@@ -3,6 +3,7 @@ package mapwriter.overlay;
 import java.awt.Point;
 import java.util.ArrayList;
 
+import mapwriter.Mw;
 import mapwriter.api.IMwChunkOverlay;
 import mapwriter.api.IMwDataProvider;
 import mapwriter.map.MapView;
@@ -13,9 +14,12 @@ public class OverlayGrid implements IMwDataProvider {
 
 	public class ChunkOverlay implements IMwChunkOverlay{
 
+		private Mw mw;
 		Point coord;
+		float borderWidth = 0.5f;
 		
-		public ChunkOverlay(int x, int z){
+		public ChunkOverlay(Mw mw, int x, int z) {
+			this.mw = mw;
 			this.coord = new Point(x, z);
 		}
 		
@@ -32,15 +36,21 @@ public class OverlayGrid implements IMwDataProvider {
 		public boolean hasBorder() { return true; }
 
 		@Override
-		public float getBorderWidth() { return 0.5f; }
+		public float getBorderWidth() { return borderWidth; }
 
 		@Override
-		public int getBorderColor() { return 0xff000000; }
+		public int getBorderColor() {
+			if (this.mw.backgroundTextureMode == 0) {
+				return 0x8021140e; //0x6021140e
+			} else {
+				return 0xff000000;
+			}
+		}
 		
 	}
 	
 	@Override
-	public ArrayList<IMwChunkOverlay> getChunksOverlay(int dim, double centerX, double centerZ, double minX, double minZ, double maxX, double maxZ) {
+	public ArrayList<IMwChunkOverlay> getChunksOverlay(Mw mw, int dim, double centerX, double centerZ, double minX, double minZ, double maxX, double maxZ) {
 		int minChunkX = (MathHelper.ceiling_double_int(minX) >> 4) - 1;
 		int minChunkZ = (MathHelper.ceiling_double_int(minZ) >> 4) - 1;
 		int maxChunkX = (MathHelper.ceiling_double_int(maxX) >> 4) + 1;
@@ -56,7 +66,7 @@ public class OverlayGrid implements IMwDataProvider {
 		ArrayList<IMwChunkOverlay> chunks = new ArrayList<IMwChunkOverlay>();
 		for (int x = limitMinX; x <= limitMaxX; x++)
 			for (int z = limitMinZ; z <= limitMaxZ; z++)
-				chunks.add(new ChunkOverlay(x, z));
+				chunks.add(new ChunkOverlay(mw, x, z));
 				
 		return chunks;
 	}
@@ -77,9 +87,7 @@ public class OverlayGrid implements IMwDataProvider {
 
 	@Override
 	public void onZoomChanged(int level, MapView mapview) {
-		/*if (level >= -1) {
-			mapview.setZoomLevel(-1);
-		}*/
+
 	}
 
 	@Override
