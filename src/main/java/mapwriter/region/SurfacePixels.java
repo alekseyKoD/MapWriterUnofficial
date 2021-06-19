@@ -144,7 +144,7 @@ public class SurfacePixels {
 			img = null;
 		} catch (Exception e) {
 			// TBD: throw special exception and regenerate broken file it the outer scope
-			RegionManager.logError("loadImage: error: could not load image from '%s': %s", filename, e.getMessage());
+			RegionManager.logError("loadImage: error: could not load image from '%s': %s", filename, e.toString());
 			img = null;
 		}
 		int[] pixels = null;
