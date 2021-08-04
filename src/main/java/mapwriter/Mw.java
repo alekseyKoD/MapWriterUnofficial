@@ -767,7 +767,11 @@ public void saveCfgAndMarkers() {
 				this.markerManager.nextGroup();
 				this.markerManager.update();
 				this.mc.thePlayer.addChatMessage(new ChatComponentText("group " + this.markerManager.getVisibleGroupName() + " selected"));
-				
+			} else if (kb == MwKeyHandler.keyPrevGroup) {
+				// toggle marker mode
+				this.markerManager.prevGroup();
+				this.markerManager.update();
+				this.mc.thePlayer.addChatMessage(new ChatComponentText("group " + this.markerManager.getVisibleGroupName() + " selected"));
 			} else if (kb == MwKeyHandler.keyTeleport) {
 				// set or remove marker
 				Marker marker = this.markerManager.getNearestMarkerInDirection(

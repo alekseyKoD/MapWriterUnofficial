@@ -370,8 +370,10 @@ public class MwGuiMarkerDialogNew extends GuiScreen
 
 	@Override
 	public void handleMouseInput() {
+	/*  if overlay is enabled it is impossible to use mouse actions(click, wheel Up/Down) on GUI New Marker Manager
 		if (MwAPI.getCurrentDataProvider() != null)
 			return;
+	 */
 		int x = Mouse.getEventX() * this.width / this.mc.displayWidth;
 		int y = this.height - Mouse.getEventY() * this.height
 				/ this.mc.displayHeight - 1;

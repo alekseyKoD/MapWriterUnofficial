@@ -113,6 +113,8 @@ public class MwGui extends GuiScreen {
     // called when gui is displayed and every time the screen
     // is resized
     public void initGui() {
+		//enable key pressed in Textfields
+    	Keyboard.enableRepeatEvents(true);
 //    	this.buttonList.add(this.optionsButton = new MwGuiButton(0, this.width - 25, this.height / 2 - 20));
     }
 
@@ -305,6 +307,9 @@ public class MwGui extends GuiScreen {
     		} else if (key == MwKeyHandler.keyNextGroup.getKeyCode()) {
     			this.mw.markerManager.nextGroup();
 	        	this.mw.markerManager.update();
+			} else if (key == MwKeyHandler.keyPrevGroup.getKeyCode()) {
+				this.mw.markerManager.prevGroup();
+				this.mw.markerManager.update();
     		} else if (key == MwKeyHandler.keyUndergroundMode.getKeyCode()) {
     			this.mw.toggleUndergroundMode();
     			this.mapView.setUndergroundMode(this.mw.undergroundMode);
@@ -379,14 +384,28 @@ public class MwGui extends GuiScreen {
 			if ((marker != null) && (prevMarker == marker)) {
     			// right clicked previously selected marker.
     			// edit the marker
-				this.mc.displayGuiScreen(
-        			new MwGuiMarkerDialog(
-        				this,
-        				this.mw.markerManager,
-        				marker
-        			)
-        		);
-    			
+
+				if (mw.newMarkerDialog)
+				{
+					this.mc.displayGuiScreen(
+							new MwGuiMarkerDialogNew(
+									this,
+									this.mw.markerManager,
+									marker
+							)
+					);
+				}
+				else
+				{
+					this.mc.displayGuiScreen(
+							new MwGuiMarkerDialog(
+									this,
+									this.mw.markerManager,
+									marker
+							)
+					);
+				}
+
     		} else if (marker == null) {
     			// open new marker dialog
     			String group = this.mw.markerManager.getVisibleGroupName();

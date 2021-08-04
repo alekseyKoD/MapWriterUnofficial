@@ -63,7 +63,12 @@ public class MarkerManager {
 	
 	public void setVisibleGroupName(String groupName) {
 		if (groupName != null) {
-			this.visibleGroupName = MwUtil.mungeString(groupName);
+			//If the group name contains an special character(".","-"," ","/","\"),
+			// then when you exit Add/Edit Marker GUI on the fullscreen, the current of markers group is set to "none"
+			//But, in the the group name this special is saved with special characters
+
+			//this.visibleGroupName = MwUtil.mungeString(groupName);
+			this.visibleGroupName = groupName;
 		} else {
 			this.visibleGroupName = "none";
 		}
@@ -202,7 +207,13 @@ public class MarkerManager {
 	public void nextGroup() {
 		this.nextGroup(1);
 	}
-	
+
+	public void prevGroup(int n) {	this.nextGroup(n);	}
+
+	public void prevGroup() {
+		this.nextGroup(-1);
+	}
+
 	public int countMarkersInGroup(String group) {
 		int count = 0;
 		if (group.equals("all")) {

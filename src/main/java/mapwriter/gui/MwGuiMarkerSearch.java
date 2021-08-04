@@ -4,6 +4,7 @@ import mapwriter.Mw;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
+import org.lwjgl.input.Keyboard;
 
 public class MwGuiMarkerSearch extends GuiScreen {
 
@@ -26,9 +27,13 @@ public class MwGuiMarkerSearch extends GuiScreen {
     }
 
     protected void keyTyped(char c, int k) {
-        super.keyTyped(c, k);
-        this.textField.textboxKeyTyped(c, k);
-        this.markerSlot.updateMarkerList(this.textField.getText());
+        if (k==Keyboard.KEY_ESCAPE){
+            this.mc.displayGuiScreen(this.parentScreen);
+        }else{
+            super.keyTyped(c, k);
+            this.textField.textboxKeyTyped(c, k);
+            this.markerSlot.updateMarkerList(this.textField.getText());
+        }
     }
 
     protected void mouseClicked(int x, int y, int btn) {
