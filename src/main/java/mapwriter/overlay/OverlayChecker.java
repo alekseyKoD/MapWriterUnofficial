@@ -15,6 +15,7 @@ public class OverlayChecker implements IMwDataProvider {
 	public class ChunkOverlay implements IMwChunkOverlay{
 
 		Point coord;
+		int overlayGridSize =OverlayChecker.this.getOverlayGridSize();;
 		
 		public ChunkOverlay(int x, int z){
 			this.coord = new Point(x, z);
@@ -37,21 +38,31 @@ public class OverlayChecker implements IMwDataProvider {
 
 		@Override
 		public int getBorderColor() { return 0xff000000; }
-		
+
+		@Override
+		public int getColorFromXY(int x, int z) { return 0x00ffffff;}
+
+		@Override
+		public boolean getPaintChunks() {	return false; }
+
+		@Override
+		public int getOverlayGridSize() {  return this.overlayGridSize;   }
+
+
 	}
 	
 	@Override
-	public ArrayList<IMwChunkOverlay> getChunksOverlay(Mw mw, int dim, double centerX, double centerZ, double minX, double minZ, double maxX, double maxZ) {
+	public ArrayList<IMwChunkOverlay> getChunksOverlay(Mw mw, int dim, double centerX, double centerZ, double minX, double minZ, double maxX, double maxZ, int gridSize) {
 		
 		// We should pass the center of the map too to reduce the display like in this case
 		// and the zoom lvl, to provide higher level informations
 		
-		int minChunkX = (MathHelper.ceiling_double_int(minX) >> 4) - 1;
-		int minChunkZ = (MathHelper.ceiling_double_int(minZ) >> 4) - 1;
-		int maxChunkX = (MathHelper.ceiling_double_int(maxX) >> 4) + 1;
-		int maxChunkZ = (MathHelper.ceiling_double_int(maxZ) >> 4) + 1;
-		int cX = (MathHelper.ceiling_double_int(centerX) >> 4) + 1;
-		int cZ = (MathHelper.ceiling_double_int(centerZ) >> 4) + 1;
+		int minChunkX = (MathHelper.ceiling_double_int(minX) / gridSize) - 1;
+		int minChunkZ = (MathHelper.ceiling_double_int(minZ) / gridSize) - 1;
+		int maxChunkX = (MathHelper.ceiling_double_int(maxX) / gridSize) + 1;
+		int maxChunkZ = (MathHelper.ceiling_double_int(maxZ) / gridSize) + 1;
+		int cX = (MathHelper.ceiling_double_int(centerX) / gridSize) + 1;
+		int cZ = (MathHelper.ceiling_double_int(centerZ) / gridSize) + 1;
 		
 		int limitMinX = Math.max(minChunkX, cX - 100);
 		int limitMaxX = Math.min(maxChunkX, cX + 100);
@@ -106,5 +117,8 @@ public class OverlayChecker implements IMwDataProvider {
 	public boolean onMouseInput(MapView mapview, MapMode mapmode) {
 		return false;
 	}
+
+	@Override
+	public int getOverlayGridSize() {   return 16;    }
 
 }

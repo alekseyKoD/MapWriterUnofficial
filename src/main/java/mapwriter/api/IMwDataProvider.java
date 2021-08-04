@@ -7,7 +7,8 @@ import mapwriter.map.MapView;
 import mapwriter.map.mapmode.MapMode;
 
 public interface IMwDataProvider {
-	public ArrayList<IMwChunkOverlay> getChunksOverlay(Mw mw, int dim, double centerX, double centerZ, double minX, double minZ, double maxX, double maxZ);
+	public ArrayList<IMwChunkOverlay> getChunksOverlay(Mw mw, int dim, double centerX, double centerZ, double minX, double minZ, double maxX, double maxZ, int gridSize);
+
 	
 	//Returns what should be added to the status bar by the addon.
 	public String getStatusString(int dim, int bX, int bY, int bZ);
@@ -29,4 +30,6 @@ public interface IMwDataProvider {
 	public void onDraw(MapView mapview, MapMode mapmode);
 	
 	public boolean onMouseInput(MapView mapview, MapMode mapmode);
+
+	public int getOverlayGridSize();
 }

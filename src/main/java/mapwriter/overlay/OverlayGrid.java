@@ -17,6 +17,7 @@ public class OverlayGrid implements IMwDataProvider {
 		private Mw mw;
 		Point coord;
 		float borderWidth = 0.5f;
+		int overlayGridSize =OverlayGrid.this.getOverlayGridSize();
 		
 		public ChunkOverlay(Mw mw, int x, int z) {
 			this.mw = mw;
@@ -46,17 +47,25 @@ public class OverlayGrid implements IMwDataProvider {
 				return 0xff000000;
 			}
 		}
-		
+
+		@Override
+		public int getColorFromXY(int x, int z) { return 0x00ffffff;}
+
+		@Override
+		public boolean getPaintChunks() {	return false; }
+		@Override
+		public int getOverlayGridSize() {  return this.overlayGridSize;   }
+
 	}
 	
 	@Override
-	public ArrayList<IMwChunkOverlay> getChunksOverlay(Mw mw, int dim, double centerX, double centerZ, double minX, double minZ, double maxX, double maxZ) {
-		int minChunkX = (MathHelper.ceiling_double_int(minX) >> 4) - 1;
-		int minChunkZ = (MathHelper.ceiling_double_int(minZ) >> 4) - 1;
-		int maxChunkX = (MathHelper.ceiling_double_int(maxX) >> 4) + 1;
-		int maxChunkZ = (MathHelper.ceiling_double_int(maxZ) >> 4) + 1;
-		int cX = (MathHelper.ceiling_double_int(centerX) >> 4) + 1;
-		int cZ = (MathHelper.ceiling_double_int(centerZ) >> 4) + 1;
+	public ArrayList<IMwChunkOverlay> getChunksOverlay(Mw mw, int dim, double centerX, double centerZ, double minX, double minZ, double maxX, double maxZ, int gridSize) {
+		int minChunkX = (MathHelper.ceiling_double_int(minX) / gridSize) - 1;
+		int minChunkZ = (MathHelper.ceiling_double_int(minZ) / gridSize) - 1;
+		int maxChunkX = (MathHelper.ceiling_double_int(maxX) / gridSize) + 1;
+		int maxChunkZ = (MathHelper.ceiling_double_int(maxZ) / gridSize) + 1;
+		int cX = (MathHelper.ceiling_double_int(centerX) / gridSize) + 1;
+		int cZ = (MathHelper.ceiling_double_int(centerZ) / gridSize) + 1;
 		
 		int limitMinX = Math.max(minChunkX, cX - 100);
 		int limitMaxX = Math.min(maxChunkX, cX + 100);
@@ -111,5 +120,8 @@ public class OverlayGrid implements IMwDataProvider {
 	public boolean onMouseInput(MapView mapview, MapMode mapmode) {
 		return false;
 	}
+
+	@Override
+	public int getOverlayGridSize() {   return 16;    }
 
 }
