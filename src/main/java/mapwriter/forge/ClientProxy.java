@@ -4,6 +4,7 @@ import java.io.File;
 
 import mapwriter.Mw;
 import mapwriter.api.MwAPI;
+import mapwriter.overlay.OverlayFluidsGrid;
 import mapwriter.overlay.OverlayGrid;
 import mapwriter.overlay.OverlaySlime;
 import mapwriter.region.MwChunk;
@@ -45,6 +46,7 @@ public class ClientProxy extends CommonProxy {
 		}
 		MwAPI.registerDataProvider("Slime", new OverlaySlime());
 		MwAPI.registerDataProvider("Grid", new OverlayGrid());
+		MwAPI.registerDataProvider("FluidsGrid", new OverlayFluidsGrid());
 		// MwAPI.registerDataProvider("Checker", new OverlayChecker());
 		// MwAPI.setCurrentDataProvider("Slime");
 	}

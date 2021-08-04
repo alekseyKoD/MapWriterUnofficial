@@ -46,7 +46,12 @@ public class OverlayGrid implements IMwDataProvider {
 				return 0xff000000;
 			}
 		}
-		
+
+		@Override
+		public int getColorFromXY(int X, int Z) { return 0x00ffffff;}
+
+		@Override
+		public boolean getPaintChunks() {	return false; }
 	}
 	
 	@Override

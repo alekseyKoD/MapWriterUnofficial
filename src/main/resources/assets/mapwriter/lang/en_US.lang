@@ -101,3 +101,4 @@ mw.gui.mwguioptionslot.backgroundMode.panning=panning
 mw.gui.mwguioptionslot.oldNewMarkerDialog=Old/New Marker Dialog: %s
 mw.gui.mwguioptionslot.oldNewMarkerDialog.new=New
 mw.gui.mwguioptionslot.oldNewMarkerDialog.old=Old
+mw.gui.mwguioptionslot.paintOverChunk=Paint over chunk: %s

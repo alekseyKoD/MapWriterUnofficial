@@ -101,3 +101,4 @@ mw.gui.mwguioptionslot.backgroundMode.panning=панорамирование
 mw.gui.mwguioptionslot.oldNewMarkerDialog=Старое/новое окно созд. маркера: %s
 mw.gui.mwguioptionslot.oldNewMarkerDialog.new=Новое
 mw.gui.mwguioptionslot.oldNewMarkerDialog.old=Старое
+mw.gui.mwguioptionslot.paintOverChunk=Закрашивать чанки: %s
