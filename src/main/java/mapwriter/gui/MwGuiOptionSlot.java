@@ -39,7 +39,7 @@ public class MwGuiOptionSlot extends GuiSlot {
 	};
 	private static final int[] ticksBetweenUpdatesIntArray = {0, 20, 40, 60, 100, 200, 300, 400, 500, 750, 1000};
 
-	private GuiButton[] buttons = new GuiButton[15];
+	private GuiButton[] buttons = new GuiButton[14];
 	
     static final ResourceLocation WIDGET_TEXTURE_LOC = new ResourceLocation("textures/gui/widgets.png");
 	
@@ -89,9 +89,6 @@ public class MwGuiOptionSlot extends GuiSlot {
 			//	break;
 			case 13:
 				this.buttons[i].displayString = I18n.format("mw.gui.mwguioptionslot.oldNewMarkerDialog", (this.mw.newMarkerDialog ? I18n.format("mw.gui.mwguioptionslot.oldNewMarkerDialog.new") : I18n.format("mw.gui.mwguioptionslot.oldNewMarkerDialog.old")));
-				break;
-			case 14:
-				this.buttons[i].displayString = I18n.format("mw.gui.mwguioptionslot.paintOverChunk",this.mw.paintChunks);
 				break;
 			default:
 				break;
@@ -214,9 +211,6 @@ public class MwGuiOptionSlot extends GuiSlot {
 			//	break;
 			case 13:
 				this.mw.newMarkerDialog = !this.mw.newMarkerDialog;
-				break;
-			case 14:
-				this.mw.paintChunks = !this.mw.paintChunks;
 				break;
 			default:
 				break;

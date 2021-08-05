@@ -116,7 +116,6 @@ public class Mw {
 	public int backgroundTextureMode = 0;
 	public boolean newMarkerDialog = true;
 	//public boolean lightingEnabled = false;
-	public boolean paintChunks = false;
 	
 	// flags and counters
 	private boolean onPlayerDeathAlreadyFired = false;
@@ -228,7 +227,6 @@ public class Mw {
 		this.backgroundTextureMode = this.config.getOrSetInt(catOptions, "backgroundTextureMode", this.backgroundTextureMode, 0, 1);
 		//this.lightingEnabled = this.config.getOrSetBoolean(catOptions, "lightingEnabled", this.lightingEnabled);
 		this.newMarkerDialog = this.config.getOrSetBoolean(catOptions, "newMarkerDialog", this.newMarkerDialog);
-		this.paintChunks = this.config.getOrSetBoolean("options", "paintChunks", this.paintChunks);
 
 		/*MwUtil.log("maxZoomAfter(%d)", this.maxZoom);
 		MwUtil.log("minZoomAfter(%d)", this.minZoom);*/
@@ -268,7 +266,7 @@ public class Mw {
 		this.config.setInt(catOptions, "backgroundTextureMode", this.backgroundTextureMode);
 		//this.config.setBoolean(catOptions, "lightingEnabled", this.lightingEnabled);
 		this.config.setBoolean(catOptions, "newMarkerDialog", this.newMarkerDialog);
-		this.config.setBoolean("options", "paintChunks", this.paintChunks);
+
 		this.config.save();	
 	}
 	

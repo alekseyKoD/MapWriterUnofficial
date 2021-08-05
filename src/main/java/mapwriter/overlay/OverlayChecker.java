@@ -37,12 +37,6 @@ public class OverlayChecker implements IMwDataProvider {
 
 		@Override
 		public int getBorderColor() { return 0xff000000; }
-
-		@Override
-		public int getColorFromXY(int X, int Z) { return 0x00ffffff;}
-
-		@Override
-		public boolean getPaintChunks() {	return false; }
 		
 	}
 	

@@ -1,7 +1,6 @@
 package mapwriter.map;
 
 import java.awt.Point;
-import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
 import mapwriter.Mw;
@@ -290,44 +289,35 @@ public class MapRenderer {
 	}
 	
 	private static void paintChunk(MapMode mapMode, MapView mapView, IMwChunkOverlay overlay){
-		int chunkX = overlay.getCoordinates().x;
-		int chunkZ = overlay.getCoordinates().y;
+		int chunkX    = overlay.getCoordinates().x;
+		int chunkZ    = overlay.getCoordinates().y;
 		float filling = overlay.getFilling();
-		boolean paintChunks = overlay.getPaintChunks();
-		Point2D.Double topCorner;
-		Point2D.Double botCorner;
-		if (MwAPI.getCurrentProviderName() != "FluidsGrid") {
-			topCorner = mapMode.blockXZtoScreenXY(mapView, (double)(chunkX << 4), (double)(chunkZ << 4));
-			botCorner = mapMode.blockXZtoScreenXY(mapView, (double)(chunkX + 1 << 4), (double)(chunkZ + 1 << 4));
-		} else {
-			topCorner = mapMode.blockXZtoScreenXY(mapView, (double)(chunkX * 96), (double)(chunkZ * 96));
-			botCorner = mapMode.blockXZtoScreenXY(mapView, (double)((chunkX + 1) * 96), (double)((chunkZ + 1) * 96));
-		}
+		
+		Point.Double topCorner = mapMode.blockXZtoScreenXY(mapView, chunkX << 4, chunkZ << 4);
+		Point.Double botCorner = mapMode.blockXZtoScreenXY(mapView, (chunkX + 1) << 4, (chunkZ + 1 << 4));
 
-		topCorner.x = Math.max((double)mapMode.x, topCorner.x);
-		topCorner.x = Math.min((double)(mapMode.x + mapMode.w), topCorner.x);
-		topCorner.y = Math.max((double)mapMode.y, topCorner.y);
-		topCorner.y = Math.min((double)(mapMode.y + mapMode.h), topCorner.y);
-		botCorner.x = Math.max((double)mapMode.x, botCorner.x);
-		botCorner.x = Math.min((double)(mapMode.x + mapMode.w), botCorner.x);
-		botCorner.y = Math.max((double)mapMode.y, botCorner.y);
-		botCorner.y = Math.min((double)(mapMode.y + mapMode.h), botCorner.y);
-		double sizeX = (botCorner.x - topCorner.x) * (double)filling;
-		double sizeY = (botCorner.y - topCorner.y) * (double)filling;
-		double offsetX = (botCorner.x - topCorner.x - sizeX) / 2.0D;
-		double offsetY = (botCorner.y - topCorner.y - sizeY) / 2.0D;
+		topCorner.x = Math.max(mapMode.x,             topCorner.x);
+		topCorner.x = Math.min(mapMode.x + mapMode.w, topCorner.x);
+		topCorner.y = Math.max(mapMode.y,             topCorner.y);
+		topCorner.y = Math.min(mapMode.y + mapMode.h, topCorner.y);
+		
+		botCorner.x = Math.max(mapMode.x,             botCorner.x);
+		botCorner.x = Math.min(mapMode.x + mapMode.w, botCorner.x);
+		botCorner.y = Math.max(mapMode.y,             botCorner.y);
+		botCorner.y = Math.min(mapMode.y + mapMode.h, botCorner.y);		
+
+		double sizeX = (botCorner.x - topCorner.x) * filling;
+		double sizeY = (botCorner.y - topCorner.y) * filling;		
+		double offsetX = ((botCorner.x - topCorner.x) - sizeX) / 2;
+		double offsetY = ((botCorner.y - topCorner.y) - sizeY) / 2;	
+		
 		if (overlay.hasBorder()) {
 			Render.setColour(overlay.getBorderColor());
-			Render.drawRectBorder(topCorner.x + 1.0D, topCorner.y + 1.0D, botCorner.x - topCorner.x - 1.0D, botCorner.y - topCorner.y - 1.0D, (double)overlay.getBorderWidth());
+			Render.drawRectBorder(topCorner.x + 1, topCorner.y + 1, botCorner.x - topCorner.x - 1, botCorner.y - topCorner.y - 1, overlay.getBorderWidth());
 		}
-
-		if (MwAPI.getCurrentProviderName() == "FluidsGrid" && overlay.getPaintChunks()) {
-			Render.setColour(overlay.getColorFromXY(chunkX * 96, chunkZ * 96));
-		} else {
-			Render.setColour(overlay.getColor());
-		}
-
-		Render.drawRect(topCorner.x + offsetX + 1.0D, topCorner.y + offsetY + 1.0D, sizeX - 1.0D, sizeY - 1.0D);
+		
+		Render.setColour(overlay.getColor());
+		Render.drawRect(topCorner.x + offsetX + 1, topCorner.y + offsetY + 1, sizeX - 1, sizeY - 1);
 	}
 }
 
