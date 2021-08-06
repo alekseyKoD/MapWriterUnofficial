@@ -16,6 +16,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.chunk.Chunk;
+import org.apache.commons.lang3.StringUtils;
 
 public class MwUtil {
 	
@@ -121,43 +122,44 @@ public class MwUtil {
 		return (dx * dx) + (dz * dz);
 	}
 
-	public static List getTargetInfo(int SourceX, int SourceZ, int TargetX, int TargetZ){
+	public static List getTargetInfo(int sourceX, int sourceZ, int targetX, int targetZ){
 
-		List TargetInfo= new ArrayList();
-		String CompassPoint;
-		int Distance;
-		double DiffX=SourceX-TargetX;
-		double DiffZ=SourceZ-TargetZ;
-		int Angle =(int)Math.toDegrees(Math.atan2(DiffX, DiffZ));
-		Angle=Angle<0?Angle+360:Angle;
+		//Return List with elements:
+		//		int straights distance beetwen marker & player
+		//		String compass direction to marker
+
+		List targetInfo= new ArrayList();
+		String compassPoint;
+
+		double diffX=sourceX-targetX;
+		double diffZ =sourceZ-targetZ;
+		int angle =(int)Math.toDegrees(Math.atan2(diffX, diffZ));
+		angle=angle<0?angle+360:angle;
 
 
 	//Determine marker`s the side of the world relative to the player.
-		if(Angle<=10 || Angle >350){
-			CompassPoint="N";
-		}else if (Angle<=80 && Angle >10){
-			CompassPoint="NW";
-		}else if (Angle<=100 && Angle >80){
-			CompassPoint="W";
-		}else if (Angle<=170 && Angle >100){
-			CompassPoint="SW";
-		}else if (Angle<=190 && Angle >170){
-			CompassPoint="S";
-		}else if (Angle<=260 && Angle >190){
-			CompassPoint="SE";
-		}else if (Angle<=280 && Angle >260){
-			CompassPoint="E";
-		}else CompassPoint="NE";
+		if(angle<=10 || angle >350){
+			compassPoint="N";
+		}else if (angle<=80 && angle >10){
+			compassPoint="NW";
+		}else if (angle<=100 && angle >80){
+			compassPoint="W";
+		}else if (angle<=170 && angle >100){
+			compassPoint="SW";
+		}else if (angle<=190 && angle >170){
+			compassPoint="S";
+		}else if (angle<=260 && angle >190){
+			compassPoint="SE";
+		}else if (angle<=280 && angle >260){
+			compassPoint="E";
+		}else compassPoint="NE";
 
-		TargetInfo.add(CompassPoint);
+		targetInfo.add(compassPoint);
 	//Determine the direct distance from the player to the marker
-		TargetInfo.add ((int)Math.sqrt(Math.abs(DiffX)*Math.abs(DiffX) +
-						   Math.abs(DiffZ)*Math.abs(DiffZ)));
-
-
-
-
-	return TargetInfo;
+		targetInfo.add ((int)Math.sqrt(Math.abs(diffX)*Math.abs(diffX) +
+						   Math.abs(diffZ)*Math.abs(diffZ)));
+	return targetInfo;
 	}
 
 }
+

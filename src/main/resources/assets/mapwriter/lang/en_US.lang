@@ -65,7 +65,7 @@ mw.gui.mwguimarkerdialognew.editMarkerGroup=Group
 mw.gui.mwguimarkerdialognew.editMarkerX=X
 mw.gui.mwguimarkerdialognew.editMarkerY=Y
 mw.gui.mwguimarkerdialognew.editMarkerZ=Z
-mw.gui.mwguimarkerdialognew.editMarkerColor=Color
+mw.gui.mwguimarkerdialognew.editMarkerColor=Colour
 mw.gui.mwguimarkerdialognew.title=Teleport Height
 mw.gui.mwguimarkerdialognew.error=invalid height
 
@@ -106,3 +106,13 @@ mw.gui.mwguioptionslot.oldNewMarkerDialog=Old/New Marker Dialog: %s
 mw.gui.mwguioptionslot.oldNewMarkerDialog.new=New
 mw.gui.mwguioptionslot.oldNewMarkerDialog.old=Old
 mw.gui.mwguioptionslot.paintOverChunk=Paint over chunk: %s
+mw.gui.mwguioptionslot.colorMarkerNameSearchMode=Marker name colour: %s
+mw.gui.mwguioptionslot.colorMarkerDistanceSearchMode=Marker distance colour: %s
+mw.gui.mwguioptionslot.colorMarkerSearchMode.off= Off
+mw.gui.mwguioptionslot.colorMarkerSearchMode.colormarker=Marker colour
+mw.gui.mwguioptionslot.colorMarkerSearchMode.onlydistance=Only distance
+
+mw.gui.mwguimarkerSlotNew.markerName=Marker Name
+mw.gui.mwguimarkerSlotNew.markerCoordinate= Marker Coordinate
+mw.gui.mwguimarkerSlotNew.markerDistance= Distance to Marker
+mw.gui.mwguimarkerSlotNew.markerCompassPoint= Direction to Marker

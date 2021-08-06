@@ -32,14 +32,26 @@ public class MwGuiOptionSlot extends GuiSlot {
 		I18n.format("mw.gui.mwguioptionslot.drawCoords.large")
 	};
 	private static final String[] backgroundModeStringArray = {
-		I18n.format("mw.gui.mwguioptionslot.backgroundMode.minecraft"),
-		I18n.format("mw.gui.mwguioptionslot.backgroundMode.none"),
-		I18n.format("mw.gui.mwguioptionslot.backgroundMode.static"),
-		I18n.format("mw.gui.mwguioptionslot.backgroundMode.panning")
+			I18n.format("mw.gui.mwguioptionslot.backgroundMode.minecraft"),
+			I18n.format("mw.gui.mwguioptionslot.backgroundMode.none"),
+			I18n.format("mw.gui.mwguioptionslot.backgroundMode.static"),
+			I18n.format("mw.gui.mwguioptionslot.backgroundMode.panning")
 	};
+	private static final String[] colorMarkerNameSearchArray={
+			I18n.format("mw.gui.mwguioptionslot.colorMarkerSearchMode.off"),
+			I18n.format("mw.gui.mwguioptionslot.colorMarkerSearchMode.colormarker"),
+	};
+	private static final String[] colorMarkerDistanceSearchArray={
+			I18n.format("mw.gui.mwguioptionslot.colorMarkerSearchMode.off"),
+			I18n.format("mw.gui.mwguioptionslot.colorMarkerSearchMode.onlydistance")
+	};
+
+
+
+
 	private static final int[] ticksBetweenUpdatesIntArray = {0, 20, 40, 60, 100, 200, 300, 400, 500, 750, 1000};
 
-	private GuiButton[] buttons = new GuiButton[15];
+	private GuiButton[] buttons = new GuiButton[17];
 	
     static final ResourceLocation WIDGET_TEXTURE_LOC = new ResourceLocation("textures/gui/widgets.png");
 	
@@ -92,6 +104,12 @@ public class MwGuiOptionSlot extends GuiSlot {
 				break;
 			case 14:
 				this.buttons[i].displayString = I18n.format("mw.gui.mwguioptionslot.paintOverChunk",this.mw.paintChunks);
+				break;
+			case 15:
+				this.buttons[i].displayString = I18n.format("mw.gui.mwguioptionslot.colorMarkerNameSearchMode",this.colorMarkerNameSearchArray[this.mw.colorMarkerNameSearchMode]);
+				break;
+			case 16:
+				this.buttons[i].displayString = I18n.format("mw.gui.mwguioptionslot.colorMarkerDistanceSearchMode",this.colorMarkerDistanceSearchArray[this.mw.colorMarkerDistanceSearchMode]);
 				break;
 			default:
 				break;
@@ -217,6 +235,14 @@ public class MwGuiOptionSlot extends GuiSlot {
 				break;
 			case 14:
 				this.mw.paintChunks = !this.mw.paintChunks;
+				break;
+			case 15:
+				//Marker`s name color on search screen
+				this.mw.colorMarkerNameSearchMode = (this.mw.colorMarkerNameSearchMode + 1) % 2;
+				break;
+			case 16:
+				//Marker`s distance color on search screen
+				this.mw.colorMarkerDistanceSearchMode = (this.mw.colorMarkerDistanceSearchMode + 1) % 2;
 				break;
 			default:
 				break;

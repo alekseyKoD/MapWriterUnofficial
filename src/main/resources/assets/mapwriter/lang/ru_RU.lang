@@ -106,3 +106,13 @@ mw.gui.mwguioptionslot.oldNewMarkerDialog=Старое/новое окно со�
 mw.gui.mwguioptionslot.oldNewMarkerDialog.new=Новое
 mw.gui.mwguioptionslot.oldNewMarkerDialog.old=Старое
 mw.gui.mwguioptionslot.paintOverChunk=Закрашивать чанки: %s
+mw.gui.mwguioptionslot.colorMarkerNameSearchMode=Цвет имени: %s
+mw.gui.mwguioptionslot.colorMarkerDistanceSearchMode=Цвет расстояния: %s
+mw.gui.mwguioptionslot.colorMarkerSearchMode.off= Отключен
+mw.gui.mwguioptionslot.colorMarkerSearchMode.colormarker=Цвет маркера
+mw.gui.mwguioptionslot.colorMarkerSearchMode.onlydistance=Только расстояние
+
+mw.gui.mwguimarkerSlotNew.markerName=Имя маркера
+mw.gui.mwguimarkerSlotNew.markerCoordinate= Координаты маркера
+mw.gui.mwguimarkerSlotNew.markerDistance= Расстояние до маркера
+mw.gui.mwguimarkerSlotNew.markerCompassPoint= Направление к маркеру

@@ -117,6 +117,8 @@ public class Mw {
 	public boolean newMarkerDialog = true;
 	//public boolean lightingEnabled = false;
 	public boolean paintChunks = false;
+	public int colorMarkerNameSearchMode;
+	public int colorMarkerDistanceSearchMode;
 	
 	// flags and counters
 	private boolean onPlayerDeathAlreadyFired = false;
@@ -229,7 +231,8 @@ public class Mw {
 		//this.lightingEnabled = this.config.getOrSetBoolean(catOptions, "lightingEnabled", this.lightingEnabled);
 		this.newMarkerDialog = this.config.getOrSetBoolean(catOptions, "newMarkerDialog", this.newMarkerDialog);
 		this.paintChunks = this.config.getOrSetBoolean("options", "paintChunks", this.paintChunks);
-
+		this.colorMarkerNameSearchMode = this.config.getOrSetInt("options", "colorMarkerNameSearchMode", this.colorMarkerNameSearchMode,0,1);
+		this.colorMarkerDistanceSearchMode = this.config.getOrSetInt("options", "colorMarkerDistanceSearchMode", this.colorMarkerDistanceSearchMode,0,1);
 		/*MwUtil.log("maxZoomAfter(%d)", this.maxZoom);
 		MwUtil.log("minZoomAfter(%d)", this.minZoom);*/
 
@@ -269,6 +272,9 @@ public class Mw {
 		//this.config.setBoolean(catOptions, "lightingEnabled", this.lightingEnabled);
 		this.config.setBoolean(catOptions, "newMarkerDialog", this.newMarkerDialog);
 		this.config.setBoolean("options", "paintChunks", this.paintChunks);
+		this.config.setInt("options", "colorMarkerNameSearchMode", this.colorMarkerNameSearchMode);
+		this.config.setInt("options", "colorMarkerDistanceSearchMode", this.colorMarkerDistanceSearchMode);
+
 		this.config.save();	
 	}
 	
