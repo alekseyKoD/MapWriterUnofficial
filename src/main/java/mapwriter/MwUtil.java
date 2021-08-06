@@ -6,7 +6,9 @@ import java.nio.ByteOrder;
 import java.nio.IntBuffer;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import mapwriter.forge.MwForge;
@@ -118,4 +120,44 @@ public class MwUtil {
 		int dz = (chunk.zPosition << 4) + 8 - z;
 		return (dx * dx) + (dz * dz);
 	}
+
+	public static List getTargetInfo(int SourceX, int SourceZ, int TargetX, int TargetZ){
+
+		List TargetInfo= new ArrayList();
+		String CompassPoint;
+		int Distance;
+		double DiffX=SourceX-TargetX;
+		double DiffZ=SourceZ-TargetZ;
+		int Angle =(int)Math.toDegrees(Math.atan2(DiffX, DiffZ));
+		Angle=Angle<0?Angle+360:Angle;
+
+
+	//Determine marker`s the side of the world relative to the player.
+		if(Angle<=10 || Angle >350){
+			CompassPoint="N";
+		}else if (Angle<=80 && Angle >10){
+			CompassPoint="NW";
+		}else if (Angle<=100 && Angle >80){
+			CompassPoint="W";
+		}else if (Angle<=170 && Angle >100){
+			CompassPoint="SW";
+		}else if (Angle<=190 && Angle >170){
+			CompassPoint="S";
+		}else if (Angle<=260 && Angle >190){
+			CompassPoint="SE";
+		}else if (Angle<=280 && Angle >260){
+			CompassPoint="E";
+		}else CompassPoint="NE";
+
+		TargetInfo.add(CompassPoint);
+	//Determine the direct distance from the player to the marker
+		TargetInfo.add ((int)Math.sqrt(Math.abs(DiffX)*Math.abs(DiffX) +
+						   Math.abs(DiffZ)*Math.abs(DiffZ)));
+
+
+
+
+	return TargetInfo;
+	}
+
 }

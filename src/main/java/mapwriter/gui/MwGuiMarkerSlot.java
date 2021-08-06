@@ -1,6 +1,7 @@
 package mapwriter.gui;
 
 import mapwriter.Mw;
+import mapwriter.MwUtil;
 import mapwriter.map.Marker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
@@ -42,11 +43,28 @@ public class MwGuiMarkerSlot extends GuiSlot {
         this.buttons.clear();
         this.buttonId.clear();
         for (int i = 0; i < this.markerList.size(); i++) {
+
+           List TargetInfo=MwUtil.getTargetInfo(
+                    this.mw.playerXInt,
+                    this.mw.playerZInt,
+                    this.markerList.get(i).x,
+                    this.markerList.get(i).z);
+
+           String CompassPoint=TargetInfo.get(0).toString();
+           String Distance2Target=TargetInfo.get(1).toString();
+
             Marker marker = this.markerList.get(i);
-            if ((text.equals("") || marker.name.toLowerCase().contains(text.toLowerCase())) && marker.dimension == this.mw.playerDimension) {
-                this.buttons.add(new GuiButton(400 + i, 0, 0, this.markerList.get(i).name));
+            if ((text.equals("") || marker.name.toLowerCase().contains(text.toLowerCase())) &&
+                                    marker.dimension == this.mw.playerDimension) {
+
+                this.buttons.add(new GuiButton(400 + i, 0, 0,
+                            this.markerList.get(i).name +(" (")+
+                                      this.markerList.get(i).x+": "+
+                                      this.markerList.get(i).z+")   "+
+                                        Distance2Target+"m " +CompassPoint ));
                 this.buttonId.add(i);
             }
+
         }
     }
 
@@ -94,4 +112,6 @@ public class MwGuiMarkerSlot extends GuiSlot {
         button.yPosition = y;
         button.drawButton(this.mc, this.mouseX, this.mouseY);
     }
+
 }
+
