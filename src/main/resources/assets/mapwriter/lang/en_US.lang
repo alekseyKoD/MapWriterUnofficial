@@ -43,6 +43,9 @@ mw.gui.mwgui.chatmsg.merge=merging to
 mw.gui.mwguidimensiondialog.title=Set dimension to
 mw.gui.mwguidimensiondialog.error=invalid dimension
 
+mw.gui.mwguigroupdialog.title=Rename current group to
+mw.gui.mwguigroupdialog.error=Group name cannot be empty
+
 mw.gui.mwguimarkerdialog.title.new=Marker Name
 mw.gui.mwguimarkerdialog.title.edit=Edit Marker Name
 mw.gui.mwguimarkerdialog.error=marker must have a name

@@ -355,6 +355,11 @@ public class MwGui extends GuiScreen {
         				this.mapView.getDimension()
         			)
         		);
+
+			} else if (this.groupLabel.posWithin(x, y) && !this.mw.markerManager.getVisibleGroupName().equals("all") &&
+						!this.mw.markerManager.getVisibleGroupName().equals("none") )  {
+				this.mc.displayGuiScreen(new MwGuiGroupDialog(this, this.mw));
+
     		} else if (this.optionsLabel.posWithin(x, y)) {
 				this.mc.displayGuiScreen(new MwGuiOptions(this, this.mw));
 			} else if (this.markersLabel.posWithin(x, y)) {
@@ -369,7 +374,6 @@ public class MwGui extends GuiScreen {
 				} else {
 	    			backFromMarkerSearch = false;
 				}
-	    		
 	    		if ((marker != null) && (prevMarker == marker)) {
 	    			// clicked previously selected marker.
 	    			// start moving the marker.
@@ -378,7 +382,7 @@ public class MwGui extends GuiScreen {
 	    			this.movingMarkerZStart = marker.z;
 	    		}
     		}
-    		
+
     	} else if (button == 1) {
     		//this.mouseRightHeld = 1;
 			if ((marker != null) && (prevMarker == marker)) {

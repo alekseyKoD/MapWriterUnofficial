@@ -7,7 +7,7 @@ import mapwriter.map.mapmode.MapMode;
 
 public class Marker {
 	public final String name;
-	public final String groupName;
+	public String groupName;
 	public int x;
 	public int y;
 	public int z;
@@ -31,7 +31,12 @@ public class Marker {
 		this.colour = colour;
 		this.groupName = groupName;
 	}
-	
+
+	public void setGroupName(String newGroupName){
+		this.groupName=newGroupName;
+	}
+
+
 	public String getString() {
 		return String.format("%s %s (%d, %d, %d) %d %06x",
 				this.name, this.groupName, this.x, this.y, this.z, this.dimension, this.colour & 0xffffff);
@@ -76,4 +81,6 @@ public class Marker {
 		}
 		return false;
 	}
+
+
 }

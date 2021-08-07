@@ -43,6 +43,9 @@ mw.gui.mwgui.chatmsg.merge=слияние в
 mw.gui.mwguidimensiondialog.title=Установить измерение на
 mw.gui.mwguidimensiondialog.error=неверное измерение
 
+mw.gui.mwguigroupdialog.title=Переименовать текущую группу на
+mw.gui.mwguigroupdialog.error=Имя группы не может быть пустым
+
 mw.gui.mwguimarkerdialog.title.new=Название маркера
 mw.gui.mwguimarkerdialog.title.edit=Редактировать название
 mw.gui.mwguimarkerdialog.error=маркеру необходимо название
