@@ -225,7 +225,7 @@ public class MwGui extends GuiScreen {
 		case Keyboard.KEY_C:
         	// cycle selected marker colour
         	if (this.mw.markerManager.selectedMarker != null) {
-        		this.mw.markerManager.selectedMarker.colourNext();
+        		this.mw.markerManager.selectedMarker.colourNext(mw.markerManager,this.mw.markerManager.selectedMarker);
         	}
         	break;
         
@@ -492,9 +492,9 @@ public class MwGui extends GuiScreen {
     	Marker marker = this.getMarkerNearScreenPos(x, y);
     	if ((marker != null) && (marker == this.mw.markerManager.selectedMarker)) {
     		if (direction > 0) {
-    			marker.colourNext();
+    			marker.colourNext(mw.markerManager, marker);
     		} else {
-    			marker.colourPrev();
+    			marker.colourPrev(this.mw.markerManager, marker);
     		}
     		
     	} else if (this.dimensionLabel.posWithin(x, y)) {

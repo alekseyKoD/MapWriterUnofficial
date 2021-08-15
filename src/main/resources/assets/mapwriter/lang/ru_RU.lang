@@ -66,6 +66,7 @@ mw.gui.mwguimarkerdialognew.editMarkerX=X
 mw.gui.mwguimarkerdialognew.editMarkerY=Y
 mw.gui.mwguimarkerdialognew.editMarkerZ=Z
 mw.gui.mwguimarkerdialognew.editMarkerColor=Цвет
+mw.gui.mwguimarkerdialognew.buttonSave=Сохранить
 mw.gui.mwguimarkerdialognew.title=Высота для телепортации
 mw.gui.mwguimarkerdialognew.error=неверная высота
 
@@ -108,9 +109,9 @@ mw.gui.mwguioptionslot.oldNewMarkerDialog.old=Старое
 mw.gui.mwguioptionslot.paintOverChunk=Закрашивать чанки: %s
 mw.gui.mwguioptionslot.colorMarkerNameSearchMode=Цвет имени: %s
 mw.gui.mwguioptionslot.colorMarkerDistanceSearchMode=Цвет расстояния: %s
-mw.gui.mwguioptionslot.colorMarkerSearchMode.off= Отключен
-mw.gui.mwguioptionslot.colorMarkerSearchMode.colormarker=Цвет маркера
-mw.gui.mwguioptionslot.colorMarkerSearchMode.onlydistance=Только расстояние
+mw.gui.mwguioptionslot.colorMarkerSearchMode.off=Откл.
+mw.gui.mwguioptionslot.colorMarkerSearchMode.colormarker=Вкл.
+mw.gui.mwguioptionslot.colorMarkerSearchMode.onlydistance=Вкл.
 
 mw.gui.mwguimarkerSlotNew.markerName=Имя маркера
 mw.gui.mwguimarkerSlotNew.markerCoordinate= Координаты маркера

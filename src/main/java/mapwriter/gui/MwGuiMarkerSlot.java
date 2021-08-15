@@ -24,8 +24,6 @@ public class MwGuiMarkerSlot extends GuiSlot {
 
     private int mouseX = 0;
     private int mouseY = 0;
-
-
     private final GuiScreen parentScreen;
 
     public List<Marker> markerList;
@@ -134,7 +132,45 @@ public class MwGuiMarkerSlot extends GuiSlot {
 
     }
 
-    public int getStartPosX() { return Math.max(this.getScrollBarX() - this.getFullMarkerFieldWidth() - 15, 0); }
+    public int getStartPosX() { return Math.max(this.getScrollBarX() - this.getFullMarkerFieldWidth() - 15, 15); }
+
+    public int getDiffWidthSlotScrollBar(){
+     //  returns the difference between the end X coordinate full markersearch string a
+     //  nd start X coordinates markerslot`s scrollbar.
+         return this.getScrollBarX()-this.getStartPosX()-this.getFullMarkerFieldWidth()-5;
+    }
+
+    public boolean isInsideMarkerSlots(int mouseX, int mouseY){
+
+        int startXDetect=this.getStartPosX();
+        int endXDetect= this.getDiffWidthSlotScrollBar()>0 ?
+                this.getStartPosX()+this.getFullMarkerFieldWidth() :
+                this.getStartPosX()+this.getFullMarkerFieldWidth()+this.getDiffWidthSlotScrollBar();
+
+        int startYDetect=this.top;
+        int endYDetect=this.bottom;
+        if (mouseX> startXDetect && mouseX< endXDetect && mouseY > startYDetect &&  mouseY < endYDetect){
+            return true;
+        } else return false;
+
+
+
+
+    }
+
+    public String getTrimRightString(String text,int overlaps){
+        int count=0;
+        String trimmedText;
+        int fullTextPixelSize=mc.fontRendererObj.getStringWidth(text);
+
+        do{
+            trimmedText=text.substring(0,text.length()-count);
+            count++;
+
+        }while (mc.fontRendererObj.getStringWidth(text)-mc.fontRendererObj.getStringWidth(trimmedText)<=overlaps);
+
+        return  trimmedText;
+    }
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float f) {
@@ -146,8 +182,7 @@ public class MwGuiMarkerSlot extends GuiSlot {
 
             int selectedIndex = this.getSlotIndexFromScreenCoords(this.width/2,mouseY);
 
-            if (mouseX>this.getStartPosX() && mouseX<=(this.getStartPosX()+this.getFullMarkerFieldWidth()) &&
-                    mouseY >= this.top && mouseY <= this.bottom && selectedIndex>=0){
+            if ( this.isInsideMarkerSlots(mouseX,mouseY) && selectedIndex>=0 && Mouse.getEventButton()!=-1 ){
 
                 this.elementClicked(selectedIndex, false, mouseX, mouseY);
 
@@ -155,6 +190,7 @@ public class MwGuiMarkerSlot extends GuiSlot {
 
 
         }
+
 
 
         super.drawScreen(mouseX, mouseY, f);
@@ -187,21 +223,31 @@ public class MwGuiMarkerSlot extends GuiSlot {
         String distance=String.valueOf(this.searchMarkerList.get(i).getDistance())+"m";
         String compassPoint=this.searchMarkerList.get(i).getCompassPoint();
 
+        int markerNamePixelSize=mc.fontRendererObj.getStringWidth(markerName);
         int coordinatesPixelSize=mc.fontRendererObj.getStringWidth(coordinates);
         int distancePixelsSize=mc.fontRendererObj.getStringWidth(distance);
         int compassPointPixelsSize=mc.fontRendererObj.getStringWidth(compassPoint);
 
-
-        //draw Marker`s name Column, align at left border
-        startPosX=this.getStartPosX();
-        button.drawString(this.mc.fontRendererObj,markerName ,startPosX,y+textYShift,
-                    this.mw.colorMarkerNameSearchMode==1 ? this.searchMarkerList.get(i).getStringColor() : 0xffffffff );
-
+        //startPosX=this.getStartPosX();
 
         //Draw coordinates column, align at right border
-        startPosX+=this.getMarkerNameFieldWidth();
+        startPosX=this.getStartPosX()+this.getMarkerNameFieldWidth()+this.getDiffWidthSlotScrollBar();
         textShift=this.getCoordinatesFieldWidth()-coordinatesPixelSize;
         button.drawString(this.mc.fontRendererObj,coordinates,startPosX+textShift,y+textYShift,0xffffffff );
+
+        //draw Marker`s name Column, align at left border. If marker`s name string longer and overlaps
+        // marker coordinate`s string, trim the marker`s name string
+
+        int overlaps=this.getStartPosX()+markerNamePixelSize-startPosX-textShift;
+        overlaps=overlaps>0 ? overlaps:0;
+
+        markerName= overlaps<=0? markerName : this.getTrimRightString(markerName,overlaps);
+
+        button.drawString(this.mc.fontRendererObj,markerName ,this.getStartPosX(),y+textYShift,
+                this.mw.colorMarkerNameSearchMode==1 ? this.searchMarkerList.get(i).getStringColor() : 0xffffffff );
+
+
+
 
         //Draw distance column, align at right border
         startPosX+=this.getCoordinatesFieldWidth();

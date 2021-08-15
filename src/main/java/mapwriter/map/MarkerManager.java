@@ -20,6 +20,8 @@ public class MarkerManager {
 	private String visibleGroupName = "none";
 	
 	public Marker selectedMarker = null;
+
+	public int selectedColor;
 	
 	public MarkerManager() {
 	}

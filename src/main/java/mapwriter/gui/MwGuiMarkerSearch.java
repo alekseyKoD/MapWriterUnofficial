@@ -2,10 +2,12 @@ package mapwriter.gui;
 
 import mapwriter.Mw;
 import mapwriter.Render;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.EnumChatFormatting;
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 
 public class MwGuiMarkerSearch extends GuiScreen {
 
@@ -22,11 +24,18 @@ public class MwGuiMarkerSearch extends GuiScreen {
     }
 
     public void initGui() {
-        this.markerSlot = new MwGuiMarkerSlot(this, this.mc, this.mw);
 
+
+        String previousSearchText=this.textField==null? "": this.textField.getText();
+
+        this.markerSlot = new MwGuiMarkerSlot(this, this.mc, this.mw);
         this.textField = new MwGuiTextField(this.fontRendererObj, (this.width / 2) - 108, this.height - 28, 200, 20);
         this.textField.setMaxStringLength(20);
+        this.textField.setText(previousSearchText);
         this.textField.setFocused(true);
+        this.markerSlot.updateMarkerList(this.textField.getText());
+
+
     }
 
     protected void keyTyped(char c, int k) {
@@ -40,8 +49,10 @@ public class MwGuiMarkerSearch extends GuiScreen {
     }
 
     protected void mouseClicked(int x, int y, int btn) {
+
         super.mouseClicked(x, y, btn);
         this.textField.mouseClicked(x, y, btn);
+
     }
 
     public void updateScreen()
@@ -56,7 +67,8 @@ public class MwGuiMarkerSearch extends GuiScreen {
         this.markerSlot.drawScreen(mouseX, mouseY, f);
 
         this.drawCenteredString(this.fontRendererObj,
-                EnumChatFormatting.UNDERLINE+(EnumChatFormatting.BOLD+I18n.format("mw.gui.mwgui.markers")), this.width / 2, 10, 0xffffff);
+                EnumChatFormatting.UNDERLINE+(EnumChatFormatting.BOLD+I18n.format("mw.gui.mwgui.markers")),
+                        this.width / 2, 10, 0xffffff);
 
         this.textField.drawTextBox();
 
@@ -65,12 +77,7 @@ public class MwGuiMarkerSearch extends GuiScreen {
         //detect top border on Slot
         int currentSlotTopY=mouseY;
 
-        //Draw highlight active string
-        if (mouseX>this.markerSlot.getStartPosX() && mouseY >= this.markerSlot.top &&
-                mouseY <= this.markerSlot.bottom &&
-                mouseX<=(this.markerSlot.getStartPosX()+this.markerSlot.getFullMarkerFieldWidth()) &&
-                currentSlotIndex>=0){
-
+        if (this.markerSlot.isInsideMarkerSlots(mouseX,mouseY) && currentSlotIndex>=0){
                 do {
                     currentSlotTopY--;
                 } while (this.markerSlot.getSlotIndexFromScreenCoords(
@@ -93,9 +100,13 @@ public class MwGuiMarkerSearch extends GuiScreen {
 
             }
 
+            int highlightBoxWidth=this.markerSlot.getDiffWidthSlotScrollBar()>0 ?
+                                  this.markerSlot.getFullMarkerFieldWidth()+20 :
+                                  this.markerSlot.getFullMarkerFieldWidth()+10+this.markerSlot.getDiffWidthSlotScrollBar();
+
            Render.setColour(0x30ffffff);
            Render.drawRect(this.markerSlot.getStartPosX()-5,currentSlotTopY,
-                                this.markerSlot.getFullMarkerFieldWidth()+10,currentSlotBottomY-currentSlotTopY);
+                   highlightBoxWidth,currentSlotBottomY-currentSlotTopY);
 
 
         }

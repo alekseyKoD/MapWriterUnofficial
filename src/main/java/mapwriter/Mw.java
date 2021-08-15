@@ -6,6 +6,7 @@ import mapwriter.forge.MwKeyHandler;
 import mapwriter.gui.MwGui;
 import mapwriter.gui.MwGuiMarkerDialog;
 import mapwriter.gui.MwGuiMarkerDialogNew;
+import mapwriter.gui.MwGuiTextDialog;
 import mapwriter.map.*;
 import mapwriter.overlay.OverlaySlime;
 import mapwriter.region.BlockColours;
@@ -649,7 +650,11 @@ public void saveCfgAndMarkers() {
 					this.onPlayerDeath();
 					this.onPlayerDeathAlreadyFired = true;
 				}
-			} else if (!(this.mc.currentScreen instanceof MwGui)) {
+			 //fixed map blinking when opening marker add/edit menu, dimension menu, group`s name edit menu
+			// } else if (!(this.mc.currentScreen instanceof MwGui)){
+			} else if (!(this.mc.currentScreen instanceof MwGui)  &&
+							!(this.mc.currentScreen instanceof MwGuiMarkerDialogNew) &&
+							!(this.mc.currentScreen instanceof MwGuiTextDialog)) {
 				// if the player is not dead
 				this.onPlayerDeathAlreadyFired = false;
 				// if in game (no gui screen) center the minimap on the player and render it.
