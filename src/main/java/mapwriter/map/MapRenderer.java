@@ -37,8 +37,8 @@ public class MapRenderer {
 	private void drawMap() {
 		
 		int regionZoomLevel = Math.max(0, this.mapView.getZoomLevel());
-		double tSize = (double) this.mw.textureSize;
-		double zoomScale = (double) (1 << regionZoomLevel);
+		double tSize =  this.mw.textureSize;
+		double zoomScale =  (1 << regionZoomLevel);
 		
 		// if the texture UV coordinates do not line up with the texture pixels then the texture
 		// will look blurry when it is drawn to the screen.
@@ -248,7 +248,9 @@ public class MapRenderer {
 					this.mapView.getDimension(),
 					this.mapView.getX(), this.mapView.getZ(),
 					this.mapView.getMinX(), this.mapView.getMinZ(),
-					this.mapView.getMaxX(), this.mapView.getMaxZ()
+					this.mapView.getMaxX(), this.mapView.getMaxZ(),
+					provider.getOverlayGridSize()
+
 			);
 			if (overlays != null) {
    	 			for (IMwChunkOverlay overlay : overlays) {
@@ -289,34 +291,45 @@ public class MapRenderer {
 	}
 	
 	private static void paintChunk(MapMode mapMode, MapView mapView, IMwChunkOverlay overlay){
-		int chunkX    = overlay.getCoordinates().x;
-		int chunkZ    = overlay.getCoordinates().y;
+		int chunkX = overlay.getCoordinates().x;
+		int chunkZ = overlay.getCoordinates().y;
+		int OverlayGridSize= overlay.getOverlayGridSize();
 		float filling = overlay.getFilling();
-		
-		Point.Double topCorner = mapMode.blockXZtoScreenXY(mapView, chunkX << 4, chunkZ << 4);
-		Point.Double botCorner = mapMode.blockXZtoScreenXY(mapView, (chunkX + 1) << 4, (chunkZ + 1 << 4));
+		boolean paintChunks = overlay.getPaintChunks();
+		Point.Double topCorner = mapMode.blockXZtoScreenXY(mapView,
+															(chunkX * OverlayGridSize),
+															(chunkZ * OverlayGridSize));
+		Point.Double botCorner = mapMode.blockXZtoScreenXY(mapView,
+															((chunkX + 1) * OverlayGridSize),
+															((chunkZ + 1) * OverlayGridSize));
 
-		topCorner.x = Math.max(mapMode.x,             topCorner.x);
-		topCorner.x = Math.min(mapMode.x + mapMode.w, topCorner.x);
-		topCorner.y = Math.max(mapMode.y,             topCorner.y);
-		topCorner.y = Math.min(mapMode.y + mapMode.h, topCorner.y);
-		
-		botCorner.x = Math.max(mapMode.x,             botCorner.x);
-		botCorner.x = Math.min(mapMode.x + mapMode.w, botCorner.x);
-		botCorner.y = Math.max(mapMode.y,             botCorner.y);
-		botCorner.y = Math.min(mapMode.y + mapMode.h, botCorner.y);		
-
+		topCorner.x = Math.max(mapMode.x, topCorner.x);
+		topCorner.x = Math.min((mapMode.x + mapMode.w), topCorner.x);
+		topCorner.y = Math.max(mapMode.y, topCorner.y);
+		topCorner.y = Math.min((mapMode.y + mapMode.h), topCorner.y);
+		botCorner.x = Math.max(mapMode.x, botCorner.x);
+		botCorner.x = Math.min((mapMode.x + mapMode.w), botCorner.x);
+		botCorner.y = Math.max(mapMode.y, botCorner.y);
+		botCorner.y = Math.min((mapMode.y + mapMode.h), botCorner.y);
 		double sizeX = (botCorner.x - topCorner.x) * filling;
-		double sizeY = (botCorner.y - topCorner.y) * filling;		
-		double offsetX = ((botCorner.x - topCorner.x) - sizeX) / 2;
-		double offsetY = ((botCorner.y - topCorner.y) - sizeY) / 2;	
-		
+		double sizeY = (botCorner.y - topCorner.y) * filling;
+		double offsetX = (botCorner.x - topCorner.x - sizeX) / 2;
+		double offsetY = (botCorner.y - topCorner.y - sizeY) / 2;
 		if (overlay.hasBorder()) {
 			Render.setColour(overlay.getBorderColor());
-			Render.drawRectBorder(topCorner.x + 1, topCorner.y + 1, botCorner.x - topCorner.x - 1, botCorner.y - topCorner.y - 1, overlay.getBorderWidth());
+			Render.drawRectBorder(topCorner.x + 1, topCorner.y + 1,
+					botCorner.x - topCorner.x - 1, botCorner.y - topCorner.y - 1, overlay.getBorderWidth());
 		}
-		
-		Render.setColour(overlay.getColor());
+
+		if ((MwAPI.getCurrentProviderName().equals("FluidsGrid") ||MwAPI.getCurrentProviderName().equals("OreVeinGrid"))
+									&& overlay.getPaintChunks()) {
+
+			Render.setColour(overlay.getColorFromXY(chunkX * OverlayGridSize,
+													chunkZ * OverlayGridSize));
+		} else {
+			Render.setColour(overlay.getColor());
+		}
+
 		Render.drawRect(topCorner.x + offsetX + 1, topCorner.y + offsetY + 1, sizeX - 1, sizeY - 1);
 	}
 }

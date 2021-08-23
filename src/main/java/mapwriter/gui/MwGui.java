@@ -113,6 +113,8 @@ public class MwGui extends GuiScreen {
     // called when gui is displayed and every time the screen
     // is resized
     public void initGui() {
+		//enable key pressed in Textfields
+    	Keyboard.enableRepeatEvents(true);
 //    	this.buttonList.add(this.optionsButton = new MwGuiButton(0, this.width - 25, this.height / 2 - 20));
     }
 
@@ -223,7 +225,7 @@ public class MwGui extends GuiScreen {
 		case Keyboard.KEY_C:
         	// cycle selected marker colour
         	if (this.mw.markerManager.selectedMarker != null) {
-        		this.mw.markerManager.selectedMarker.colourNext();
+        		this.mw.markerManager.selectedMarker.colourNext(mw.markerManager,this.mw.markerManager.selectedMarker);
         	}
         	break;
         
@@ -305,6 +307,9 @@ public class MwGui extends GuiScreen {
     		} else if (key == MwKeyHandler.keyNextGroup.getKeyCode()) {
     			this.mw.markerManager.nextGroup();
 	        	this.mw.markerManager.update();
+			} else if (key == MwKeyHandler.keyPrevGroup.getKeyCode()) {
+				this.mw.markerManager.prevGroup();
+				this.mw.markerManager.update();
     		} else if (key == MwKeyHandler.keyUndergroundMode.getKeyCode()) {
     			this.mw.toggleUndergroundMode();
     			this.mapView.setUndergroundMode(this.mw.undergroundMode);
@@ -350,6 +355,11 @@ public class MwGui extends GuiScreen {
         				this.mapView.getDimension()
         			)
         		);
+
+			} else if (this.groupLabel.posWithin(x, y) && !this.mw.markerManager.getVisibleGroupName().equals("all") &&
+						!this.mw.markerManager.getVisibleGroupName().equals("none") )  {
+				this.mc.displayGuiScreen(new MwGuiGroupDialog(this, this.mw));
+
     		} else if (this.optionsLabel.posWithin(x, y)) {
 				this.mc.displayGuiScreen(new MwGuiOptions(this, this.mw));
 			} else if (this.markersLabel.posWithin(x, y)) {
@@ -364,7 +374,6 @@ public class MwGui extends GuiScreen {
 				} else {
 	    			backFromMarkerSearch = false;
 				}
-	    		
 	    		if ((marker != null) && (prevMarker == marker)) {
 	    			// clicked previously selected marker.
 	    			// start moving the marker.
@@ -373,20 +382,34 @@ public class MwGui extends GuiScreen {
 	    			this.movingMarkerZStart = marker.z;
 	    		}
     		}
-    		
+
     	} else if (button == 1) {
     		//this.mouseRightHeld = 1;
 			if ((marker != null) && (prevMarker == marker)) {
     			// right clicked previously selected marker.
     			// edit the marker
-				this.mc.displayGuiScreen(
-        			new MwGuiMarkerDialog(
-        				this,
-        				this.mw.markerManager,
-        				marker
-        			)
-        		);
-    			
+
+				if (mw.newMarkerDialog)
+				{
+					this.mc.displayGuiScreen(
+							new MwGuiMarkerDialogNew(
+									this,
+									this.mw.markerManager,
+									marker
+							)
+					);
+				}
+				else
+				{
+					this.mc.displayGuiScreen(
+							new MwGuiMarkerDialog(
+									this,
+									this.mw.markerManager,
+									marker
+							)
+					);
+				}
+
     		} else if (marker == null) {
     			// open new marker dialog
     			String group = this.mw.markerManager.getVisibleGroupName();
@@ -469,9 +492,9 @@ public class MwGui extends GuiScreen {
     	Marker marker = this.getMarkerNearScreenPos(x, y);
     	if ((marker != null) && (marker == this.mw.markerManager.selectedMarker)) {
     		if (direction > 0) {
-    			marker.colourNext();
+    			marker.colourNext(mw.markerManager, marker);
     		} else {
-    			marker.colourPrev();
+    			marker.colourPrev(this.mw.markerManager, marker);
     		}
     		
     	} else if (this.dimensionLabel.posWithin(x, y)) {

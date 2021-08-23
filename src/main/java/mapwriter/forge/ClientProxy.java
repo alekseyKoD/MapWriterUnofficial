@@ -4,8 +4,10 @@ import java.io.File;
 
 import mapwriter.Mw;
 import mapwriter.api.MwAPI;
+import mapwriter.overlay.OverlayFluidsGrid;
 import mapwriter.overlay.OverlayGrid;
 import mapwriter.overlay.OverlaySlime;
+import mapwriter.overlay.OverlayVeinsGrid;
 import mapwriter.region.MwChunk;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.common.MinecraftForge;
@@ -44,7 +46,9 @@ public class ClientProxy extends CommonProxy {
 			MwChunk.FMPdata();
 		}
 		MwAPI.registerDataProvider("Slime", new OverlaySlime());
-		MwAPI.registerDataProvider("Grid", new OverlayGrid());
+		MwAPI.registerDataProvider("ChunkGrid", new OverlayGrid());
+		MwAPI.registerDataProvider("OreVeinGrid", new OverlayVeinsGrid());
+		MwAPI.registerDataProvider("FluidsGrid", new OverlayFluidsGrid());
 		// MwAPI.registerDataProvider("Checker", new OverlayChecker());
 		// MwAPI.setCurrentDataProvider("Slime");
 	}

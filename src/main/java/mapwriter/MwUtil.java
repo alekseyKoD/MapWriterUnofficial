@@ -6,7 +6,9 @@ import java.nio.ByteOrder;
 import java.nio.IntBuffer;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import mapwriter.forge.MwForge;
@@ -14,6 +16,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.chunk.Chunk;
+import org.apache.commons.lang3.StringUtils;
 
 public class MwUtil {
 	
@@ -118,4 +121,45 @@ public class MwUtil {
 		int dz = (chunk.zPosition << 4) + 8 - z;
 		return (dx * dx) + (dz * dz);
 	}
+
+	public static List getTargetInfo(int sourceX, int sourceZ, int targetX, int targetZ){
+
+		//Return List with elements:
+		//		int straights distance beetwen marker & player
+		//		String compass direction to marker
+
+		List targetInfo= new ArrayList();
+		String compassPoint;
+
+		double diffX=sourceX-targetX;
+		double diffZ =sourceZ-targetZ;
+		int angle =(int)Math.toDegrees(Math.atan2(diffX, diffZ));
+		angle=angle<0?angle+360:angle;
+
+
+	//Determine marker`s the side of the world relative to the player.
+		if(angle<=10 || angle >350){
+			compassPoint="N";
+		}else if (angle<=80 && angle >10){
+			compassPoint="NW";
+		}else if (angle<=100 && angle >80){
+			compassPoint="W";
+		}else if (angle<=170 && angle >100){
+			compassPoint="SW";
+		}else if (angle<=190 && angle >170){
+			compassPoint="S";
+		}else if (angle<=260 && angle >190){
+			compassPoint="SE";
+		}else if (angle<=280 && angle >260){
+			compassPoint="E";
+		}else compassPoint="NE";
+
+		targetInfo.add(compassPoint);
+	//Determine the direct distance from the player to the marker
+		targetInfo.add ((int)Math.sqrt(Math.abs(diffX)*Math.abs(diffX) +
+						   Math.abs(diffZ)*Math.abs(diffZ)));
+	return targetInfo;
+	}
+
 }
+

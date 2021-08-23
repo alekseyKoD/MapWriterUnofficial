@@ -3,6 +3,7 @@ key.mw_open_gui=Открыть карту
 key.mw_new_marker=Новый маркер
 key.mw_next_map_mode=След. режим карты
 key.mw_next_marker_group=След. группа маркеров
+key.mw_prev_marker_group=Пред. группа маркеров
 key.mw_teleport=Телепорт к маркеру
 key.mw_zoom_in=Приближение
 key.mw_zoom_out=Отдаление
@@ -42,6 +43,9 @@ mw.gui.mwgui.chatmsg.merge=слияние в
 mw.gui.mwguidimensiondialog.title=Установить измерение на
 mw.gui.mwguidimensiondialog.error=неверное измерение
 
+mw.gui.mwguigroupdialog.title=Переименовать текущую группу на
+mw.gui.mwguigroupdialog.error=Имя группы не может быть пустым
+
 mw.gui.mwguimarkerdialog.title.new=Название маркера
 mw.gui.mwguimarkerdialog.title.edit=Редактировать название
 mw.gui.mwguimarkerdialog.error=маркеру необходимо название
@@ -62,6 +66,7 @@ mw.gui.mwguimarkerdialognew.editMarkerX=X
 mw.gui.mwguimarkerdialognew.editMarkerY=Y
 mw.gui.mwguimarkerdialognew.editMarkerZ=Z
 mw.gui.mwguimarkerdialognew.editMarkerColor=Цвет
+mw.gui.mwguimarkerdialognew.buttonSave=Сохранить
 mw.gui.mwguimarkerdialognew.title=Высота для телепортации
 mw.gui.mwguimarkerdialognew.error=неверная высота
 
@@ -101,3 +106,14 @@ mw.gui.mwguioptionslot.backgroundMode.panning=панорамирование
 mw.gui.mwguioptionslot.oldNewMarkerDialog=Старое/новое окно созд. маркера: %s
 mw.gui.mwguioptionslot.oldNewMarkerDialog.new=Новое
 mw.gui.mwguioptionslot.oldNewMarkerDialog.old=Старое
+mw.gui.mwguioptionslot.paintOverChunk=Закрашивать чанки: %s
+mw.gui.mwguioptionslot.colorMarkerNameSearchMode=Цвет имени: %s
+mw.gui.mwguioptionslot.colorMarkerDistanceSearchMode=Цвет расстояния: %s
+mw.gui.mwguioptionslot.colorMarkerSearchMode.off=Откл.
+mw.gui.mwguioptionslot.colorMarkerSearchMode.colormarker=Вкл.
+mw.gui.mwguioptionslot.colorMarkerSearchMode.onlydistance=Вкл.
+
+mw.gui.mwguimarkerSlotNew.markerName=Имя маркера
+mw.gui.mwguimarkerSlotNew.markerCoordinate= Координаты маркера
+mw.gui.mwguimarkerSlotNew.markerDistance= Расстояние до маркера
+mw.gui.mwguimarkerSlotNew.markerCompassPoint= Направление к маркеру

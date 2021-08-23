@@ -6,6 +6,8 @@ import mapwriter.Render;
 import mapwriter.api.MwAPI;
 import mapwriter.map.Marker;
 import mapwriter.map.MarkerManager;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.resources.I18n;
@@ -16,6 +18,7 @@ import org.lwjgl.input.Mouse;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import org.lwjgl.opengl.GL11;
 
 @SideOnly(Side.CLIENT)
 public class MwGuiMarkerDialogNew extends GuiScreen
@@ -35,6 +38,8 @@ public class MwGuiMarkerDialogNew extends GuiScreen
 	ScrollableNumericTextBox scrollableNumericTextBoxX = null;
 	ScrollableNumericTextBox scrollableNumericTextBoxY = null;
 	ScrollableNumericTextBox scrollableNumericTextBoxZ = null;
+	MwColorPallete markerColorPallete= null;
+
 	boolean backToGameOnSubmit = false;
 	static final int dialogWidthPercent = 40;
 	static final int elementVSpacing = 20;
@@ -46,6 +51,9 @@ public class MwGuiMarkerDialogNew extends GuiScreen
 	private int markerY = 80;
 	private int markerZ = 0;
 	private int dimension = 0;
+	private int currentColor;
+	private int[] colours=null;
+
 	private ResourceLocation leftArrowTexture = new ResourceLocation(
 			"mapwriter", "textures/map/arrow_text_left.png");
 	private ResourceLocation rightArrowTexture = new ResourceLocation(
@@ -248,6 +256,16 @@ public class MwGuiMarkerDialogNew extends GuiScreen
 		this.dimension = dimension;
 		this.parentScreen = parentScreen;
 		this.title = this.titleNew;
+
+		this.colours= new int[Marker.getColours().length];
+		 for(int i=0; i<Marker.getColours().length ; i++){
+		 	this.colours[i]=0xff000000 | Marker.getColours()[i];
+		}
+
+			this.currentColor = this.markerManager.selectedColor;
+
+
+
 	}
 
 	public MwGuiMarkerDialogNew(GuiScreen parentScreen,
@@ -262,6 +280,12 @@ public class MwGuiMarkerDialogNew extends GuiScreen
 		this.dimension = editingMarker.dimension;
 		this.parentScreen = parentScreen;
 		this.title = this.titleEdit;
+
+		this.colours= new int[Marker.getColours().length];
+		for(int i=0; i<Marker.getColours().length ; i++) {
+			this.colours[i] = 0xff000000 | Marker.getColours()[i];
+		}
+		this.currentColor=editingMarker.colour;
 	}
 
 	public boolean submit() {
@@ -287,17 +311,29 @@ public class MwGuiMarkerDialogNew extends GuiScreen
 		else
 			inputCorrect = false;
 		if (inputCorrect) {
-			int colour = Marker.getCurrentColour();
+
+			int colour =this.markerColorPallete.getSelectedColor();
 			if (this.editingMarker != null) {
-				colour = this.editingMarker.colour;
-				this.markerManager.delMarker(this.editingMarker);
+
+				this.editingMarker.setMarkerName(this.markerName);
+				this.editingMarker.setGroupName(this.markerGroup);
+				this.editingMarker.setCoordX(this.markerX);
+				this.editingMarker.setCoordY(this.markerY);
+				this.editingMarker.setCoordZ(this.markerZ);
+				this.editingMarker.setDimension(this.dimension);
+				this.editingMarker.setColour( this.markerColorPallete.getSelectedColor());
+
 				this.editingMarker = null;
+			} else {
+				this.markerManager.addMarker(this.markerName, this.markerGroup,
+						this.markerX, this.markerY, this.markerZ, this.dimension,
+						this.markerColorPallete.getSelectedColor());
+
 			}
-			this.markerManager.addMarker(this.markerName, this.markerGroup,
-					this.markerX, this.markerY, this.markerZ, this.dimension,
-					colour);
+			this.markerManager.selectedColor=this.markerColorPallete.getSelectedColor();
 			this.markerManager.setVisibleGroupName(this.markerGroup);
 			this.markerManager.update();
+
 		}
 		return inputCorrect;
 	}
@@ -333,6 +369,16 @@ public class MwGuiMarkerDialogNew extends GuiScreen
 		this.scrollableNumericTextBoxZ.init();
 		this.scrollableNumericTextBoxZ.textField.setText("" + this.markerZ);
 		this.scrollableNumericTextBoxZ.setDrawArrows(true);
+
+		this.markerColorPallete= new MwColorPallete(this,x+this.scrollableTextBoxName.arrowsWidth,
+				y+ this.elementVSpacing * 5, this.scrollableTextBoxName.textFieldHeight,this.colours, this.currentColor);
+
+		this.buttonList.add(new GuiButton(200,x+this.scrollableTextBoxName.arrowsWidth,
+				y+ this.elementVSpacing
+						*6+this.markerColorPallete.getColorCellsRowCount()
+						* (this.markerColorPallete.getPalleteHeight()+this.markerColorPallete.getColorCellVSpacing()),
+							60, 20, I18n.format("mw.gui.mwguimarkerdialognew.buttonSave")));
+
 	}
 
 	public void drawScreen(int mouseX, int mouseY, float f) {
@@ -347,8 +393,10 @@ public class MwGuiMarkerDialogNew extends GuiScreen
 				(this.width - w) / 2,
 				(this.height - this.elementVSpacing * 7) / 2 - 4,
 				(this.width - w) / 2 + w,
-				(this.height - this.elementVSpacing * 7) / 2
-						+ this.elementVSpacing * 6,
+				(this.height - this.elementVSpacing *5) / 2
+						+ this.elementVSpacing * 6+10+20*this.buttonList.size() +
+						+this.markerColorPallete.getColorCellsRowCount()*this.markerColorPallete.getPalleteHeight()
+						+(this.markerColorPallete.getColorCellsRowCount()-1)*this.markerColorPallete.getColorCellVSpacing(),
 				0x80000000);
 		this.drawCenteredString(
 				this.fontRendererObj,
@@ -362,6 +410,14 @@ public class MwGuiMarkerDialogNew extends GuiScreen
 		this.scrollableNumericTextBoxX.draw();
 		this.scrollableNumericTextBoxY.draw();
 		this.scrollableNumericTextBoxZ.draw();
+
+		int labelColorWidth = this.fontRendererObj.getStringWidth(this.markerColorPallete.getpaletteLabel());
+		int labelColorHeight = this.fontRendererObj.FONT_HEIGHT;
+		int labelColorX = this.markerColorPallete.getX() - labelColorWidth -this.scrollableTextBoxName.arrowsWidth - 4;
+		int labelColorY = this.markerColorPallete.getY() + labelColorHeight / 2 - 2;
+		this.drawString(this.fontRendererObj,"Colour",labelColorX,labelColorY,0xffffff);
+		this.markerColorPallete.draw();
+
 		super.drawScreen(mouseX, mouseY, f);
 	}
 
@@ -370,8 +426,10 @@ public class MwGuiMarkerDialogNew extends GuiScreen
 
 	@Override
 	public void handleMouseInput() {
+	/*  if overlay is enabled it is impossible to use mouse actions(click, wheel Up/Down) on GUI New Marker Manager
 		if (MwAPI.getCurrentDataProvider() != null)
 			return;
+	 */
 		int x = Mouse.getEventX() * this.width / this.mc.displayWidth;
 		int y = this.height - Mouse.getEventY() * this.height
 				/ this.mc.displayHeight - 1;
@@ -388,6 +446,11 @@ public class MwGuiMarkerDialogNew extends GuiScreen
 		this.scrollableNumericTextBoxX.mouseDWheelScrolled(x, y, direction);
 		this.scrollableNumericTextBoxY.mouseDWheelScrolled(x, y, direction);
 		this.scrollableNumericTextBoxZ.mouseDWheelScrolled(x, y, direction);
+
+		for(int i=0;i<this.markerColorPallete.colorCells.size();i++){
+			this.markerColorPallete.colorCells.get(i).mouseDWheelScrolled(x,y,direction);
+		}
+
 	}
 
 	protected void mouseClicked(int x, int y, int button) {
@@ -397,6 +460,11 @@ public class MwGuiMarkerDialogNew extends GuiScreen
 		this.scrollableNumericTextBoxX.mouseClicked(x, y, button);
 		this.scrollableNumericTextBoxY.mouseClicked(x, y, button);
 		this.scrollableNumericTextBoxZ.mouseClicked(x, y, button);
+
+		for(int i=0;i<this.markerColorPallete.colorCells.size();i++){
+			this.markerColorPallete.colorCells.get(i).mouseClicked(x,y,button);
+		}
+
 	}
 
 	protected void keyTyped(char c, int key) {
@@ -478,4 +546,19 @@ public class MwGuiMarkerDialogNew extends GuiScreen
 			break;
 		}
 	}
+
+	protected void actionPerformed(GuiButton button) {
+		if (button.id == 200) {
+			// when enter pressed, submit current input
+			if (this.submit()) {
+				if (!this.backToGameOnSubmit) {
+					this.mc.displayGuiScreen(this.parentScreen);
+				} else {
+					this.mc.displayGuiScreen(null);
+				}
+			}
+		}
+	}
+
 }
+

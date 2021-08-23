@@ -1,13 +1,14 @@
 package mapwriter.map;
 
 import java.awt.Point;
-
 import mapwriter.Render;
 import mapwriter.map.mapmode.MapMode;
+import mapwriter.map.MarkerManager;
+
 
 public class Marker {
-	public final String name;
-	public final String groupName;
+	public String name;
+	public String groupName;
 	public int x;
 	public int y;
 	public int z;
@@ -15,10 +16,20 @@ public class Marker {
 	public int colour;
 	
 	public Point.Double screenPos = new Point.Double(0, 0);
-	
+
+
 	private static int[] colours = new int[] {
     		0xff0000, 0x00ff00, 0x0000ff, 0xffff00, 0xff00ff, 0x00ffff,
-    		0xff8000, 0x8000ff};
+    		0xff8000, 0x8000ff,0x964b00,0x006400};
+
+	/*
+	private static int[] colours = new int[] {
+			0xff0000, 0x00ff00, 0x0000ff, 0xffff00, 0xff00ff, 0x00ffff,
+			0xff8000, 0x8000ff,
+			0xff0000, 0xff0000, 0xff0000,0xff0000, 0xff0000 };
+	*/
+
+
 	// static so that current index is shared between all markers
     private static int colourIndex = 0;
 	
@@ -31,7 +42,21 @@ public class Marker {
 		this.colour = colour;
 		this.groupName = groupName;
 	}
-	
+
+	public void setMarkerName(String name) { this.name = name; }
+
+	public void setGroupName(String newGroupName){ this.groupName=newGroupName; }
+
+	public void setCoordX(int x) { this.x = x; }
+
+	public void setCoordY(int y) { this.y = y; }
+
+	public void setCoordZ(int z) { this.z = z; }
+
+	public void setDimension(int dimension) { this.dimension = dimension; }
+
+	public void setColour(int colour) { this.colour = colour; }
+
 	public String getString() {
 		return String.format("%s %s (%d, %d, %d) %d %06x",
 				this.name, this.groupName, this.x, this.y, this.z, this.dimension, this.colour & 0xffffff);
@@ -40,17 +65,38 @@ public class Marker {
 	public static int getCurrentColour() {
     	return 0xff000000 | colours[colourIndex];
     }
+
+	public static int[] getColours(){return colours; }
 	
-    public void colourNext() {
-    	colourIndex = (colourIndex + 1) % colours.length;
+    public void colourNext(MarkerManager markerManager, Marker marker) {
+    	colourIndex = (getIndexFromColor(marker.colour)+ 1) % colours.length;
 		this.colour = getCurrentColour();
+		markerManager.selectedColor=this.colour;
+
+
     }
     
-    public void colourPrev() {
-    	colourIndex = (colourIndex + colours.length - 1) % colours.length;
+    public void colourPrev(MarkerManager markerManager, Marker marker) {
+
+    	colourIndex = (getIndexFromColor(marker.colour) + colours.length - 1) % colours.length;
 		this.colour = getCurrentColour();
+		markerManager.selectedColor=this.colour;
+
     }
-    
+
+	public int getIndexFromColor(int color){
+
+		for(int i=0;i<colours.length;i++){
+			if((0xff000000 |colours[i]) == color){
+				return i;
+			}
+		}
+		return 0;
+	}
+
+
+
+
     public void draw(MapMode mapMode, MapView mapView, int borderColour) {
 		double scale = mapView.getDimensionScaling(this.dimension);
 		Point.Double p = mapMode.getClampedScreenXY(mapView, this.x * scale, this.z * scale);
@@ -76,4 +122,6 @@ public class Marker {
 		}
 		return false;
 	}
+
+
 }

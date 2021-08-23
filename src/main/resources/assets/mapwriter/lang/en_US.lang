@@ -3,6 +3,7 @@ key.mw_open_gui=Open map GUI
 key.mw_new_marker=New Waypoint
 key.mw_next_map_mode=Next map mode
 key.mw_next_marker_group=Next waypoint group
+key.mw_prev_marker_group=Previous waypoint group
 key.mw_teleport=Teleport to waypoint
 key.mw_zoom_in=Minimap zoom in
 key.mw_zoom_out=Minimap zoom out
@@ -42,6 +43,9 @@ mw.gui.mwgui.chatmsg.merge=merging to
 mw.gui.mwguidimensiondialog.title=Set dimension to
 mw.gui.mwguidimensiondialog.error=invalid dimension
 
+mw.gui.mwguigroupdialog.title=Rename current group to
+mw.gui.mwguigroupdialog.error=Group name cannot be empty
+
 mw.gui.mwguimarkerdialog.title.new=Marker Name
 mw.gui.mwguimarkerdialog.title.edit=Edit Marker Name
 mw.gui.mwguimarkerdialog.error=marker must have a name
@@ -61,7 +65,8 @@ mw.gui.mwguimarkerdialognew.editMarkerGroup=Group
 mw.gui.mwguimarkerdialognew.editMarkerX=X
 mw.gui.mwguimarkerdialognew.editMarkerY=Y
 mw.gui.mwguimarkerdialognew.editMarkerZ=Z
-mw.gui.mwguimarkerdialognew.editMarkerColor=Color
+mw.gui.mwguimarkerdialognew.editMarkerColor=Colour
+mw.gui.mwguimarkerdialognew.buttonSave=Save
 mw.gui.mwguimarkerdialognew.title=Teleport Height
 mw.gui.mwguimarkerdialognew.error=invalid height
 
@@ -101,3 +106,14 @@ mw.gui.mwguioptionslot.backgroundMode.panning=panning
 mw.gui.mwguioptionslot.oldNewMarkerDialog=Old/New Marker Dialog: %s
 mw.gui.mwguioptionslot.oldNewMarkerDialog.new=New
 mw.gui.mwguioptionslot.oldNewMarkerDialog.old=Old
+mw.gui.mwguioptionslot.paintOverChunk=Paint over chunk: %s
+mw.gui.mwguioptionslot.colorMarkerNameSearchMode=Marker name colour: %s
+mw.gui.mwguioptionslot.colorMarkerDistanceSearchMode=Marker distance colour: %s
+mw.gui.mwguioptionslot.colorMarkerSearchMode.off= Off
+mw.gui.mwguioptionslot.colorMarkerSearchMode.colormarker=On
+mw.gui.mwguioptionslot.colorMarkerSearchMode.onlydistance=On
+
+mw.gui.mwguimarkerSlotNew.markerName=Marker Name
+mw.gui.mwguimarkerSlotNew.markerCoordinate= Marker Coordinate
+mw.gui.mwguimarkerSlotNew.markerDistance= Distance to Marker
+mw.gui.mwguimarkerSlotNew.markerCompassPoint= Direction to Marker
