@@ -161,13 +161,13 @@ public class MwGuiMarkerSlot extends GuiSlot {
     public String getTrimRightString(String text,int overlaps){
         int count=0;
         String trimmedText;
-        int fullTextPixelSize=mc.fontRendererObj.getStringWidth(text);
+        int fullTextPixelSize=mc.fontRenderer.getStringWidth(text);
 
         do{
             trimmedText=text.substring(0,text.length()-count);
             count++;
 
-        }while (mc.fontRendererObj.getStringWidth(text)-mc.fontRendererObj.getStringWidth(trimmedText)<=overlaps);
+        }while (mc.fontRenderer.getStringWidth(text)-mc.fontRenderer.getStringWidth(trimmedText)<=overlaps);
 
         return  trimmedText;
     }
@@ -178,9 +178,9 @@ public class MwGuiMarkerSlot extends GuiSlot {
         this.mouseX = mouseX;
         this.mouseY = mouseY;
 
-        if (Mouse.isButtonDown(0) && this.getEnabled()){
+        if (Mouse.isButtonDown(0) && this.func_148125_i()){
 
-            int selectedIndex = this.getSlotIndexFromScreenCoords(this.width/2,mouseY);
+            int selectedIndex = this.func_148124_c(this.width/2,mouseY);
 
             if ( this.isInsideMarkerSlots(mouseX,mouseY) && selectedIndex>=0 && Mouse.getEventButton()!=-1 ){
 
@@ -211,7 +211,7 @@ public class MwGuiMarkerSlot extends GuiSlot {
 
         int startPosX;
         int textShift;
-        int textYShift=mc.fontRendererObj.FONT_HEIGHT/2;
+        int textYShift=mc.fontRenderer.FONT_HEIGHT/2;
 
         GuiButton button = buttons.get(i);
         button.xPosition = getStartPosX();
@@ -223,17 +223,17 @@ public class MwGuiMarkerSlot extends GuiSlot {
         String distance=String.valueOf(this.searchMarkerList.get(i).getDistance())+"m";
         String compassPoint=this.searchMarkerList.get(i).getCompassPoint();
 
-        int markerNamePixelSize=mc.fontRendererObj.getStringWidth(markerName);
-        int coordinatesPixelSize=mc.fontRendererObj.getStringWidth(coordinates);
-        int distancePixelsSize=mc.fontRendererObj.getStringWidth(distance);
-        int compassPointPixelsSize=mc.fontRendererObj.getStringWidth(compassPoint);
+        int markerNamePixelSize=mc.fontRenderer.getStringWidth(markerName);
+        int coordinatesPixelSize=mc.fontRenderer.getStringWidth(coordinates);
+        int distancePixelsSize=mc.fontRenderer.getStringWidth(distance);
+        int compassPointPixelsSize=mc.fontRenderer.getStringWidth(compassPoint);
 
         //startPosX=this.getStartPosX();
 
         //Draw coordinates column, align at right border
         startPosX=this.getStartPosX()+this.getMarkerNameFieldWidth()+this.getDiffWidthSlotScrollBar();
         textShift=this.getCoordinatesFieldWidth()-coordinatesPixelSize;
-        button.drawString(this.mc.fontRendererObj,coordinates,startPosX+textShift,y+textYShift,0xffffffff );
+        button.drawString(this.mc.fontRenderer,coordinates,startPosX+textShift,y+textYShift,0xffffffff );
 
         //draw Marker`s name Column, align at left border. If marker`s name string longer and overlaps
         // marker coordinate`s string, trim the marker`s name string
@@ -243,7 +243,7 @@ public class MwGuiMarkerSlot extends GuiSlot {
 
         markerName= overlaps<=0? markerName : this.getTrimRightString(markerName,overlaps);
 
-        button.drawString(this.mc.fontRendererObj,markerName ,this.getStartPosX(),y+textYShift,
+        button.drawString(this.mc.fontRenderer,markerName ,this.getStartPosX(),y+textYShift,
                 this.mw.colorMarkerNameSearchMode==1 ? this.searchMarkerList.get(i).getStringColor() : 0xffffffff );
 
 
@@ -252,13 +252,13 @@ public class MwGuiMarkerSlot extends GuiSlot {
         //Draw distance column, align at right border
         startPosX+=this.getCoordinatesFieldWidth();
         textShift=this.getDistanceFieldWidth()-distancePixelsSize;
-        button.drawString(this.mc.fontRendererObj,distance,startPosX+textShift,y+textYShift,
+        button.drawString(this.mc.fontRenderer,distance,startPosX+textShift,y+textYShift,
                 this.mw.colorMarkerDistanceSearchMode==1 ? this.searchMarkerList.get(i).getDistanceColor() : 0xffffffff );
 
         //Draw CompassPoint column, align at right border
         startPosX+=this.getDistanceFieldWidth();
         textShift=this.getCompassPointFieldWidth()-compassPointPixelsSize;
-        button.drawString(this.mc.fontRendererObj,compassPoint,startPosX+textShift,y+textYShift,0xffffffff );
+        button.drawString(this.mc.fontRenderer,compassPoint,startPosX+textShift,y+textYShift,0xffffffff );
 
         //button.drawButton(this.mc, this.mouseX, this.mouseY);
 

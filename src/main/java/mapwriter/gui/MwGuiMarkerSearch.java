@@ -72,7 +72,7 @@ public class MwGuiMarkerSearch extends GuiScreen {
 
         this.textField.drawTextBox();
 
-        int currentSlotIndex=this.markerSlot.getSlotIndexFromScreenCoords(this.markerSlot.width/2,mouseY);
+        int currentSlotIndex=this.markerSlot.func_148124_c(this.markerSlot.width/2,mouseY);
 
         //detect top border on Slot
         int currentSlotTopY=mouseY;
@@ -80,7 +80,7 @@ public class MwGuiMarkerSearch extends GuiScreen {
         if (this.markerSlot.isInsideMarkerSlots(mouseX,mouseY) && currentSlotIndex>=0){
                 do {
                     currentSlotTopY--;
-                } while (this.markerSlot.getSlotIndexFromScreenCoords(
+                } while (this.markerSlot.func_148124_c(
                                 this.markerSlot.width/2,currentSlotTopY)==currentSlotIndex);
 
             int currentSlotBottomY=currentSlotTopY+this.markerSlot.getSlotHeight();
