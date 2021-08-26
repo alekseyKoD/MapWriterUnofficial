@@ -134,6 +134,8 @@ public class MwGui extends GuiScreen {
         this.mc.getSoundHandler().resumeSounds();
     }
     
+
+
     // get a marker near the specified block pos if it exists.
     // the maxDistance is based on the view width so that you need to click closer
     // to a marker when zoomed in to select it.
@@ -169,6 +171,9 @@ public class MwGui extends GuiScreen {
     		this.mw.markerManager.delMarker(this.mw.markerManager.selectedMarker);
     		this.mw.markerManager.update();
     		this.mw.markerManager.selectedMarker = null;
+			//save markers to file
+			this.mw.markerManager.saveMarkersToFile();
+
     	}
     }
     
@@ -493,8 +498,10 @@ public class MwGui extends GuiScreen {
     	if ((marker != null) && (marker == this.mw.markerManager.selectedMarker)) {
     		if (direction > 0) {
     			marker.colourNext(mw.markerManager, marker);
+				mw.markerManager.saveMarkersToFile();
     		} else {
     			marker.colourPrev(this.mw.markerManager, marker);
+    			mw.markerManager.saveMarkersToFile();
     		}
     		
     	} else if (this.dimensionLabel.posWithin(x, y)) {
@@ -626,7 +633,8 @@ public class MwGui extends GuiScreen {
         double yOffset = 0.0;
         //double zoomFactor = 1.0;
 
-    	if (this.mouseLeftHeld > 2) {
+    	//drag & drop map
+		if (this.mouseLeftHeld > 2) {
     		xOffset = (this.mouseLeftDragStartX - mouseX) * this.mapView.getWidth() / this.mapMode.w;
     		yOffset = (this.mouseLeftDragStartY - mouseY) * this.mapView.getHeight() / this.mapMode.h;
     		
@@ -639,9 +647,13 @@ public class MwGui extends GuiScreen {
     		}
     	}
     	
-        if (this.mouseLeftHeld > 0) {
+
+        if (this.mouseLeftHeld > 0  && Mouse.isButtonDown(0)) {
         	this.mouseLeftHeld++;
-        }
+        } else {
+			this.movingMarker=null;
+        	this.mouseLeftHeld=0;
+		}
         
         // draw the map
         this.map.draw();

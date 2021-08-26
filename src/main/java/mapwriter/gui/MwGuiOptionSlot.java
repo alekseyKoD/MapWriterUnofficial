@@ -38,13 +38,22 @@ public class MwGuiOptionSlot extends GuiSlot {
 			I18n.format("mw.gui.mwguioptionslot.backgroundMode.panning")
 	};
 	private static final String[] colorMarkerNameSearchArray={
-			I18n.format("mw.gui.mwguioptionslot.colorMarkerSearchMode.off"),
-			I18n.format("mw.gui.mwguioptionslot.colorMarkerSearchMode.colormarker"),
+			I18n.format("mw.gui.mwguioptionslot.optionOff"),
+			I18n.format("mw.gui.mwguioptionslot.optionOn"),
 	};
 	private static final String[] colorMarkerDistanceSearchArray={
-			I18n.format("mw.gui.mwguioptionslot.colorMarkerSearchMode.off"),
-			I18n.format("mw.gui.mwguioptionslot.colorMarkerSearchMode.onlydistance")
+			I18n.format("mw.gui.mwguioptionslot.optionOff"),
+			I18n.format("mw.gui.mwguioptionslot.optionOn")
 	};
+	private static final String[] saveMarkersIngameSaveFolderArray={
+			I18n.format("mw.gui.mwguioptionslot.optionOff"),
+			I18n.format("mw.gui.mwguioptionslot.optionOn")
+	};
+	private static final String[] circularMiniMapModeArray={
+			I18n.format("mw.gui.mwguioptionslot.optionOff"),
+			I18n.format("mw.gui.mwguioptionslot.optionOn")
+	};
+
 
 
 
@@ -58,59 +67,91 @@ public class MwGuiOptionSlot extends GuiSlot {
 	public void updateButtonLabel(int i) {
 		switch(i) {
 			case 0:
-				this.buttons[i].displayString = I18n.format("mw.gui.mwguioptionslot.renderRadius", this.mw.renderRadius, (this.mw.renderRadius * 2 - 1)*(this.mw.renderRadius * 2 - 1));
+				this.buttons[i].displayString = I18n.format("mw.gui.mwguioptionslot.renderRadius",
+									 this.mw.renderRadius,
+												(this.mw.renderRadius * 2 - 1)*(this.mw.renderRadius * 2 - 1));
 				break;
 			case 1:
-				this.buttons[i].displayString = I18n.format("mw.gui.mwguioptionslot.ticksBetweenUpdates", this.mw.ticksBetweenUpdates);
+				this.buttons[i].displayString = I18n.format("mw.gui.mwguioptionslot.ticksBetweenUpdates",
+												this.mw.ticksBetweenUpdates);
 				break;
 			case 2:
-				this.buttons[i].displayString = I18n.format("mw.gui.mwguioptionslot.drawCoords", coordsModeStringArray[this.mw.coordsMode]);
+				this.buttons[i].displayString = I18n.format("mw.gui.mwguioptionslot.drawCoords",
+												coordsModeStringArray[this.mw.coordsMode]);
 				break;
 			case 3:
-				this.buttons[i].displayString = I18n.format("mw.gui.mwguioptionslot.circularMode", this.mw.miniMap.smallMapMode.circular);
+				this.buttons[i].displayString = I18n.format("mw.gui.mwguioptionslot.circularMode",
+												this.mw.miniMap.smallMapMode.circular ?
+														circularMiniMapModeArray[1] : circularMiniMapModeArray[0] );
 				break;
 			case 4:
-				this.buttons[i].displayString = I18n.format("mw.gui.mwguioptionslot.textureSize", this.mw.configTextureSize);
+				this.buttons[i].displayString = I18n.format("mw.gui.mwguioptionslot.textureSize",
+												this.mw.configTextureSize);
 				break;
 			case 5:
-				this.buttons[i].displayString = I18n.format("mw.gui.mwguioptionslot.textureScaling", (this.mw.linearTextureScalingEnabled ? I18n.format("mw.gui.mwguioptionslot.textureScaling.linear") : I18n.format("mw.gui.mwguioptionslot.textureScaling.nearest")));
+				this.buttons[i].displayString = I18n.format("mw.gui.mwguioptionslot.textureScaling",
+												(this.mw.linearTextureScalingEnabled ?
+													I18n.format("mw.gui.mwguioptionslot.textureScaling.linear") :
+													I18n.format("mw.gui.mwguioptionslot.textureScaling.nearest")));
 				break;
 			case 6:
-				this.buttons[i].displayString = I18n.format("mw.gui.mwguioptionslot.trailMarkers", (this.mw.playerTrail.enabled));
+				this.buttons[i].displayString = I18n.format("mw.gui.mwguioptionslot.trailMarkers",
+												(this.mw.playerTrail.enabled));
 				break;
 			case 7:
-				this.buttons[i].displayString = I18n.format("mw.gui.mwguioptionslot.mapColours", (this.mw.useSavedBlockColours ? I18n.format("mw.gui.mwguioptionslot.mapColours.frozen") : I18n.format("mw.gui.mwguioptionslot.mapColours.auto")));
+				this.buttons[i].displayString = I18n.format("mw.gui.mwguioptionslot.mapColours",
+												(this.mw.useSavedBlockColours ?
+														I18n.format("mw.gui.mwguioptionslot.mapColours.frozen") :
+														I18n.format("mw.gui.mwguioptionslot.mapColours.auto")));
 				break;
 			case 8:
-				this.buttons[i].displayString = I18n.format("mw.gui.mwguioptionslot.miniMapSize", this.mw.miniMap.smallMapMode.heightPercent);
+				this.buttons[i].displayString = I18n.format("mw.gui.mwguioptionslot.miniMapSize",
+												this.mw.miniMap.smallMapMode.heightPercent);
 				break;
 			case 9:
-				this.buttons[i].displayString = I18n.format("mw.gui.mwguioptionslot.miniMapPosition", miniMapPositionStringArray[this.miniMapPositionIndex]);
+				this.buttons[i].displayString = I18n.format("mw.gui.mwguioptionslot.miniMapPosition",
+												miniMapPositionStringArray[this.miniMapPositionIndex]);
 				break;
 			case 10:
-				this.buttons[i].displayString = I18n.format("mw.gui.mwguioptionslot.mapPixelSnapping", (this.mw.mapPixelSnapEnabled ? I18n.format("mw.gui.mwguioptionslot.mapPixelSnapping.enabled") : I18n.format("mw.gui.mwguioptionslot.mapPixelSnapping.disabled")));
+				this.buttons[i].displayString = I18n.format("mw.gui.mwguioptionslot.mapPixelSnapping",
+												(this.mw.mapPixelSnapEnabled ?
+														I18n.format("mw.gui.mwguioptionslot.mapPixelSnapping.enabled") :
+														I18n.format("mw.gui.mwguioptionslot.mapPixelSnapping.disabled")));
 				break;
 			case 11:
-				this.buttons[i].displayString = I18n.format("mw.gui.mwguioptionslot.maxDeathMarkers", this.mw.maxDeathMarkers);
+				this.buttons[i].displayString = I18n.format("mw.gui.mwguioptionslot.maxDeathMarkers",
+												this.mw.maxDeathMarkers);
 				break;
 			case 12:
-				this.buttons[i].displayString = I18n.format("mw.gui.mwguioptionslot.backgroundMode", backgroundModeStringArray[this.mw.backgroundTextureMode]);
+				this.buttons[i].displayString = I18n.format("mw.gui.mwguioptionslot.backgroundMode",
+												backgroundModeStringArray[this.mw.backgroundTextureMode]);
 				break;
 			//case 11:
 			//	this.buttons[i].displayString = "Map Lighting: " + (this.mw.lightingEnabled ? "enabled" : "disabled");
 			//	break;
 			case 13:
-				this.buttons[i].displayString = I18n.format("mw.gui.mwguioptionslot.oldNewMarkerDialog", (this.mw.newMarkerDialog ? I18n.format("mw.gui.mwguioptionslot.oldNewMarkerDialog.new") : I18n.format("mw.gui.mwguioptionslot.oldNewMarkerDialog.old")));
+				this.buttons[i].displayString = I18n.format("mw.gui.mwguioptionslot.oldNewMarkerDialog",
+												(this.mw.newMarkerDialog ?
+														I18n.format("mw.gui.mwguioptionslot.oldNewMarkerDialog.new") :
+														I18n.format("mw.gui.mwguioptionslot.oldNewMarkerDialog.old")));
 				break;
 			case 14:
 				this.buttons[i].displayString = I18n.format("mw.gui.mwguioptionslot.paintOverChunk",this.mw.paintChunks);
 				break;
 			case 15:
-				this.buttons[i].displayString = I18n.format("mw.gui.mwguioptionslot.colorMarkerNameSearchMode",this.colorMarkerNameSearchArray[this.mw.colorMarkerNameSearchMode]);
+				this.buttons[i].displayString = I18n.format("mw.gui.mwguioptionslot.colorMarkerNameSearchMode",
+												this.colorMarkerNameSearchArray[this.mw.colorMarkerNameSearchMode]);
 				break;
 			case 16:
-				this.buttons[i].displayString = I18n.format("mw.gui.mwguioptionslot.colorMarkerDistanceSearchMode",this.colorMarkerDistanceSearchArray[this.mw.colorMarkerDistanceSearchMode]);
+				this.buttons[i].displayString = I18n.format("mw.gui.mwguioptionslot.colorMarkerDistanceSearchMode",
+												this.colorMarkerDistanceSearchArray[this.mw.colorMarkerDistanceSearchMode]);
 				break;
+			/* for feature
+			case 17:
+				this.buttons[i].displayString = I18n.format("mw.gui.mwguioptionslot.storeSaveIngameSaveDir",
+												saveMarkersIngameSaveFolderArray[this.mw.saveMarkersIngameSaveFolder]);
+				break;
+			*/
 			default:
 				break;
 		}
@@ -123,7 +164,7 @@ public class MwGuiOptionSlot extends GuiSlot {
 		this.mw = mw;
 		this.mc = mc;
 		for (int i = 0; i < this.buttons.length; i++) {
-			this.buttons[i] = new GuiButton(300 + i, 0, 0, "");
+			this.buttons[i] = new GuiButton(300 + i, 0, 0, 210,20, "");
 			this.updateButtonLabel(i);
 		}
 	}
@@ -246,6 +287,14 @@ public class MwGuiOptionSlot extends GuiSlot {
 				break;
 			default:
 				break;
+
+			/* for feature
+			case 17:
+
+				// Store markers and map in world`s save folder
+				this.mw.saveMarkersIngameSaveFolder = (this.mw.saveMarkersIngameSaveFolder + 1) % 2;
+				break;
+			*/
 		}
 		this.updateButtonLabel(i);
 	}

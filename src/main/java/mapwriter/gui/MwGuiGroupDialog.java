@@ -35,6 +35,8 @@ public class MwGuiGroupDialog extends MwGuiTextDialog {
 
             mw.markerManager.update();
 
+            //save markers to file
+            mw.markerManager.saveMarkersToFile();
             done = true;
         }
         return done;

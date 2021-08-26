@@ -23,7 +23,6 @@ import org.lwjgl.opengl.GL11;
 @SideOnly(Side.CLIENT)
 public class MwGuiMarkerDialogNew extends GuiScreen
 {
-
 	private final GuiScreen parentScreen;
 	String title = "";
 	String titleNew = "mw.gui.mwguimarkerdialognew.title.new";
@@ -289,6 +288,7 @@ public class MwGuiMarkerDialogNew extends GuiScreen
 	}
 
 	public boolean submit() {
+
 		boolean inputCorrect = true;
 		if (scrollableTextBoxName.validateTextFieldData())
 			this.markerName = scrollableTextBoxName.textField.getText();
@@ -334,7 +334,9 @@ public class MwGuiMarkerDialogNew extends GuiScreen
 			this.markerManager.setVisibleGroupName(this.markerGroup);
 			this.markerManager.update();
 
-		}
+			//save markers to file
+			this.markerManager.saveMarkersToFile();
+	}
 		return inputCorrect;
 	}
 

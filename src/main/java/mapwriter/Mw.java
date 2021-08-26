@@ -20,6 +20,7 @@ import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
+import cpw.mods.fml.common.FMLCommonHandler;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -120,7 +121,8 @@ public class Mw {
 	public boolean paintChunks = false;
 	public int colorMarkerNameSearchMode;
 	public int colorMarkerDistanceSearchMode;
-	
+	public int saveMarkersIngameSaveFolder;
+
 	// flags and counters
 	private boolean onPlayerDeathAlreadyFired = false;
 	public boolean ready = false;
@@ -232,8 +234,15 @@ public class Mw {
 		//this.lightingEnabled = this.config.getOrSetBoolean(catOptions, "lightingEnabled", this.lightingEnabled);
 		this.newMarkerDialog = this.config.getOrSetBoolean(catOptions, "newMarkerDialog", this.newMarkerDialog);
 		this.paintChunks = this.config.getOrSetBoolean("options", "paintChunks", this.paintChunks);
-		this.colorMarkerNameSearchMode = this.config.getOrSetInt("options", "colorMarkerNameSearchMode", this.colorMarkerNameSearchMode,0,1);
-		this.colorMarkerDistanceSearchMode = this.config.getOrSetInt("options", "colorMarkerDistanceSearchMode", this.colorMarkerDistanceSearchMode,0,1);
+
+		this.colorMarkerNameSearchMode = this.config.getOrSetInt("options", "colorMarkerNameSearchMode",
+																this.colorMarkerNameSearchMode,0,1);
+
+		this.colorMarkerDistanceSearchMode = this.config.getOrSetInt("options", "colorMarkerDistanceSearchMode",
+																this.colorMarkerDistanceSearchMode,0,1);
+		this.saveMarkersIngameSaveFolder = this.config.getOrSetInt("options", "saveMarkersIngameSaveFolder",
+				this.saveMarkersIngameSaveFolder,0,1);
+
 		/*MwUtil.log("maxZoomAfter(%d)", this.maxZoom);
 		MwUtil.log("minZoomAfter(%d)", this.minZoom);*/
 
@@ -275,6 +284,7 @@ public class Mw {
 		this.config.setBoolean("options", "paintChunks", this.paintChunks);
 		this.config.setInt("options", "colorMarkerNameSearchMode", this.colorMarkerNameSearchMode);
 		this.config.setInt("options", "colorMarkerDistanceSearchMode", this.colorMarkerDistanceSearchMode);
+		this.config.setInt("options", "saveMarkersIngameSaveFolder", this.saveMarkersIngameSaveFolder);
 
 		this.config.save();	
 	}
@@ -489,7 +499,7 @@ public class Mw {
 		MwUtil.log("Mw.load: loading...");
 		
 		this.multiplayer = !this.mc.isIntegratedServerRunning();
-		
+
 		this.loadConfig();
 		
 		this.worldName = this.getWorldName();
@@ -526,7 +536,7 @@ public class Mw {
 		this.onPlayerDeathAlreadyFired = false;
 		
 		// marker manager only depends on the config being loaded
-		this.markerManager = new MarkerManager();
+		this.markerManager = new MarkerManager(this);
 		this.markerManager.load(this.worldConfig, catMarkers);
 		
 		this.playerTrail = new Trail(this, "player");
@@ -601,7 +611,11 @@ public void saveCfgAndMarkers() {
 
 		this.markerManager.save(this.worldConfig, catMarkers);
 
-		this.miniMap.save();
+		
+		if(this.miniMap!=null){
+
+			 this.miniMap.save();
+		}
 
 		this.saveWorldConfig();
 		this.saveConfig();
@@ -803,4 +817,6 @@ public void saveCfgAndMarkers() {
 			}
 		}
 	}
+
+	public String getCatMarkers(){ return catMarkers ;}
 }

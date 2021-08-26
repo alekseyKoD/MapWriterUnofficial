@@ -101,6 +101,8 @@ public class MwGuiMarkerDialog extends MwGuiTextDialog {
 						this.dimension, colour);
 				this.markerManager.setVisibleGroupName(this.markerGroup);
 				this.markerManager.update();
+				//save markers
+				this.markerManager.saveMarkersToFile();
 			}
 			break;
 		}

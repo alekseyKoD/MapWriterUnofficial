@@ -72,6 +72,8 @@ mw.gui.mwguimarkerdialognew.error=invalid height
 
 mw.gui.mwguioptions.mwOptions=MapWriter Options
 
+mw.gui.mwguioptionslot.optionOn=On
+mw.gui.mwguioptionslot.optionOff=Off
 mw.gui.mwguioptionslot.drawCoords=Draw coords: %s
 mw.gui.mwguioptionslot.drawCoords.disabled=disabled
 mw.gui.mwguioptionslot.drawCoords.small=small
@@ -109,9 +111,7 @@ mw.gui.mwguioptionslot.oldNewMarkerDialog.old=Old
 mw.gui.mwguioptionslot.paintOverChunk=Paint over chunk: %s
 mw.gui.mwguioptionslot.colorMarkerNameSearchMode=Marker name colour: %s
 mw.gui.mwguioptionslot.colorMarkerDistanceSearchMode=Marker distance colour: %s
-mw.gui.mwguioptionslot.colorMarkerSearchMode.off= Off
-mw.gui.mwguioptionslot.colorMarkerSearchMode.colormarker=On
-mw.gui.mwguioptionslot.colorMarkerSearchMode.onlydistance=On
+mw.gui.mwguioptionslot.storeSaveIngameSaveDir=Save data in World`s save folder: %s
 
 mw.gui.mwguimarkerSlotNew.markerName=Marker Name
 mw.gui.mwguimarkerSlotNew.markerCoordinate= Marker Coordinate

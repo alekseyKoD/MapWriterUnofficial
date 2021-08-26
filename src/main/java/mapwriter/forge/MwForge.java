@@ -23,7 +23,8 @@ import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.network.FMLNetworkEvent;
 import org.lwjgl.Sys;
 
-@Mod(modid="MapWriter", name="MapWriter", version="2.1.14-fix2", acceptableRemoteVersions = "*")
+@Mod(modid="MapWriter", name="MapWriter", version="2.1.15.1-IIA-Edition", acceptableRemoteVersions = "*")
+
 public class MwForge {
 	
 	@Instance("MapWriter")

@@ -23,7 +23,8 @@ public class MarkerManager {
 
 	public int selectedColor;
 	
-	public MarkerManager() {
+	public MarkerManager(Mw mw) {
+		this.mw=mw;
 	}
 	
 	public void load(MwConfig config, String category) {
@@ -53,7 +54,8 @@ public class MarkerManager {
 	public void save(MwConfig config, String category) {
 		config.get(category, "markerCount", 0).set(this.markerList.size());
 		config.get(category, "visibleGroup", "").set(this.visibleGroupName);
-		
+
+
 		int i = 0;
 		for (Marker marker : this.markerList) {
 			String key = "marker" + i;
@@ -61,6 +63,11 @@ public class MarkerManager {
 			config.get(category, key, "").set(value);
 			i++;
 		}
+	}
+
+	public void saveMarkersToFile(){
+		this.save(this.mw.worldConfig, this.mw.getCatMarkers());
+		this.mw.saveWorldConfig();
 	}
 	
 	public void setVisibleGroupName(String groupName) {

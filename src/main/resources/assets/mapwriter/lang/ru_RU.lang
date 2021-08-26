@@ -72,6 +72,8 @@ mw.gui.mwguimarkerdialognew.error=неверная высота
 
 mw.gui.mwguioptions.mwOptions=Настройки MapWriter
 
+mw.gui.mwguioptionslot.optionOn=Вкл.
+mw.gui.mwguioptionslot.optionOff=Откл.
 mw.gui.mwguioptionslot.drawCoords=Показывать координаты: %s
 mw.gui.mwguioptionslot.drawCoords.disabled=выкл.
 mw.gui.mwguioptionslot.drawCoords.small=маленькие
@@ -107,11 +109,9 @@ mw.gui.mwguioptionslot.oldNewMarkerDialog=Старое/новое окно со�
 mw.gui.mwguioptionslot.oldNewMarkerDialog.new=Новое
 mw.gui.mwguioptionslot.oldNewMarkerDialog.old=Старое
 mw.gui.mwguioptionslot.paintOverChunk=Закрашивать чанки: %s
-mw.gui.mwguioptionslot.colorMarkerNameSearchMode=Цвет имени: %s
-mw.gui.mwguioptionslot.colorMarkerDistanceSearchMode=Цвет расстояния: %s
-mw.gui.mwguioptionslot.colorMarkerSearchMode.off=Откл.
-mw.gui.mwguioptionslot.colorMarkerSearchMode.colormarker=Вкл.
-mw.gui.mwguioptionslot.colorMarkerSearchMode.onlydistance=Вкл.
+mw.gui.mwguioptionslot.colorMarkerNameSearchMode=Цвет имени маркера: %s
+mw.gui.mwguioptionslot.colorMarkerDistanceSearchMode=Цвет расстояния до маркера: %s
+mw.gui.mwguioptionslot.storeSaveIngameSaveDir=Хранить данные в осн. папке сохранений мира: %s
 
 mw.gui.mwguimarkerSlotNew.markerName=Имя маркера
 mw.gui.mwguimarkerSlotNew.markerCoordinate= Координаты маркера
