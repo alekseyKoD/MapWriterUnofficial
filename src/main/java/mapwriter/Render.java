@@ -284,7 +284,7 @@ public class Render {
 	public static void drawString(int x, int y, int colour, String formatString, Object...args) {
 		Minecraft mc = Minecraft.getMinecraft();
 		//mc.renderEngine.resetBoundTexture();
-		FontRenderer fr = mc.fontRendererObj;
+		FontRenderer fr = mc.fontRenderer;
 		String s = String.format(formatString, args);
 		fr.drawStringWithShadow(s, x, y, colour);
 	}
@@ -292,7 +292,7 @@ public class Render {
 	public static void drawCentredString(int x, int y, int colour, String formatString, Object...args) {
 		Minecraft mc = Minecraft.getMinecraft();
 		//mc.renderEngine.resetBoundTexture();
-		FontRenderer fr = mc.fontRendererObj;
+		FontRenderer fr = mc.fontRenderer;
 		String s = String.format(formatString, args);
 		int w = fr.getStringWidth(s);
 		fr.drawStringWithShadow(s, x - (w / 2), y, colour);
