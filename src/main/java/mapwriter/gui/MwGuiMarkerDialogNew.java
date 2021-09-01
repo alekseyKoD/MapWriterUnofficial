@@ -192,7 +192,7 @@ public class MwGuiMarkerDialogNew extends GuiScreen
 					&& (y <= this.textFieldHeight + this.textFieldY);
 		}
 
-		public void textFieldScroll(int direction) {
+		public void  textFieldScroll(int direction) {
 			if (this.scrollableElements != null) {
 				int index = this.scrollableElements.indexOf(this.textField
 						.getText().trim());
@@ -336,7 +336,7 @@ public class MwGuiMarkerDialogNew extends GuiScreen
 
 			//save markers to file
 			this.markerManager.saveMarkersToFile();
-	}
+		}
 		return inputCorrect;
 	}
 
@@ -372,8 +372,12 @@ public class MwGuiMarkerDialogNew extends GuiScreen
 		this.scrollableNumericTextBoxZ.textField.setText("" + this.markerZ);
 		this.scrollableNumericTextBoxZ.setDrawArrows(true);
 
-		this.markerColorPallete= new MwColorPallete(this,x+this.scrollableTextBoxName.arrowsWidth,
-				y+ this.elementVSpacing * 5, this.scrollableTextBoxName.textFieldHeight,this.colours, this.currentColor);
+		this.markerColorPallete= new MwColorPallete(x+this.scrollableTextBoxName.arrowsWidth,
+								y+ this.elementVSpacing * 5, this.scrollableTextBoxName.textFieldHeight,
+									this.colours,
+									this.currentColor,
+						this.width * this.dialogWidthPercent / 100,
+				(this.width - (this.width * this.dialogWidthPercent / 100)) / 2);
 
 		this.buttonList.add(new GuiButton(200,x+this.scrollableTextBoxName.arrowsWidth,
 				y+ this.elementVSpacing

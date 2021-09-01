@@ -1,15 +1,20 @@
 package mapwriter.gui;
 
+import cpw.mods.fml.client.config.GuiCheckBox;
 import mapwriter.Mw;
 import mapwriter.MwUtil;
 import mapwriter.map.Marker;
 import mapwriter.map.SearchMarker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.*;
+import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -17,7 +22,7 @@ import java.util.List;
 
 
 
-public class MwGuiMarkerSlot extends GuiSlot {
+public class MwGuiMarkerManageSlot extends GuiSlot {
 
     private Minecraft mc;
     private Mw mw;
@@ -25,16 +30,22 @@ public class MwGuiMarkerSlot extends GuiSlot {
     private int mouseX = 0;
     private int mouseY = 0;
     private final GuiScreen parentScreen;
+    private boolean mouseButton1 = false;
+
+
 
     public List<Marker> markerList;
-    public List<GuiButton> buttons = new ArrayList<GuiButton>();
+    public List<GuiCheckBox> checkBoxes = new ArrayList<GuiCheckBox>();
     public List<SearchMarker> searchMarkerList = new ArrayList<SearchMarker>();
-    public List<Integer> buttonId = new ArrayList<Integer>();
+    public List<Integer> checkboxesId = new ArrayList<Integer>();
+    public HashMap <Integer, Boolean> checkboxesEnabled= new HashMap<Integer, Boolean>();
 
 
 
-    public MwGuiMarkerSlot(GuiScreen parentScreen, Minecraft mc, Mw mw) {
-        super(mc, parentScreen.width+60, parentScreen.height, 50, parentScreen.height - 40,24);
+
+
+    public MwGuiMarkerManageSlot(GuiScreen parentScreen, Minecraft mc, Mw mw) {
+        super(mc, parentScreen.width+60, parentScreen.height, 50, parentScreen.height - 120,24);
         //super(mc, parentScreen.width+200, parentScreen.height, 50, parentScreen.height - 40, 25);
         this.parentScreen = parentScreen;
         this.mw = mw;
@@ -45,76 +56,57 @@ public class MwGuiMarkerSlot extends GuiSlot {
 
     public void updateMarkerList(String text) {
         int color;
-        this.buttons.clear();
-        this.buttonId.clear();
+        int slotIndex=0;
+        this.checkBoxes.clear();
+        this.checkboxesId.clear();
         this.searchMarkerList.clear();
-        this.setShowSelectionBox(true);
+        this.checkboxesEnabled.clear();
 
-        int buttonSizeX=100;
+
+        int buttonSizeX=15;
 
         for (int i = 0; i < this.markerList.size(); i++) {
-
-            List targetInfo=MwUtil.getTargetInfo(
-                    this.mw.playerXInt,
-                    this.mw.playerZInt,
-                    this.markerList.get(i).x,
-                    this.markerList.get(i).z);
 
             String markerName=this.markerList.get(i).name;
             int markerColor=this.markerList.get(i).colour;
             String coordinates=this.markerList.get(i).x+": "+this.markerList.get(i).z;
-            String compassPoint=targetInfo.get(0).toString();
-            int distance2Target= Integer.parseInt(targetInfo.get(1).toString());
-
-
-            if(distance2Target<=200){
-                color=0xff00ff00;
-            }else if(distance2Target>200 && distance2Target<=500){
-                color=0xffffff00;
-            }else color=0xffff0000;
 
             Marker marker = this.markerList.get(i);
             if ((text.equals("") || marker.name.toLowerCase().contains(text.toLowerCase())) &&
                     marker.dimension == this.mw.playerDimension) {
 
-                this.searchMarkerList.add(new SearchMarker(markerName,
-                                                            coordinates,
-                                                            distance2Target,
-                                                            color,
-                                                            compassPoint,
-                                                            markerColor ));
+                this.searchMarkerList.add(new SearchMarker(markerName, coordinates, markerColor));
 
-
-                this.buttons.add(new GuiButton(400 + i, 0, 0,buttonSizeX,20,""));
-
-                this.buttonId.add(i);
+                this.checkBoxes.add(new GuiCheckBox(400 + i, 0, 0,"",false));
+//                this.checkBoxes.add(new GuiButton(400 + i, 0, 0,15,15,""));
+                this.checkboxesId.add(i);
+                this.checkboxesEnabled.put(slotIndex,false);
+                slotIndex++;
             }
 
         }
+
     }
 
     @Override
     protected int getSize() {
-        return this.buttons.size();
+        return this.checkBoxes.size();
     }
 
     @Override
     protected void elementClicked(int i, boolean doubleClicked, int x, int y) {
+        //System.out.println("mouse pressed -;mousebutton1="+mouseButton1);
 
-
-        this.mw.markerManager.selectedMarker = this.markerList.get(this.buttonId.get(i));
-        this.mw.mwGui.mapView.setViewCentreScaled(
-                this.mw.markerManager.selectedMarker.x,
-                this.mw.markerManager.selectedMarker.z,
-                0
-        );
-
-        this.mw.mwGui.backFromMarkerSearch = true;
-        this.mw.setTextureSize();
-        this.mc.displayGuiScreen(this.mw.mwGui);
-
-
+        //this.checkBoxes.get(i).setIsChecked(!this.checkBoxes.get(i).isChecked());
+        //checkboxesEnabled.put(i, !checkboxesEnabled.get(i));
+       // checkBoxes.get(i).displayString = checkboxesEnabled.get(i) == true ? "X" : "";
     }
+
+    protected void checkBoxClicked(int index){
+        this.checkBoxes.get(index).setIsChecked(!this.checkBoxes.get(index).isChecked());
+        checkboxesEnabled.put(index, !checkboxesEnabled.get(index));
+    }
+
 
     public int getMarkerNameFieldWidth() { return 200; }
 
@@ -135,17 +127,15 @@ public class MwGuiMarkerSlot extends GuiSlot {
     public int getStartPosX() { return Math.max(this.getScrollBarX() - this.getFullMarkerFieldWidth() - 15, 15); }
 
     public int getDiffWidthSlotScrollBar(){
-     //  returns the difference between the end X coordinate full markersearch string a
-     //  nd start X coordinates markerslot`s scrollbar.
-         return this.getScrollBarX()-this.getStartPosX()-this.getFullMarkerFieldWidth()-5;
+        //  returns the difference between the end X coordinate full markersearch string a
+        //  nd start X coordinates markerslot`s scrollbar.
+        return this.getScrollBarX()-this.getStartPosX()-this.getFullMarkerFieldWidth()-5;
     }
 
-    public boolean isInsideMarkerSlots(int mouseX, int mouseY){
+    public boolean isInsideMarkerManageSlots(int mouseX, int mouseY){
 
         int startXDetect=this.getStartPosX();
-        int endXDetect= this.getDiffWidthSlotScrollBar()>0 ?
-                this.getStartPosX()+this.getFullMarkerFieldWidth() :
-                this.getStartPosX()+this.getFullMarkerFieldWidth()+this.getDiffWidthSlotScrollBar();
+        int endXDetect=  this.getStartPosX()+12;
 
         int startYDetect=this.top;
         int endYDetect=this.bottom;
@@ -178,19 +168,17 @@ public class MwGuiMarkerSlot extends GuiSlot {
         this.mouseX = mouseX;
         this.mouseY = mouseY;
 
-        if (Mouse.isButtonDown(0) && this.func_148125_i()){ // func_148125_i() - getEnabled
+        if (Mouse.isButtonDown(0) && !mouseButton1){
 
-            int selectedIndex = this.func_148124_c(this.width/2,mouseY);
+           int selectedIndex = this.func_148124_c(this.width/2,mouseY);
 
-            if ( this.isInsideMarkerSlots(mouseX,mouseY) && selectedIndex>=0 && Mouse.getEventButton()!=-1 ){
+            if ( this.isInsideMarkerManageSlots(mouseX,mouseY) && selectedIndex>=0){
 
-                this.elementClicked(selectedIndex, false, mouseX, mouseY);
+                this.checkBoxClicked(selectedIndex);
+                //this.elementClicked(selectedIndex, false, mouseX, mouseY);
 
-           }
-
-
+            }
         }
-
 
 
         super.drawScreen(mouseX, mouseY, f);
@@ -209,14 +197,14 @@ public class MwGuiMarkerSlot extends GuiSlot {
     @Override
     protected void drawSlot(int i, int x, int y, int i4, Tessellator tessellator, int i5, int i6) {
 
+        mouseButton1 = Mouse.isButtonDown(0);
         int startPosX;
         int textShift;
-        int textYShift=mc.fontRenderer.FONT_HEIGHT/2;
+        int textYShift=0;//mc.fontRenderer.FONT_HEIGHT/2;
 
-        GuiButton button = buttons.get(i);
+        GuiButton button = checkBoxes.get(i);
         button.xPosition = getStartPosX();
         button.yPosition = y;
-
 
         String markerName=this.searchMarkerList.get(i).getMarkerName();
         String coordinates=this.searchMarkerList.get(i).getCoordinates();
@@ -233,7 +221,8 @@ public class MwGuiMarkerSlot extends GuiSlot {
         //Draw coordinates column, align at right border
         startPosX=this.getStartPosX()+this.getMarkerNameFieldWidth()+this.getDiffWidthSlotScrollBar();
         textShift=this.getCoordinatesFieldWidth()-coordinatesPixelSize;
-        button.drawString(this.mc.fontRenderer,coordinates,startPosX+textShift,y+textYShift,0xffffffff );
+        button.drawString(this.mc.fontRenderer,coordinates,startPosX+textShift,y+textYShift,
+                            this.searchMarkerList.get(i).getStringColor());
 
         //draw Marker`s name Column, align at left border. If marker`s name string longer and overlaps
         // marker coordinate`s string, trim the marker`s name string
@@ -243,27 +232,27 @@ public class MwGuiMarkerSlot extends GuiSlot {
 
         markerName= overlaps<=0? markerName : this.getTrimRightString(markerName,overlaps);
 
-        button.drawString(this.mc.fontRenderer,markerName ,this.getStartPosX(),y+textYShift,
-                this.mw.colorMarkerNameSearchMode==1 ? this.searchMarkerList.get(i).getStringColor() : 0xffffffff );
+        button.drawString(this.mc.fontRenderer,markerName ,this.getStartPosX()+15,y+textYShift,
+                             this.searchMarkerList.get(i).getStringColor());
 
 
 
 
         //Draw distance column, align at right border
-        startPosX+=this.getCoordinatesFieldWidth();
-        textShift=this.getDistanceFieldWidth()-distancePixelsSize;
-        button.drawString(this.mc.fontRenderer,distance,startPosX+textShift,y+textYShift,
-                this.mw.colorMarkerDistanceSearchMode==1 ? this.searchMarkerList.get(i).getDistanceColor() : 0xffffffff );
+     //   startPosX+=this.getCoordinatesFieldWidth();
+     //   textShift=this.getDistanceFieldWidth()-distancePixelsSize;
+     //   button.drawString(this.mc.fontRenderer,distance,startPosX+textShift,y+textYShift,
+     //           this.mw.colorMarkerDistanceSearchMode==1 ? this.searchMarkerList.get(i).getDistanceColor() : 0xffffffff );
 
         //Draw CompassPoint column, align at right border
-        startPosX+=this.getDistanceFieldWidth();
-        textShift=this.getCompassPointFieldWidth()-compassPointPixelsSize;
-        button.drawString(this.mc.fontRenderer,compassPoint,startPosX+textShift,y+textYShift,0xffffffff );
-
-        //button.drawButton(this.mc, this.mouseX, this.mouseY);
+     //   startPosX+=this.getDistanceFieldWidth();
+     //   textShift=this.getCompassPointFieldWidth()-compassPointPixelsSize;
+     //   button.drawString(this.mc.fontRenderer,compassPoint,startPosX+textShift,y+textYShift,0xffffffff );
 
 
+        button.drawButton(this.mc, this.mouseX, this.mouseY);
     }
+
 
 }
 

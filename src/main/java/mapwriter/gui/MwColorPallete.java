@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MwColorPallete extends GuiScreen {
-    private MwGuiMarkerDialogNew MarkerDialog;
+
     private int x;
     private int y;
     private int palleteWidth;
@@ -16,6 +16,8 @@ public class MwColorPallete extends GuiScreen {
     private int colorCellVSpacing=5;
     private int colorCellsRowCount;
     private int colorCellsColumnCount;
+    private int parentScreenWidth;
+    private int parentScreenStartXpos;
 
 
     private int[] colors;
@@ -25,19 +27,17 @@ public class MwColorPallete extends GuiScreen {
 
 
 
-    public MwColorPallete(MwGuiMarkerDialogNew MarkerDialog, int x, int y,int palleteHeight, int[] colors, int selectedColor){
+    public MwColorPallete(int x, int y,int palleteHeight, int[] colors, int selectedColor,
+                          int parentScreenWidth,int parentScreenStartXpos ){
 
-        this.MarkerDialog=MarkerDialog;
         this.x =x;
         this.y =y;
         this.palleteWidth=palleteHeight;
         this.palleteHeight=palleteHeight;
         this.colors=colors;
         this.selectedColor =selectedColor;
-
-        int markerDialogWidth=MarkerDialog.width * MarkerDialog.dialogWidthPercent / 100;
-        int markerDialogStartXPos=(MarkerDialog.width - markerDialogWidth) / 2;
-
+        this.parentScreenWidth=parentScreenWidth;
+        this.parentScreenStartXpos=parentScreenStartXpos;
         this.colorCellsRowCount=0;
         this.colorCellsColumnCount=0;
 
@@ -48,7 +48,7 @@ public class MwColorPallete extends GuiScreen {
 
 
             if( (this.x+(this.colorCellsColumnCount+1)*this.palleteWidth+(this.colorCellsColumnCount+1)*colorCellHSpacing)>
-                        (markerDialogStartXPos+markerDialogWidth) ){
+                        (this.parentScreenStartXpos+this.parentScreenWidth) ){
                 this.colorCellsColumnCount=0;
                 this.colorCellsRowCount++;
 

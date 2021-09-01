@@ -115,7 +115,7 @@ public class MwGui extends GuiScreen {
     public void initGui() {
 		//enable key pressed in Textfields
     	Keyboard.enableRepeatEvents(true);
-//    	this.buttonList.add(this.optionsButton = new MwGuiButton(0, this.width - 25, this.height / 2 - 20));
+
     }
 
     // called when a button is pressed
@@ -237,6 +237,7 @@ public class MwGui extends GuiScreen {
 		case Keyboard.KEY_N:
         	// select next visible marker
         	this.mw.markerManager.selectNextMarker();
+
         	break;
         	
 		case Keyboard.KEY_HOME:
@@ -389,31 +390,36 @@ public class MwGui extends GuiScreen {
     		}
 
     	} else if (button == 1) {
-    		//this.mouseRightHeld = 1;
-			if ((marker != null) && (prevMarker == marker)) {
+    			//this.mouseRightHeld = 1;
+
+			if (this.markersLabel.posWithin(x, y)) {
+				this.mc.displayGuiScreen(new MwGuiMarkerManage(this, this.mw));
+
+
+			} else if ((marker != null) && (prevMarker == marker)) {
     			// right clicked previously selected marker.
     			// edit the marker
 
-				if (mw.newMarkerDialog)
-				{
-					this.mc.displayGuiScreen(
+					if (mw.newMarkerDialog)
+					{
+						this.mc.displayGuiScreen(
 							new MwGuiMarkerDialogNew(
 									this,
 									this.mw.markerManager,
 									marker
 							)
-					);
-				}
-				else
-				{
-					this.mc.displayGuiScreen(
+						);
+					}
+					else
+					{
+						this.mc.displayGuiScreen(
 							new MwGuiMarkerDialog(
 									this,
 									this.mw.markerManager,
 									marker
 							)
-					);
-				}
+						);
+					}
 
     		} else if (marker == null) {
     			// open new marker dialog

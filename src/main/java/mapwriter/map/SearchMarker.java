@@ -20,6 +20,13 @@ public class SearchMarker {
         this.stringColor =stringColor;
     }
 
+    public SearchMarker(String markerName, String coordinates, int stringColor ) {
+        this.markerName = markerName;
+        this.coordinates =coordinates;
+        this.stringColor =stringColor;
+
+    }
+
     public String getMarkerName() { return markerName; }
 
     public String getCoordinates() { return coordinates; }

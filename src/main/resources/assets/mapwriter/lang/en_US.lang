@@ -117,3 +117,30 @@ mw.gui.mwguimarkerSlotNew.markerName=Marker Name
 mw.gui.mwguimarkerSlotNew.markerCoordinate= Marker Coordinate
 mw.gui.mwguimarkerSlotNew.markerDistance= Distance to Marker
 mw.gui.mwguimarkerSlotNew.markerCompassPoint= Direction to Marker
+
+mw.gui.mwguimarkersearch.markersCount=Total markers: %s
+mw.gui.mwguimarkermanage.title=Manage markers
+mw.gui.mwguimarkermanage.markersCount=Total markers: %s
+mw.gui.mwguimarkermanage.currentGroup=Current group
+mw.gui.mwguimarkermanage.actionWithSelectedTitle=Action with selected markers
+mw.gui.mwguimarkermanage.setSelectedNameLabel=Assign a name:
+mw.gui.mwguimarkermanage.setSelectedGroupLabel=Assign a group:
+mw.gui.mwguimarkermanage.setSelectedColorLabel=Assign a color:
+mw.gui.mwguimarkermanage.selectAllButtonOn=Select all
+mw.gui.mwguimarkermanage.selectAllButtonOff=Deselect all
+mw.gui.mwguimarkermanage.importFtomJMButton=Import from JourneyMap
+
+
+
+mw.gui.mwguimportmarkerfromjm.title=Import markers from JourneyMap`s waypoint
+mw.gui.mwguimportmarkerfromjm.currentWorldTitle= Your current World: %s(%s)
+mw.gui.mwguimportmarkerfromjm.selectWorld=Select world
+mw.gui.mwguimportmarkerfromjm.jmWaypointsCount=JourneyMap`s waypoints found: %s
+mw.gui.mwguimportmarkerfromjm.importButton=Import
+mw.gui.mwguimportmarkerfromjm.cancelButton=Cancel
+mw.gui.mwguimportmarkerfromjm.chooseFolderButton=Choose folder
+mw.gui.mwguimportmarkerfromjm.text1=You can load this waypoints as
+mw.gui.mwguimportmarkerfromjm.text2=mapwriter`s markers.
+mw.gui.mwguimportmarkerfromjm.text3=These markers will be placed in "importJM"
+mw.gui.mwguimportmarkerfromjm.text4=group. All previous markers from this group
+mw.gui.mwguimportmarkerfromjm.text5=will be delete

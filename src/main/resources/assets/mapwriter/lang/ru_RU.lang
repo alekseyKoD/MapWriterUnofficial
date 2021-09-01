@@ -117,3 +117,28 @@ mw.gui.mwguimarkerSlotNew.markerName=Имя маркера
 mw.gui.mwguimarkerSlotNew.markerCoordinate= Координаты маркера
 mw.gui.mwguimarkerSlotNew.markerDistance= Расстояние до маркера
 mw.gui.mwguimarkerSlotNew.markerCompassPoint= Направление к маркеру
+
+mw.gui.mwguimarkermanage.title=Управление маркерами
+mw.gui.mwguimarkermanage.markersCount=Всего маркеров: %s
+mw.gui.mwguimarkermanage.currentGroup=Текущая группа
+mw.gui.mwguimarkermanage.actionWithSelectedTitle=Действия с выделенными маркерами
+mw.gui.mwguimarkermanage.setSelectedNameLabel=Назначить имя:
+mw.gui.mwguimarkermanage.setSelectedGroupLabel=Назначить группу:
+mw.gui.mwguimarkermanage.setSelectedColorLabel=Назначить цвет:
+mw.gui.mwguimarkermanage.selectAllButtonOn=Выделить все
+mw.gui.mwguimarkermanage.selectAllButtonOff=Снять выделение
+mw.gui.mwguimarkermanage.importFtomJMButton=Импорт из JourneyMap
+
+
+
+mw.gui.mwguimportmarkerfromjm.title=Импорт маркеров из JourneyMap
+mw.gui.mwguimportmarkerfromjm.currentWorldTitle= Ваш текущий мир: %s
+mw.gui.mwguimportmarkerfromjm.jmWaypointsCount=Найдено маркеров JourneyMap: %s
+mw.gui.mwguimportmarkerfromjm.importButton=Импорт
+mw.gui.mwguimportmarkerfromjm.cancelButton=Отмена
+mw.gui.mwguimportmarkerfromjm.chooseFolderButton=Выбор папки
+mw.gui.mwguimportmarkerfromjm.text1=Вы можете загрузить эти маркеры как
+mw.gui.mwguimportmarkerfromjm.text2=маркеры mapwriter.
+mw.gui.mwguimportmarkerfromjm.text3=Эти маркеры будут помещены в группу "importJM"
+mw.gui.mwguimportmarkerfromjm.text4=Все предыдущие маркеры из этой группы
+mw.gui.mwguimportmarkerfromjm.text5=будут удалены.

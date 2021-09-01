@@ -70,6 +70,11 @@ public class MwGuiMarkerSearch extends GuiScreen {
                 EnumChatFormatting.UNDERLINE+(EnumChatFormatting.BOLD+I18n.format("mw.gui.mwgui.markers")),
                         this.width / 2, 10, 0xffffff);
 
+        this.drawString(this.fontRendererObj,
+                I18n.format("mw.gui.mwguimarkersearch.markersCount",String.valueOf(this.markerSlot.buttons.size())),
+                this.markerSlot.getStartPosX(), this.markerSlot.bottom+2,0xffffff);
+
+
         this.textField.drawTextBox();
 
         int currentSlotIndex=this.markerSlot.func_148124_c(this.markerSlot.width/2,mouseY);
