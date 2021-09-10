@@ -12,9 +12,9 @@ key.mw_underground_mode=Underground map mode
 # GUI
 mw.gui.mwgui.help=Help
 mw.gui.mwgui.options=Options
-mw.gui.mwgui.dimension=dimension: %d
+mw.gui.mwgui.dimension=Dimension
 mw.gui.mwgui.group=group
-mw.gui.mwgui.overlay=overlay: %s
+mw.gui.mwgui.overlay=Overlay
 mw.gui.mwgui.markers=Markers
 mw.gui.mwgui.keys=Keys
 mw.gui.mwgui.helptext.1=Left click drag or arrow keys pan the map.
@@ -128,9 +128,7 @@ mw.gui.mwguimarkermanage.setSelectedGroupLabel=Assign a group:
 mw.gui.mwguimarkermanage.setSelectedColorLabel=Assign a color:
 mw.gui.mwguimarkermanage.selectAllButtonOn=Select all
 mw.gui.mwguimarkermanage.selectAllButtonOff=Deselect all
-mw.gui.mwguimarkermanage.importFtomJMButton=Import from JourneyMap
-
-
+mw.gui.mwguimarkermanage.applybutton=Apply
 
 mw.gui.mwguimportmarkerfromjm.title=Import markers from JourneyMap`s waypoint
 mw.gui.mwguimportmarkerfromjm.currentWorldTitle= Your current World: %s(%s)
@@ -144,3 +142,19 @@ mw.gui.mwguimportmarkerfromjm.text2=mapwriter`s markers.
 mw.gui.mwguimportmarkerfromjm.text3=These markers will be placed in "importJM"
 mw.gui.mwguimportmarkerfromjm.text4=group. All previous markers from this group
 mw.gui.mwguimportmarkerfromjm.text5=will be delete
+
+mw.gui.mwguimanagegroup.title=Manage group
+mw.gui.mwguimanagegroup.renameGroup=Rename group
+mw.gui.mwguimanagegroup.group=Group
+mw.gui.mwguimanagegroup.rename=rename to
+mw.gui.mwguimanagegroup.buttonRename=Rename
+mw.gui.mwguimanagegroup.changeOrder=Change the order
+mw.gui.mwguimanagegroup.errorEmptyName=New name can`t be empty
+mw.gui.mwguimanagegroup.errorDuplicateName=This group name already exists
+mw.gui.mwguimanagegroup.errorSystemGroupName=This group`s name can`t rename
+
+# Menu
+mw.gui.mwguimenumarkerssearch=Search markers
+mw.gui.mwguimenumarkersmanage=Manage markers
+mw.gui.mwguimenumarkersgroup=Manage groups
+mw.gui.mwguimenumarkersimportJM=Import markers from JM

@@ -27,13 +27,33 @@ public class MwGuiMarkerManage  extends GuiScreen {
 
     private MwGuiTextField textField = null;
     private MwGuiMarkerManageSlot markerManageSlot = null;
-    private ScrollableTextBox currentGroup=null;
     private ScrollableTextBox setSelectedName=null;
     private ScrollableTextBox setSelectedGroup=null;
     private MwColorPallete setSelectedColor=null;
+    private MwGuiComboBox currentGroup=null;
+
+//    private GuiButton setSelectionName=null;
+//    private GuiButton setSelectionGroup=null;
+//    private GuiButton setSelectionColor=null;
+
+    private GuiCheckBox setSelectionName=null;
+    private GuiCheckBox setSelectionGroup=null;
+    private GuiCheckBox setSelectionColor=null;
+    private GuiCheckBox setSelectAllAction=null;
+    private GuiCheckBox setSelectAllMarkers=null;
+
+
+    private GuiButton selectAllActions=null;
+
     private int[] colours=null;
     boolean backToGameOnSubmit = false;
-    private boolean selectAllFalg=false;
+
+    private boolean flagSelectAllMarkers=false;
+    private boolean flagSelectAllActions=false;
+    private boolean flagSetSelectionName=false;
+    private boolean flagSetSelectionGroup=false;
+    private boolean flagSetSelectionColor=false;
+
     int LeftScreenBorderShift=0;
     int assignButtonWidth=30;
 
@@ -73,19 +93,15 @@ public class MwGuiMarkerManage  extends GuiScreen {
         int textfieldFrameThicknessInPx=1;
 
 
-        int setSelectedNameStartPosY=20+this.markerManageSlot.bottom+2*this.fontRendererObj.FONT_HEIGHT+elementVSpacing;
+        int setSelectedNameStartPosY=30+this.markerManageSlot.bottom+2*this.fontRendererObj.FONT_HEIGHT+elementVSpacing;
         int setSelectedGroupStartPosY=setSelectedNameStartPosY+elementVSpacing;
         int setSelectedColorStartPosY=setSelectedGroupStartPosY+elementVSpacing;
 
-        this.currentGroup=new ScrollableTextBox(20+ this.fontRendererObj.getStringWidth(currentGroupLabel),
-                                this.markerManageSlot.top-this.fontRendererObj.FONT_HEIGHT-elementVSpacing,
-                             this.width/100*20,currentGroupLabel, this.mw.markerManager.groupList);
-
-        this.currentGroup.init();
-        this.currentGroup.textField.setText(this.mw.markerManager.getVisibleGroupName());
-        this.currentGroup.setDrawArrows(true);
-        this.currentGroup.textField.setEnabled(false);
-
+        this.currentGroup=new MwGuiComboBox(this.fontRendererObj,20,
+                               this.markerManageSlot.top-this.fontRendererObj.FONT_HEIGHT-elementVSpacing,
+                                currentGroupLabel,this.fontRendererObj.getStringWidth(this.currentGroupLabel)+120,
+                                this.mw.markerManager.groupList,false);
+        this.currentGroup.setActiveElementName(this.mw.markerManager.getVisibleGroupName());
 
         this.textField = new MwGuiTextField(this.fontRendererObj,
                 this.fontRendererObj.getStringWidth(I18n.format("mw.gui.mwguimarkermanage.markersCount"))+20,
@@ -95,13 +111,13 @@ public class MwGuiMarkerManage  extends GuiScreen {
         this.textField.setFocused(true);
 
         this.setSelectedName=new ScrollableTextBox(20+this.LeftScreenBorderShift, setSelectedNameStartPosY,
-                5*(this.colours.length-1)+this.currentGroup.textFieldHeight*this.colours.length+14, //14 is 2*arrowsWidth
+                5*(this.colours.length-1)+this.currentGroup.getHeight()*this.colours.length+14, //14 is 2*arrowsWidth
                       setSelectedNameLabel);
         this.setSelectedName.init();
         this.setSelectedName.setDrawArrows(false);
 
         this.setSelectedGroup=new ScrollableTextBox(20+this.LeftScreenBorderShift, setSelectedGroupStartPosY,
-                5*(this.colours.length-1)+this.currentGroup.textFieldHeight*this.colours.length+14, //14 is 2*arrowsWidth
+                5*(this.colours.length-1)+this.currentGroup.getHeight()*this.colours.length+14, //14 is 2*arrowsWidth
                       setSelectedGroupLabel,this.mw.markerManager.groupList);
         this.setSelectedGroup.init();
         this.setSelectedGroup.textField.setText(this.mw.markerManager.getVisibleGroupName());
@@ -112,34 +128,33 @@ public class MwGuiMarkerManage  extends GuiScreen {
                                     this.setSelectedGroup.textFieldHeight,this.colours,this.colours[0],
                                     this.width,0);
 
-        // add a button which selected all visible marker in markerslot
-        this.buttonList.add(new GuiButton(200, this.markerManageSlot.getStartPosX(), this.markerManageSlot.top-14,
-                10,10,"x"));
-
-        //add a button to assign a name to selected markers
-        this.buttonList.add(new GuiButton(201,20+this.LeftScreenBorderShift+this.setSelectedName.width,
-                setSelectedNameStartPosY-2*textfieldFrameThicknessInPx,this.assignButtonWidth,
-                this.setSelectedName.textFieldHeight+2*textfieldFrameThicknessInPx,"OK"));
-
-        //add a button to assign a group to selected markers
-        this.buttonList.add(new GuiButton(202,20+this.LeftScreenBorderShift+this.setSelectedGroup.width,
-                                setSelectedGroupStartPosY-2*textfieldFrameThicknessInPx,this.assignButtonWidth,
-                        this.setSelectedGroup.textFieldHeight+2*textfieldFrameThicknessInPx,"OK"));
-        //add a button to assign a color to selected markers
-        this.buttonList.add(new GuiButton(203,20+this.LeftScreenBorderShift+this.setSelectedGroup.width,
-                                setSelectedColorStartPosY-2*textfieldFrameThicknessInPx,this.assignButtonWidth,
-                        this.setSelectedColor.getPalleteHeight()+2*textfieldFrameThicknessInPx,"OK"));
-        //add a button for import markers from JourneyMap`s waypoints
-
-        int importJMButtonWidth=10+this.fontRendererObj.
-                                getStringWidth(I18n.format("mw.gui.mwguimarkermanage.importFtomJMButton"));
-        this.buttonList.add(new GuiButton(204,this.width-importJMButtonWidth-2,
-                    this.markerManageSlot.top-20, importJMButtonWidth,16,
-                                I18n.format("mw.gui.mwguimarkermanage.importFtomJMButton")));
+        //add a checkbox to select/deselect all visible marker in markerslot
+        this.setSelectAllMarkers=new GuiCheckBox(1,this.markerManageSlot.getStartPosX(),
+                this.markerManageSlot.top-14,I18n.format("mw.gui.mwguimarkermanage.selectAllButtonOn"),false);
 
 
+        //add a checkbox to select for assign a name to selected markers
+        this.setSelectionName=new GuiCheckBox(2,22+this.LeftScreenBorderShift+this.setSelectedName.width,
+                                                                setSelectedNameStartPosY,"",false);
 
+        //add a checkbox to select for assign a group to selected markers
+        this.setSelectionGroup=new GuiCheckBox(3,22+this.LeftScreenBorderShift+this.setSelectedName.width,
+                                                                setSelectedGroupStartPosY,"",false);
 
+        //add a checkbox to select  for assign a color to selected markers
+        this.setSelectionColor=new GuiCheckBox(4,22+this.LeftScreenBorderShift+this.setSelectedName.width,
+                                                                setSelectedColorStartPosY,"",false);
+
+        //add a checkbox to select/deselect all actions
+
+        this.setSelectAllAction=new GuiCheckBox(5,22+this.LeftScreenBorderShift+this.setSelectedName.width,
+                setSelectedNameStartPosY-16,I18n.format("mw.gui.mwguimarkermanage.selectAllButtonOn"),false);
+
+        //add a guibutton to apply selection action
+        this.buttonList.add(new GuiButton(200,this.setSelectionColor.xPosition+
+                                this.setSelectionColor.width+10, setSelectedColorStartPosY,
+                this.fontRendererObj.getStringWidth(I18n.format("mw.gui.mwguimarkermanage.applybutton"))+20,
+                16,I18n.format("mw.gui.mwguimarkermanage.applybutton")));
 
         this.markerManageSlot.updateMarkerList(this.textField.getText());
 
@@ -147,6 +162,11 @@ public class MwGuiMarkerManage  extends GuiScreen {
     }
 
     protected void keyTyped(char c, int k) {
+
+        String oldName=this.setSelectedName.textField.getText();
+        String oldGroup=this.setSelectedGroup.textField.getText();
+
+
         if (k==Keyboard.KEY_ESCAPE){
             this.mc.displayGuiScreen(this.parentScreen);
         }else{
@@ -156,6 +176,16 @@ public class MwGuiMarkerManage  extends GuiScreen {
             this.textField.textboxKeyTyped(c, k);
             if(!this.setSelectedGroup.textField.isFocused() && !this.setSelectedName.textField.isFocused()){
                 this.markerManageSlot.updateMarkerList(this.textField.getText());
+            }
+
+            //set action checkboxes if the value of the new Name, group or color  has changed
+            if(!this.setSelectedName.textField.getText().equals(oldName)){
+                this.flagSetSelectionName=true;
+                this.setSelectionName.setIsChecked(true);
+            }
+            if(!this.setSelectedGroup.textField.getText().equals(oldGroup)){
+                this.flagSetSelectionGroup=true;
+                this.setSelectionGroup.setIsChecked(true);
             }
 
         }
@@ -174,18 +204,100 @@ public class MwGuiMarkerManage  extends GuiScreen {
     }
 
     public void mouseDWheelScrolled(int x, int y, int direction) {
-        this.currentGroup.mouseDWheelScrolled(x, y, direction);
+
+        String oldGroup=this.setSelectedGroup.textField.getText();
+        int oldColor=this.setSelectedColor.getSelectedColor();
+
+
+
         this.setSelectedGroup.mouseDWheelScrolled(x, y, direction);
+
         for(int i=0;i<this.setSelectedColor.colorCells.size();i++){
             this.setSelectedColor.colorCells.get(i).mouseDWheelScrolled(x,y,direction);
+        }
+
+        //set action checkboxes if the value of the new Name, group or color  has changed
+        if(this.setSelectedColor.getSelectedColor()!=oldColor){
+            this.flagSetSelectionColor=true;
+            this.setSelectionColor.setIsChecked(true);
+        }
+        if(!this.setSelectedGroup.textField.getText().equals(oldGroup)){
+            this.flagSetSelectionGroup=true;
+            this.setSelectionGroup.setIsChecked(true);
         }
 
     }
 
 
+    private void setCurrentGroup(){
+        MwGuiMarkerManage.this.mw.markerManager.setVisibleGroupName(this.currentGroup.getSelectionElementName());
+        MwGuiMarkerManage.this.mw.markerManager.update();
+        MwGuiMarkerManage.this.markerManageSlot.markerList=MwGuiMarkerManage.this.mw.markerManager.visibleMarkerList;
+        MwGuiMarkerManage.this.markerManageSlot.updateMarkerList(this.textField.getText());
+    }
+
     protected void mouseClicked(int x, int y, int button) {
 
-        super.mouseClicked(x, y, button);
+        String oldCurrentGroup=this.currentGroup.getSelectionElementName();
+
+        String oldName=this.setSelectedName.textField.getText();
+        String oldGroup=this.setSelectedGroup.textField.getText();
+        int oldColor=this.setSelectedColor.getSelectedColor();
+
+        //set checkbox to assign selection`s markers name
+        if(this.setSelectionName.mousePressed(this.mc, x, y)){
+            this.flagSetSelectionName=!this.flagSetSelectionName;
+            this.setSelectionName.setIsChecked(flagSetSelectionName);
+        }
+        //set checkbox to assign selection`s markers group
+        if(this.setSelectionGroup.mousePressed(this.mc, x, y)){
+            this.flagSetSelectionGroup=!this.flagSetSelectionGroup;
+            this.setSelectionGroup.setIsChecked(flagSetSelectionGroup);
+        }
+        //set checkbox to assign selection`s markers color
+        if(this.setSelectionColor.mousePressed(this.mc, x, y)){
+            this.flagSetSelectionColor=!this.flagSetSelectionColor;
+            this.setSelectionColor.setIsChecked(flagSetSelectionColor);
+        }
+        //select/deselect all checkboxes set actions
+        if(this.setSelectAllAction.mousePressed(this.mc, x, y)) {
+            this.flagSelectAllActions = !this.flagSelectAllActions;
+            if(this.flagSelectAllActions){
+                this.setSelectAllAction.displayString=I18n.format("mw.gui.mwguimarkermanage.selectAllButtonOff");
+                this.flagSetSelectionName=true;
+                this.flagSetSelectionGroup=true;
+                this.flagSetSelectionColor=true;
+                this.setSelectionName.setIsChecked(flagSetSelectionName);
+                this.setSelectionGroup.setIsChecked(flagSetSelectionGroup);
+                this.setSelectionColor.setIsChecked(flagSetSelectionColor);
+            }else{
+                this.setSelectAllAction.displayString=I18n.format("mw.gui.mwguimarkermanage.selectAllButtonOn");
+                this.flagSetSelectionName=false;
+                this.flagSetSelectionGroup=false;
+                this.flagSetSelectionColor=false;
+                this.setSelectionName.setIsChecked(flagSetSelectionName);
+                this.setSelectionGroup.setIsChecked(flagSetSelectionGroup);
+                this.setSelectionColor.setIsChecked(flagSetSelectionColor);
+            }
+        }
+        // select/deselect all markers in list
+        if(this.setSelectAllMarkers.mousePressed(this.mc, x, y)) {
+
+            //select all markers in list
+            int counter = 0;
+            for (Map.Entry<Integer, Boolean> pair : this.markerManageSlot.checkboxesEnabled.entrySet()) {
+
+                this.markerManageSlot.checkBoxes.get(counter).setIsChecked(!this.flagSelectAllMarkers);
+                pair.setValue(!this.flagSelectAllMarkers);
+                counter++;
+
+                }
+            this.flagSelectAllMarkers=!this.flagSelectAllMarkers;
+            if(this.flagSelectAllMarkers){
+                this.setSelectAllMarkers.displayString=I18n.format("mw.gui.mwguimarkermanage.selectAllButtonOff");
+            }else this.setSelectAllMarkers.displayString=I18n.format("mw.gui.mwguimarkermanage.selectAllButtonOn");
+
+        }
         this.textField.mouseClicked(x, y, button);
         this.currentGroup.mouseClicked(x, y, button);
         this.setSelectedName.mouseClicked(x, y, button);
@@ -193,8 +305,20 @@ public class MwGuiMarkerManage  extends GuiScreen {
         for(int i=0;i<this.setSelectedColor.colorCells.size();i++){
             this.setSelectedColor.colorCells.get(i).mouseClicked(x,y,button);
         }
+        if (!this.currentGroup.getSelectionElementName().equals(oldCurrentGroup)){
+            this.setCurrentGroup();
+        }
 
-
+        //set action checkboxes if the value of the new Name, group or color  has changed
+        if(this.setSelectedColor.getSelectedColor()!=oldColor){
+            this.flagSetSelectionColor=true;
+            this.setSelectionColor.setIsChecked(true);
+        }
+        if(!this.setSelectedGroup.textField.getText().equals(oldGroup)){
+            this.flagSetSelectionGroup=true;
+            this.setSelectionGroup.setIsChecked(true);
+        }
+        super.mouseClicked(x, y, button);
     }
 
     public void updateScreen()
@@ -213,7 +337,7 @@ public class MwGuiMarkerManage  extends GuiScreen {
                           I18n.format("mw.gui.mwguimarkermanage.title")),
                 this.width / 2, 10, 0xffffff);
 
-        this.currentGroup.draw();
+        this.currentGroup.draw(mouseX,mouseY);
 
         this.drawString(this.fontRendererObj,
                 (I18n.format("mw.gui.mwguimarkermanage.markersCount",
@@ -224,23 +348,22 @@ public class MwGuiMarkerManage  extends GuiScreen {
                 this.markerManageSlot.bottom+30,0xffffff);
 
         Render.setColour(0xffffffff);
-        Render.drawRectBorder(10,30+this.markerManageSlot.bottom+this.fontRendererObj.FONT_HEIGHT+2,
-                                            this.LeftScreenBorderShift+this.setSelectedGroup.width+50,
-                (this.setSelectedColor.getY()+this.setSelectedColor.getPalleteHeight())-
-                        (30+this.markerManageSlot.bottom+this.fontRendererObj.FONT_HEIGHT+2)+5,1f);
+        Render.drawRectBorder(10,this.markerManageSlot.bottom+40,
+                                            this.LeftScreenBorderShift+this.setSelectedGroup.width+100,
+                (this.setSelectedColor.getY()+this.setSelectedColor.getPalleteHeight())-this.markerManageSlot.bottom-30,1f);
 
         this.setSelectedName.draw();
         this.setSelectedGroup.draw();
         this.setSelectedColor.draw();
 
-        this.drawString(this.fontRendererObj,
-                this.selectAllFalg ? I18n.format("mw.gui.mwguimarkermanage.selectAllButtonOff"):
-                                     I18n.format("mw.gui.mwguimarkermanage.selectAllButtonOn"),
-                this.markerManageSlot.getStartPosX()+15,this.markerManageSlot.top-12,0xffffff);
+        this.setSelectionName.drawButton(this.mc,mouseX, mouseY);
+        this.setSelectionGroup.drawButton(this.mc,mouseX, mouseY);
+        this.setSelectionColor.drawButton(this.mc,mouseX, mouseY);
+        this.setSelectAllAction.drawButton(this.mc,mouseX, mouseY);
+        this.setSelectAllMarkers.drawButton(this.mc,mouseX, mouseY);
 
         this.drawString(this.fontRendererObj,this.setSelectedColorLabel,20,
-                //this.markerManageSlot.bottom+2*this.fontRendererObj.FONT_HEIGHT+3*elementVSpacing,0xffffff);
-                this.setSelectedColor.getY()+2,0xffffff);
+                                                        this.setSelectedColor.getY()+2,0xffffff);
 
         this.textField.drawTextBox();
 
@@ -250,102 +373,58 @@ public class MwGuiMarkerManage  extends GuiScreen {
 
     @Override
     protected void actionPerformed(GuiButton p_146284_1_) {
-        if(p_146284_1_.id == 200){
-            //select all markers
-            int counter=0;
-            for (Map.Entry<Integer,Boolean> pair: this.markerManageSlot.checkboxesEnabled.entrySet()) {
+        if(p_146284_1_.id == 200) {
+            //Apply selected action to selected markers
 
-                this.markerManageSlot.checkBoxes.get(counter).setIsChecked(!this.selectAllFalg);
-                pair.setValue(!this.selectAllFalg);
-                counter++;
+            String oldMarkerName="";
+            int counterName=0;
+            int counterGroup=0;
+            int counterColor=0;
+            for (Map.Entry<Integer,Boolean> mapPair: this.markerManageSlot.checkboxesEnabled.entrySet()){
+                if (mapPair.getValue()){
+                    int Index=this.markerManageSlot.checkboxesId.get(mapPair.getKey());
 
+                    if(flagSetSelectionName && this.setSelectedName.validateTextFieldData()){
+                        oldMarkerName=this.markerManageSlot.markerList.get(Index).name;
+                        this.markerManageSlot.markerList.get(Index).setMarkerName(this.setSelectedName.textField.getText());
+                        counterName++;
+                    }
+                    if (flagSetSelectionGroup && this.setSelectedGroup.validateTextFieldData()) {
+                        this.markerManageSlot.markerList.get(Index).setGroupName(this.setSelectedGroup.textField.getText());
+                        counterGroup++;
+                    }
+                    if(flagSetSelectionColor){
+                        this.markerManageSlot.markerList.get(Index).setColour(this.setSelectedColor.getSelectedColor());
+                        counterColor++;
+                    }
+                }
             }
-            this.selectAllFalg=!this.selectAllFalg;
-
-        }else if (p_146284_1_.id == 201) {
-            // assign name to selected markers
-            if (this.setSelectedName.validateTextFieldData()) {
-                this.assignNameToSelectedMarkers(setSelectedName.textField.getText());
+            if(flagSetSelectionName){
+                MwUtil.logInfo("Rename %d markers. Old name<%s>, new name<%s>",counterName,oldMarkerName,
+                                                                        this.setSelectedName.textField.getText());
+                flagSetSelectionName=!flagSetSelectionName;
+                this.setSelectionName.setIsChecked(false);
             }
-        } else if(p_146284_1_.id == 202){
-            // assign group to selected markers
-            if (this.setSelectedGroup.validateTextFieldData()) {
-                this.assignGroupToSelectedMarkers(setSelectedGroup.textField.getText());
+            if(flagSetSelectionGroup){
+                MwUtil.logInfo("Move %d markers from group<%s> to group<%s>",
+                                                        counterGroup,this.currentGroup.getSelectionElementName(),
+                                                        this.setSelectedGroup.textField.getText());
+
+                flagSetSelectionGroup=false;
+                this.setSelectionGroup.setIsChecked(false);
             }
-
-
-        }else if(p_146284_1_.id == 203){
-            // assign color to selected markers
-            assignColorToSelectedMarkers(this.setSelectedColor.getSelectedColor());
-
-        }else if(p_146284_1_.id == 204){
-        // Open import JM waypoints GUI
-
-        //    MwUtil.chooseDirectory();
-
-        this.mc.displayGuiScreen(new MwGuiImportMarkerFromJM(this,this.mw.markerManager));
-
-    }
-
-
-    }
-
-    public void assignNameToSelectedMarkers(String markerName){
-
-        String oldMarkerName="";
-        int counter=0;
-        for (Map.Entry<Integer,Boolean> mapPair: this.markerManageSlot.checkboxesEnabled.entrySet()){
-            if (mapPair.getValue()){
-                int Index=this.markerManageSlot.checkboxesId.get(mapPair.getKey());
-                oldMarkerName=this.markerManageSlot.markerList.get(Index).name;
-                this.markerManageSlot.markerList.get(Index).setMarkerName(markerName);
-                counter++;
+            if(flagSetSelectionColor){
+                MwUtil.logInfo("Changed color for  %d markers.", counterColor);
+                flagSetSelectionColor=false;
+                this.setSelectionColor.setIsChecked(false);
             }
+            this.mw.markerManager.update();
+            this.mw.markerManager.saveMarkersToFile();
+            this.markerManageSlot.updateMarkerList(this.textField.getText());
         }
 
-        this.saveMarkers();
-        this.selectAllFalg=false;
-        MwUtil.logInfo("Rename %d markers. Old name<%s>, new name<%s>",counter,oldMarkerName, markerName);
     }
-
-    public void assignGroupToSelectedMarkers(String group){
-
-        int counter=0;
-        for (Map.Entry<Integer,Boolean> mapPair: this.markerManageSlot.checkboxesEnabled.entrySet()){
-
-            if (mapPair.getValue()){
-                int Index=this.markerManageSlot.checkboxesId.get(mapPair.getKey());
-                this.markerManageSlot.markerList.get(Index).setGroupName(group);
-                counter++;
-            }
-        }
-        this.saveMarkers();
-        this.selectAllFalg=false;
-        MwUtil.logInfo("Move %d markers from group<%s> to group<%s>",
-                                counter,this.currentGroup.textField.getText(), group);
-    }
-
-    public void assignColorToSelectedMarkers(int color){
-        int counter=0;
-        for (Map.Entry<Integer,Boolean> mapPair: this.markerManageSlot.checkboxesEnabled.entrySet()){
-            if (mapPair.getValue()){
-                int Index=this.markerManageSlot.checkboxesId.get(mapPair.getKey());
-                this.markerManageSlot.markerList.get(Index).setColour(color);
-                counter++;
-            }
-        }
-        this.saveMarkers();
-        this.selectAllFalg=false;
-        MwUtil.logInfo("Changed color for  %d markers.", counter);
-    }
-
-    public void saveMarkers(){
-        this.mw.markerManager.update();
-        this.mw.markerManager.saveMarkersToFile();
-        this.markerManageSlot.updateMarkerList(this.textField.getText());
-    }
-
-    class ScrollableTextBox {
+   class ScrollableTextBox {
         public int x;
         public int y;
         public int width;
@@ -498,10 +577,7 @@ public class MwGuiMarkerManage  extends GuiScreen {
             }
 
             if (this.equals(MwGuiMarkerManage.this.currentGroup)){
-                MwGuiMarkerManage.this.mw.markerManager.setVisibleGroupName(this.textField.getText());
-                MwGuiMarkerManage.this.mw.markerManager.update();
-                MwGuiMarkerManage.this.markerManageSlot.markerList=MwGuiMarkerManage.this.mw.markerManager.visibleMarkerList;
-                MwGuiMarkerManage.this.markerManageSlot.updateMarkerList(MwGuiMarkerManage.this.textField.getText());
+
             }
         }
     }

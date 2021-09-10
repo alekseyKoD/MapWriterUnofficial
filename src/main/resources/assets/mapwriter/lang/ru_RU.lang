@@ -12,9 +12,9 @@ key.mw_underground_mode=Режим пещер
 # GUI
 mw.gui.mwgui.help=Помощь
 mw.gui.mwgui.options=Настройки
-mw.gui.mwgui.dimension=измерение: %d
-mw.gui.mwgui.group=группа
-mw.gui.mwgui.overlay=наложение: %s
+mw.gui.mwgui.dimension=Измерение:
+mw.gui.mwgui.group=Группа
+mw.gui.mwgui.overlay=Наложение:
 mw.gui.mwgui.markers=Маркеры
 mw.gui.mwgui.keys=Клавиши
 mw.gui.mwgui.helptext.1=Для прокрутки карты используйте ЛКМ или стрелки.
@@ -127,7 +127,7 @@ mw.gui.mwguimarkermanage.setSelectedGroupLabel=Назначить группу:
 mw.gui.mwguimarkermanage.setSelectedColorLabel=Назначить цвет:
 mw.gui.mwguimarkermanage.selectAllButtonOn=Выделить все
 mw.gui.mwguimarkermanage.selectAllButtonOff=Снять выделение
-mw.gui.mwguimarkermanage.importFtomJMButton=Импорт из JourneyMap
+mw.gui.mwguimarkermanage.applybutton=Применить
 
 
 
@@ -142,3 +142,19 @@ mw.gui.mwguimportmarkerfromjm.text2=маркеры mapwriter.
 mw.gui.mwguimportmarkerfromjm.text3=Эти маркеры будут помещены в группу "importJM"
 mw.gui.mwguimportmarkerfromjm.text4=Все предыдущие маркеры из этой группы
 mw.gui.mwguimportmarkerfromjm.text5=будут удалены.
+
+mw.gui.mwguimanagegroup.title=Управление группами
+mw.gui.mwguimanagegroup.renameGroup=Переименовать группу
+mw.gui.mwguimanagegroup.group=Группа
+mw.gui.mwguimanagegroup.rename=Переименовать в
+mw.gui.mwguimanagegroup.buttonRename=Переименовать
+mw.gui.mwguimanagegroup.changeOrder=Изменить порядок
+mw.gui.mwguimanagegroup.errorEmptyName=Новое имя не может быть пустым
+mw.gui.mwguimanagegroup.errorDuplicateName=Такая группа уже существует
+mw.gui.mwguimanagegroup.errorSystemGroupName=Это имя группы нельзя переименовать
+
+# Menu
+mw.gui.mwguimenumarkerssearch=Поиск маркеров
+mw.gui.mwguimenumarkersmanage=Управление маркерами
+mw.gui.mwguimenumarkersgroup=Управление группами
+mw.gui.mwguimenumarkersimportJM=Импорт маркеров из JM

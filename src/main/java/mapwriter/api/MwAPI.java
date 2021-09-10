@@ -2,6 +2,7 @@ package mapwriter.api;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import com.google.common.collect.HashBiMap;
 
@@ -33,6 +34,8 @@ public class MwAPI {
 	public static IMwDataProvider getCurrentDataProvider(){
 		return currentProvider;
 	}
+
+	public static List<String> getProviderKeys(){ return providerKeys; }
 
 	public static String getCurrentProviderName(){
 		if (currentProvider != null)

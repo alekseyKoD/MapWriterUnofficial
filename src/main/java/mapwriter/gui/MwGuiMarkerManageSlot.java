@@ -45,7 +45,7 @@ public class MwGuiMarkerManageSlot extends GuiSlot {
 
 
     public MwGuiMarkerManageSlot(GuiScreen parentScreen, Minecraft mc, Mw mw) {
-        super(mc, parentScreen.width+60, parentScreen.height, 50, parentScreen.height - 120,24);
+        super(mc, parentScreen.width+60, parentScreen.height, 50, parentScreen.height - 140,16);
         //super(mc, parentScreen.width+200, parentScreen.height, 50, parentScreen.height - 40, 25);
         this.parentScreen = parentScreen;
         this.mw = mw;
@@ -95,11 +95,7 @@ public class MwGuiMarkerManageSlot extends GuiSlot {
 
     @Override
     protected void elementClicked(int i, boolean doubleClicked, int x, int y) {
-        //System.out.println("mouse pressed -;mousebutton1="+mouseButton1);
 
-        //this.checkBoxes.get(i).setIsChecked(!this.checkBoxes.get(i).isChecked());
-        //checkboxesEnabled.put(i, !checkboxesEnabled.get(i));
-       // checkBoxes.get(i).displayString = checkboxesEnabled.get(i) == true ? "X" : "";
     }
 
     protected void checkBoxClicked(int index){
@@ -208,15 +204,9 @@ public class MwGuiMarkerManageSlot extends GuiSlot {
 
         String markerName=this.searchMarkerList.get(i).getMarkerName();
         String coordinates=this.searchMarkerList.get(i).getCoordinates();
-        String distance=String.valueOf(this.searchMarkerList.get(i).getDistance())+"m";
-        String compassPoint=this.searchMarkerList.get(i).getCompassPoint();
 
         int markerNamePixelSize=mc.fontRenderer.getStringWidth(markerName);
         int coordinatesPixelSize=mc.fontRenderer.getStringWidth(coordinates);
-        int distancePixelsSize=mc.fontRenderer.getStringWidth(distance);
-        int compassPointPixelsSize=mc.fontRenderer.getStringWidth(compassPoint);
-
-        //startPosX=this.getStartPosX();
 
         //Draw coordinates column, align at right border
         startPosX=this.getStartPosX()+this.getMarkerNameFieldWidth()+this.getDiffWidthSlotScrollBar();
@@ -234,21 +224,6 @@ public class MwGuiMarkerManageSlot extends GuiSlot {
 
         button.drawString(this.mc.fontRenderer,markerName ,this.getStartPosX()+15,y+textYShift,
                              this.searchMarkerList.get(i).getStringColor());
-
-
-
-
-        //Draw distance column, align at right border
-     //   startPosX+=this.getCoordinatesFieldWidth();
-     //   textShift=this.getDistanceFieldWidth()-distancePixelsSize;
-     //   button.drawString(this.mc.fontRenderer,distance,startPosX+textShift,y+textYShift,
-     //           this.mw.colorMarkerDistanceSearchMode==1 ? this.searchMarkerList.get(i).getDistanceColor() : 0xffffffff );
-
-        //Draw CompassPoint column, align at right border
-     //   startPosX+=this.getDistanceFieldWidth();
-     //   textShift=this.getCompassPointFieldWidth()-compassPointPixelsSize;
-     //   button.drawString(this.mc.fontRenderer,compassPoint,startPosX+textShift,y+textYShift,0xffffffff );
-
 
         button.drawButton(this.mc, this.mouseX, this.mouseY);
     }
