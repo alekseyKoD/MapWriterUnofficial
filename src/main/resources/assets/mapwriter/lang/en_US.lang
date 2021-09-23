@@ -8,6 +8,7 @@ key.mw_teleport=Teleport to waypoint
 key.mw_zoom_in=Minimap zoom in
 key.mw_zoom_out=Minimap zoom out
 key.mw_underground_mode=Underground map mode
+key.mw_control=Control key
 
 # GUI
 mw.gui.mwgui.help=Help
@@ -153,8 +154,29 @@ mw.gui.mwguimanagegroup.errorEmptyName=New name can`t be empty
 mw.gui.mwguimanagegroup.errorDuplicateName=This group name already exists
 mw.gui.mwguimanagegroup.errorSystemGroupName=This group`s name can`t rename
 
+
+mw.gui.mwguiuserpreset.title=User Preset Marker
+mw.gui.mwguiuserpreset.groupPreset=Group preset
+mw.gui.mwguiuserpreset.notSavedText=Some items were not saved and will be lost when this button is pressed
+mw.gui.mwguiuserpreset.buttonSave=Save
+mw.gui.mwguiuserpreset.buttonClose=Close
+mw.gui.mwguiuserpreset.buttonHelp=Help
+mw.gui.mwguiuserpreset.buttonClear=Clear
+
+mwgui.mwguiquickmarker.title=User preset
+mwgui.mwguiquickmarker.markertitle=User markers Preset
+mwgui.mwguiquickmarker.grouptitle=User group Preset
+mwgui.mwguiquickmarker.ExitLabel=Back to game
+mwgui.mwguiquickmarker.prevLevel=Back to group
+mwgui.mwguiquickmarker.markerdialog=Create marker GUI
+
+
+
+
+
 # Menu
 mw.gui.mwguimenumarkerssearch=Search markers
 mw.gui.mwguimenumarkersmanage=Manage markers
 mw.gui.mwguimenumarkersgroup=Manage groups
 mw.gui.mwguimenumarkersimportJM=Import markers from JM
+mw.gui.mwguimenumarkersuserpreset="Quick markers" preset

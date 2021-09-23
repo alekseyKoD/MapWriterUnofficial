@@ -53,17 +53,11 @@ public class MwGui extends GuiScreen {
     private int mouseBlockY = 0;
     private int mouseBlockZ = 0;
 	public boolean backFromMarkerSearch = false;
+	private boolean forbidenMapDragDrop=false;
+	private int forbidenMapDragDropCounter=0;
 
 
     private int exit = 0;
-    /*
-    private Label helpLabel;
-    private Label optionsLabel;
-    private Label dimensionLabel;
-    private Label groupLabel;
-    private Label overlayLabel;
-    private Label markersLabel;
-	*/
 	private List <MwGuiDropDownList> mainMenuItems= new ArrayList<MwGuiDropDownList>();
 	private boolean mainMenuItemMouseClick=false;
 	private int mainMenuActiveElementIndex;
@@ -71,29 +65,7 @@ public class MwGui extends GuiScreen {
 	private int mainMenuEndPosX;
 
     private GuiButton optionsButton;
-  /*
-    class Label {
-    	int x = 0, y = 0, w = 1, h = 12;
-    	public Label() {
-    	}
-    	
-    	public void draw(int x, int y, String s) {
-    		this.x = x;
-    		this.y = y;
-    		this.w = MwGui.this.fontRendererObj.getStringWidth(s) + 4;
-    		MwGui.drawRect(this.x, this.y, this.x + this.w, this.y + this.h, 0x80000000);
-    		MwGui.this.drawString(MwGui.this.fontRendererObj, s, this.x + 2, this.y + 2, 0xffffff);
-    	}
-    	
-    	public void drawToRightOf(Label label, String s) {
-    		this.draw(label.x + label.w + 5, label.y, s);
-    	}
 
-    	public boolean posWithin(int x, int y) {
-    		return (x >= this.x) && (y >= this.y) && (x <= (this.x + this.w)) && (y <= (this.y + this.h));
-    	}
-    }
-    */
     public MwGui(Mw mw) {
     	this.mw = mw;
     	this.mapMode = new FullScreenMapMode(mw.config);
@@ -130,7 +102,6 @@ public class MwGui extends GuiScreen {
     	Keyboard.enableRepeatEvents(true);
 
     }
-
 
     //Init menu elements
     private void menuInit(){
@@ -169,6 +140,7 @@ public class MwGui extends GuiScreen {
 		markerMenuElement.add(I18n.format("mw.gui.mwguimenumarkersmanage"));
 		markerMenuElement.add(I18n.format("mw.gui.mwguimenumarkersgroup"));
 		markerMenuElement.add(I18n.format("mw.gui.mwguimenumarkersimportJM"));
+		markerMenuElement.add(I18n.format("mw.gui.mwguimenumarkersuserpreset"));
 		mainMenuItems.add(new MwGuiDropDownList(this.mw.mc.fontRenderer, "markers",
 							I18n.format("mw.gui.mwgui.markers"),markerMenuElement,true));
 
@@ -325,7 +297,7 @@ public class MwGui extends GuiScreen {
 		case Keyboard.KEY_N:
         	// select next visible marker
         	this.mw.markerManager.selectNextMarker();
-		   	break;
+			break;
         	
 		case Keyboard.KEY_HOME:
         	// centre map on player
@@ -460,6 +432,7 @@ public class MwGui extends GuiScreen {
 				this.mouseLeftHeld = 1;
 				this.mouseLeftDragStartX = x;
 				this.mouseLeftDragStartY = y;
+
 			}
 
 			if(this.isPosInsideMainMenu(x,y) && this.mainMenuActiveElementIndex==0) {
@@ -578,6 +551,7 @@ public class MwGui extends GuiScreen {
 
     public void dropDownListClicked(int mainMenuActiveElementIndex, int posX, int posY){
 
+
     	MwGuiDropDownList activeDropDownList=this.mainMenuItems.get(mainMenuActiveElementIndex);
     	int activeDropDownListItemIndex=activeDropDownList.getDropDownActiveElementIndex(activeDropDownList, posX, posY);
 
@@ -610,14 +584,14 @@ public class MwGui extends GuiScreen {
 			}else if (activeDropDownListItemIndex==3){
 				//import markers from JM
 				this.mc.displayGuiScreen(new MwGuiImportMarkerFromJM(this,this.mw.markerManager));
+			}else if (activeDropDownListItemIndex==4){
+				//User preset marker GUI
+				this.mc.displayGuiScreen(new MwGuiUserPresets(this.mw,this));
+				this.forbidenMapDragDropCounter=0;
+				this.forbidenMapDragDrop=true;
+
 			}
-
-
 		}
-
-
-
-
 	}
 
 
@@ -666,29 +640,6 @@ public class MwGui extends GuiScreen {
 
 			if (MwAPI.getCurrentDataProvider() != null)
 				MwAPI.getCurrentDataProvider().onOverlayActivated(this.mapView);
-
-		/*
-    	} else if (this.dimensionLabel.posWithin(x, y)) {
-    		int n = (direction > 0) ? 1 : -1;
-	    	this.mapView.nextDimension(this.mw.dimensionList, n);
-	    	
-    	} else if (this.groupLabel.posWithin(x, y)) {
-    		int n = (direction > 0) ? 1 : -1;
-    		this.mw.markerManager.nextGroup(n);
-    		this.mw.markerManager.update();
-    	} else if (this.overlayLabel.posWithin(x, y)) {
-    		int n = (direction > 0) ? 1 : -1;
-			if (MwAPI.getCurrentDataProvider() != null)
-				MwAPI.getCurrentDataProvider().onOverlayDeactivated(this.mapView);    		
-    		
-    		if (n == 1)
-    			MwAPI.setNextProvider();
-    		else
-    			MwAPI.setPrevProvider();
-
-			if (MwAPI.getCurrentDataProvider() != null)
-				MwAPI.getCurrentDataProvider().onOverlayActivated(this.mapView);    		
-    	*/
     	} else {
     		int zF = (direction > 0) ? -1 : 1;
     		this.mapView.zoomToPoint(this.mapView.getZoomLevel() + zF, this.mouseBlockX, this.mouseBlockZ);
@@ -798,14 +749,22 @@ public class MwGui extends GuiScreen {
     
     // also called every frame
     public void drawScreen(int mouseX, int mouseY, float f) {
-    	
+
+    	if(this.forbidenMapDragDropCounter>50 ){
+    		if(this.forbidenMapDragDrop){
+				this.forbidenMapDragDrop=false;
+			}else this.forbidenMapDragDropCounter=0;
+
+		}else this.forbidenMapDragDropCounter++;
+
+
         this.drawDefaultBackground();
         double xOffset = 0.0;
         double yOffset = 0.0;
         //double zoomFactor = 1.0;
 
     	//drag & drop map
-		if (this.mouseLeftHeld > 2) {
+		if (this.mouseLeftHeld > 2 && !this.forbidenMapDragDrop) {
     		xOffset = (this.mouseLeftDragStartX - mouseX) * this.mapView.getWidth() / this.mapMode.w;
     		yOffset = (this.mouseLeftDragStartY - mouseY) * this.mapView.getHeight() / this.mapMode.h;
     		
@@ -817,7 +776,7 @@ public class MwGui extends GuiScreen {
 	    		this.mapView.setViewCentre(this.viewXStart + xOffset, this.viewZStart + yOffset);
     		}
     	}
-    	
+
 
         if (this.mouseLeftHeld > 0  && Mouse.isButtonDown(0)) {
         	this.mouseLeftHeld++;

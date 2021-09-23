@@ -1,7 +1,6 @@
 package mapwriter.map;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import mapwriter.Mw;
 import mapwriter.MwUtil;
@@ -14,6 +13,10 @@ public class MarkerManager {
 
 	public List<Marker> markerList = new ArrayList<Marker>();
 	public List<String> groupList = new ArrayList<String>();
+
+	public HashMap<String, HashMap<Integer,UserPresetMarker> > userPresetMarker=new HashMap<String, HashMap<Integer,UserPresetMarker>>();
+	public HashMap<Integer, String> userPresetGroup=new HashMap<Integer, String>();
+
 	
 	public List<Marker> visibleMarkerList = new ArrayList<Marker>();
 	
@@ -65,6 +68,112 @@ public class MarkerManager {
 		}
 	}
 
+	public void loadPresetGroup(MwConfig config, String category){
+
+		this.userPresetGroup.clear();
+
+		if (config.hasCategory(category)) {
+
+			int presetGroupCount = config.get(category, "presetGroupCount", 0).getInt();
+			if (presetGroupCount > 0) {
+
+			}
+
+			//load preset group from config to HashMap
+			for (int i = 0; i < presetGroupCount; i++) {
+				String key = "presetGroup" + i;
+				if (config.get(category, key, "").getString().length() != 0) {
+					String value = config.get(category, key, "").getString();
+					String[] split = value.split(":");
+					try {
+						this.userPresetGroup.put(Integer.parseInt(split[1]), split[0]);
+					} catch (NumberFormatException e) {
+					}
+				}
+			}
+		}
+
+	}
+
+	public void loadPresetMarkers(MwConfig config, String category){
+
+		this.userPresetMarker.clear();
+		List<UserPresetMarker> presetMarkerList=new ArrayList<UserPresetMarker>();
+		List< List <UserPresetMarker> > tempList= new ArrayList<List<UserPresetMarker>>();
+
+		for(int i=0; i<10; i++){
+			tempList.add(new ArrayList<UserPresetMarker>());
+		}
+
+
+
+		//load preset marker from config to temp ArrayList
+		if (config.hasCategory(category)) {
+
+			int presetMarkerCount = config.get(category, "presetMarkerCount", 0).getInt();
+			if (presetMarkerCount > 0) {
+				for (int i = 0; i < presetMarkerCount; i++) {
+					String key = "presetMarker" + i;
+					String value = config.get(category, key, "").getString();
+					UserPresetMarker presetMarker = this.stringToPresetMarker(value);
+					if (presetMarker != null) {
+						String presetGroupName=presetMarker.getPresetGroup();
+						int groupIndex=presetMarker.getGroupNumber();
+						int markerIndex=presetMarker.getMarkerNumber();
+
+						if(this.userPresetMarker.containsKey(presetGroupName)){
+							this.userPresetMarker.get(presetGroupName).put(markerIndex,presetMarker);
+
+						}else {
+							this.userPresetMarker.put(presetGroupName,new HashMap<Integer, UserPresetMarker>());
+							this.userPresetMarker.get(presetGroupName).put(markerIndex,presetMarker);
+						}
+					} else {
+						MwUtil.log("error: could not load " + key + " from config file");
+					}
+				}
+			}
+
+
+		}
+
+	}
+
+	public void savePresetGroups(MwConfig config, String category){
+
+		config.getCategory(category).clear();
+		config.get(category, "presetGroupCount", 0).set(userPresetGroup.size());
+		int j=0;
+		for(Map.Entry<Integer, String> groupMapEntry : this.userPresetGroup.entrySet()){
+			String key="presetGroup"+j;
+			String value=groupMapEntry.getValue()+":"+String.valueOf(groupMapEntry.getKey());
+			config.get(category, key, "").set(value);
+			j++;
+		}
+
+	}
+
+	public void savePresetMarkers(MwConfig config, String category){
+
+		List<UserPresetMarker> presetMarkerListForSave=new ArrayList<UserPresetMarker>();
+		for(Map.Entry<String, HashMap<Integer,UserPresetMarker> > mapEntry : this.userPresetMarker.entrySet()){
+			for(Map.Entry<Integer, UserPresetMarker>  markersMapEntry : mapEntry.getValue().entrySet()){
+				presetMarkerListForSave.add(markersMapEntry.getValue());
+			}
+		}
+		config.getCategory(category).clear();
+		config.get(category, "presetMarkerCount", 0).set(presetMarkerListForSave.size());
+		int i = 0;
+		for (UserPresetMarker presetMarker : presetMarkerListForSave) {
+			String key = "presetMarker" + i;
+			String value = this.presetMarkerToString(presetMarker);
+			config.get(category, key, "").set(value);
+			i++;
+		}
+
+	}
+
+
 	public void saveMarkersToFile(){
 		this.save(this.mw.worldConfig, this.mw.getCatMarkers());
 		this.mw.saveWorldConfig();
@@ -103,7 +212,38 @@ public class MarkerManager {
 			marker.groupName
 		);
 	}
-	
+
+	public String presetMarkerToString(UserPresetMarker marker) {
+		return String.format("%s:%s:%06x:%d:%d",
+				marker.getPresetGroup(),
+				marker.getPresetMarkerName(),
+				marker.getColor() & 0xffffff,
+				marker.getGroupNumber(),
+				marker.getMarkerNumber()
+
+		);
+	}
+
+	public UserPresetMarker stringToPresetMarker(String s) {
+
+		String[] split = s.split(":");
+
+		UserPresetMarker marker = null;
+		if (split.length == 5) {
+			try {
+				int color = 0xff000000 | Integer.parseInt(split[2], 16);
+
+				marker = new UserPresetMarker(split[0],split[1], color,Integer.parseInt(split[3]),Integer.parseInt(split[4]));
+
+			} catch (NumberFormatException e) {
+				marker = null;
+			}
+		} else {
+			MwUtil.log("Marker.stringToMarker: invalid preset marker '%s'", s);
+		}
+		return marker;
+	}
+
 	public Marker stringToMarker(String s) {
 		// new style delimited with colons
 		String[] split = s.split(":");

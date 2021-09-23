@@ -32,10 +32,6 @@ public class MwGuiMarkerManage  extends GuiScreen {
     private MwColorPallete setSelectedColor=null;
     private MwGuiComboBox currentGroup=null;
 
-//    private GuiButton setSelectionName=null;
-//    private GuiButton setSelectionGroup=null;
-//    private GuiButton setSelectionColor=null;
-
     private GuiCheckBox setSelectionName=null;
     private GuiCheckBox setSelectionGroup=null;
     private GuiCheckBox setSelectionColor=null;

@@ -153,8 +153,24 @@ mw.gui.mwguimanagegroup.errorEmptyName=Новое имя не может быт�
 mw.gui.mwguimanagegroup.errorDuplicateName=Такая группа уже существует
 mw.gui.mwguimanagegroup.errorSystemGroupName=Это имя группы нельзя переименовать
 
+mw.gui.mwguiuserpreset.title=Предустановки "Быстрые маркеры"
+mw.gui.mwguiuserpreset.groupPreset=Предустановки группы
+mw.gui.mwguiuserpreset.notSavedText=Некоторые элементы не были сохранены и при нажатии на эту кнопку будут потеряны
+mw.gui.mwguiuserpreset.buttonSave=Сохранить
+mw.gui.mwguiuserpreset.buttonClose=Закрыть
+mw.gui.mwguiuserpreset.buttonHelp=Помощь
+mw.gui.mwguiuserpreset.buttonClear=Очистить
+
+mwgui.mwguiquickmarker.title=Предустановки
+mwgui.mwguiquickmarker.markertitle=Предустановки маркеров
+mwgui.mwguiquickmarker.grouptitle=Предустановки групп
+mwgui.mwguiquickmarker.ExitLabel=Назад к игре
+mwgui.mwguiquickmarker.prevLevel=На уровень вверх
+mwgui.mwguiquickmarker.markerdialog=Создать маркер через GUI
+
 # Menu
 mw.gui.mwguimenumarkerssearch=Поиск маркеров
 mw.gui.mwguimenumarkersmanage=Управление маркерами
 mw.gui.mwguimenumarkersgroup=Управление группами
 mw.gui.mwguimenumarkersimportJM=Импорт маркеров из JM
+mw.gui.mwguimenumarkersuserpreset=Предустановки "Быстрые маркеры"

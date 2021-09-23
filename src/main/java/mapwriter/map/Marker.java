@@ -22,14 +22,6 @@ public class Marker {
     		0xff0000, 0x00ff00, 0x0000ff, 0xffff00, 0xff00ff, 0x00ffff,
     		0xff8000, 0x8000ff,0x964b00,0x006400};
 
-	/*
-	private static int[] colours = new int[] {
-			0xff0000, 0x00ff00, 0x0000ff, 0xffff00, 0xff00ff, 0x00ffff,
-			0xff8000, 0x8000ff,
-			0xff0000, 0xff0000, 0xff0000,0xff0000, 0xff0000 };
-	*/
-
-
 	// static so that current index is shared between all markers
     private static int colourIndex = 0;
 	

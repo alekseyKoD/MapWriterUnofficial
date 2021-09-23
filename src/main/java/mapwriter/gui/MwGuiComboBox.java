@@ -6,6 +6,7 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.util.ResourceLocation;
+import org.lwjgl.input.Keyboard;
 
 import java.util.List;
 
@@ -26,6 +27,7 @@ public class MwGuiComboBox extends GuiScreen {
     private int textFieldHeight;
     private FontRenderer fontRenderer;
     private List <String> elementList;
+    private int selectionElementIndex;
 
     private int arrowIconX;
     private int arrowIconY;
@@ -57,6 +59,7 @@ public class MwGuiComboBox extends GuiScreen {
         this.width=width;
         this.elementList=elementList;
         this.editableTextField=editableTextField;
+        this.selectionElementIndex=0;
         this.init();
     }
 
@@ -91,50 +94,55 @@ public class MwGuiComboBox extends GuiScreen {
 
     }
 
-    private boolean isArrowClick(int mouseX,int mouseY){
+    public boolean isPosInsideComboBox(int mouseX, int mouseY,String detectionElement){
+        int startXDetect=0;
+        int endXDetect=0;
+        int startYDetect=0;
+        int endYDetect=0;
 
-        int startXDetect;
-        int endXDetect;
-        int startYDetect;
-        int endYDetect;
+        if(detectionElement.equals("arrow")){
+            startXDetect=this.arrowIconX;
+            endXDetect=startXDetect+this.arrowIconWidth;
+            startYDetect = this.arrowIconY;
+            endYDetect = startYDetect + this.arrowIconHeight;
 
+        } else if(detectionElement.equals("dropDownList")){
+            startXDetect= this.dropDownListPosX;
+            endXDetect=startXDetect+this.dropDownListWidth;
+            startYDetect = this.dropDownListPosY;
+            endYDetect = startYDetect +this.dropDownListHeight;
 
+        }else if(detectionElement.equals("textfield")){
 
-        startXDetect=this.arrowIconX;
-        endXDetect=startXDetect+this.arrowIconWidth;
-        startYDetect = this.arrowIconY;
-        endYDetect = startYDetect + this.arrowIconHeight;
+            startXDetect= this.textFieldPosX;
+            endXDetect=startXDetect+this.textFieldWidth;
+            startYDetect = this.textFieldPosY;
+            endYDetect = startYDetect +this.textFieldHeight;
 
-        if (mouseX > startXDetect && mouseX < endXDetect && mouseY > startYDetect && mouseY < endYDetect) {
-            return true;
-        } else return false;
+        }else return false;
 
-
-    }
-
-    public boolean isPosInsideDropdownList(int mouseX, int mouseY) {
-
-        int startXDetect;
-        int endXDetect;
-        int startYDetect;
-        int endYDetect;
-
-        startXDetect= this.dropDownListPosX;
-        endXDetect=startXDetect+this.dropDownListWidth;
-
-        startYDetect = this.dropDownListPosY;
-        endYDetect = startYDetect +this.dropDownListHeight;
-        if (mouseX > startXDetect && mouseX < endXDetect && mouseY > startYDetect && mouseY < endYDetect) {
+         if (mouseX > startXDetect && mouseX < endXDetect && mouseY > startYDetect && mouseY < endYDetect) {
             return true;
         } else return false;
     }
 
     public int getDropDownActiveElementIndex(int mouseX, int mouseY){
 
-        return (mouseY-this.dropDownListPosY)/
-                (this.fontRenderer.FONT_HEIGHT+1);
+            return (mouseY-this.dropDownListPosY)/(this.fontRenderer.FONT_HEIGHT+1);
 
     }
+
+    public boolean validateTextFieldData() {
+        return this.textField.getText().length() > 0;
+    }
+
+    public int getTextfieldPosX(){ return this.textFieldPosX; }
+
+    public int getTextfieldPosY(){ return this.textFieldPosY; }
+
+    public int getTextFieldWidth(){ return this.textFieldWidth; }
+
+    public int getTextFieldHeight(){ return this.textFieldHeight; }
 
     public int getWidth(){ return this.width; }
 
@@ -148,23 +156,49 @@ public class MwGuiComboBox extends GuiScreen {
 
     public String getSelectionElementName(){ return this.textField.getText(); }
 
+    public int getSelectionElementIndex(){ return this.selectionElementIndex; }
+
+    public boolean isDropDownelementListActive(){ return this.dropDownelementList; }
+
+    public void setNewElementName(String name){ this.elementList.set(this.selectionElementIndex, name); }
+
+    public void setLabel(String labelName){ this.label=labelName; }
+
     public void setActiveElementName(String name){ this.textField.setText(name); }
 
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int button) {
 
-        if(this.isArrowClick(mouseX,mouseY)){
+        int index;
+
+        //detect click on arrow to open dropdown list
+        if(this.isPosInsideComboBox(mouseX,mouseY,"arrow")){
 
             this.dropDownelementList=!this.dropDownelementList;
 
-        }else if(this.dropDownelementList && isPosInsideDropdownList(mouseX,mouseY)){
+        //detect click om dropdown list to set selection elemen as active
+        }else if(this.dropDownelementList && isPosInsideComboBox(mouseX,mouseY,"dropDownList")){
 
-            this.textField.setText(this.elementList.get(getDropDownActiveElementIndex(mouseX,mouseY)));
+            index=this.getDropDownActiveElementIndex(mouseX,mouseY);
+            this.textField.setText(this.elementList.get(index));
+            this.selectionElementIndex=index;
             this.dropDownelementList=false;
+            this.textField.setFocused(false);
 
         }else this.dropDownelementList=false;
 
-        this.textField.mouseClicked(mouseX,mouseY,button);
+        //detect click to textfield to focused
+        if(this.isPosInsideComboBox(mouseX, mouseY,"textfield")){
+            this.textField.mouseClicked(mouseX,mouseY,button);
+        }
+
+        if(this.textField.isFocused() && !this.isPosInsideComboBox(mouseX,mouseY,"textfield") &&
+                                                !this.isPosInsideComboBox(mouseX,mouseY,"arrow") ){
+            this.textField.setFocused(false);
+        }
+
+
+
 
     }
 
@@ -172,6 +206,23 @@ public class MwGuiComboBox extends GuiScreen {
     protected void keyTyped(char c, int key) {
         if (this.textField.isFocused())
             this.textField.textboxKeyTyped(c, key);
+
+        if (key==Keyboard.KEY_RETURN) {
+
+            if(this.validateTextFieldData()){
+                this.setNewElementName(this.getSelectionElementName());
+                this.textField.setFocused(false);
+            } else {
+                this.setNewElementName(this.elementList.get(this.selectionElementIndex));
+                this.setActiveElementName(this.elementList.get(this.selectionElementIndex));
+                this.textField.setFocused(false);
+            }
+
+
+
+
+        }
+
     }
 
     public void draw(int mouseX,int mouseY){
@@ -228,7 +279,8 @@ public class MwGuiComboBox extends GuiScreen {
 
         activeElement=this.getDropDownActiveElementIndex( posX, posY);
 
-        if(this.dropDownelementList && isPosInsideDropdownList(posX, posY) && activeElement<(this.elementList.size())) {
+        if(this.dropDownelementList && isPosInsideComboBox(posX,posY,"dropDownList") &&
+                                                                            activeElement<(this.elementList.size())) {
 
             highlightBoxPosY=this.dropDownListPosY+activeElement*(this.fontRenderer.FONT_HEIGHT+this.elementListSpasing);
             highlightBoxposX= this.dropDownListPosX;

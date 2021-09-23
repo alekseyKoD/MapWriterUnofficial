@@ -225,6 +225,7 @@ public class MwGuiMarkerManageSlot extends GuiSlot {
         button.drawString(this.mc.fontRenderer,markerName ,this.getStartPosX()+15,y+textYShift,
                              this.searchMarkerList.get(i).getStringColor());
 
+
         button.drawButton(this.mc, this.mouseX, this.mouseY);
     }
 

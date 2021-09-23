@@ -3,10 +3,7 @@ package mapwriter;
 import mapwriter.forge.MwConfig;
 import mapwriter.forge.MwForge;
 import mapwriter.forge.MwKeyHandler;
-import mapwriter.gui.MwGui;
-import mapwriter.gui.MwGuiMarkerDialog;
-import mapwriter.gui.MwGuiMarkerDialogNew;
-import mapwriter.gui.MwGuiTextDialog;
+import mapwriter.gui.*;
 import mapwriter.map.*;
 import mapwriter.overlay.OverlaySlime;
 import mapwriter.region.BlockColours;
@@ -14,13 +11,12 @@ import mapwriter.region.RegionManager;
 import mapwriter.tasks.CloseRegionManagerTask;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGameOver;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
-import cpw.mods.fml.common.FMLCommonHandler;
+
 
 import java.io.File;
 import java.util.ArrayList;
@@ -132,7 +128,7 @@ public class Mw {
 
 	// list of available dimensions
 	public List<Integer> dimensionList = new ArrayList<Integer>();
-	
+
 	// player position and heading
 	public double playerX = 0.0;
 	public double playerZ = 0.0;
@@ -147,6 +143,8 @@ public class Mw {
 	// constants
 	public final static String catWorld = "world";
 	public final static String catMarkers = "markers";
+	public final static String catUserPresetMarkers = "presetMarkers";
+	public final static String catUserPresetGroups = "presetGroups";
 	public final static String catOptions = "options";
 	public final static String worldDirConfigName = "mapwriter.cfg";
 	public final static String blockColourSaveFileName = "MapWriterBlockColours.txt";
@@ -538,6 +536,9 @@ public class Mw {
 		// marker manager only depends on the config being loaded
 		this.markerManager = new MarkerManager(this);
 		this.markerManager.load(this.worldConfig, catMarkers);
+		this.markerManager.loadPresetGroup(this.worldConfig,catUserPresetGroups);
+		this.markerManager.loadPresetMarkers(this.worldConfig,catUserPresetMarkers);
+
 		
 		this.playerTrail = new Trail(this, "player");
 		
@@ -611,7 +612,6 @@ public void saveCfgAndMarkers() {
 
 		this.markerManager.save(this.worldConfig, catMarkers);
 
-		
 		if(this.miniMap!=null){
 
 			 this.miniMap.save();
@@ -664,11 +664,13 @@ public void saveCfgAndMarkers() {
 					this.onPlayerDeath();
 					this.onPlayerDeathAlreadyFired = true;
 				}
-			 //fixed map blinking when opening marker add/edit menu, dimension menu, group`s name edit menu
+			 //fixed map blinking when opening marker add/edit menu, dimension menu, group`s name edit menu or quick
+			 // marker gui
 			// } else if (!(this.mc.currentScreen instanceof MwGui)){
-			} else if (!(this.mc.currentScreen instanceof MwGui)  &&
-							!(this.mc.currentScreen instanceof MwGuiMarkerDialogNew) &&
-							!(this.mc.currentScreen instanceof MwGuiTextDialog)) {
+			} else if ( !(this.mc.currentScreen instanceof MwGui)  &&
+						!(this.mc.currentScreen instanceof MwGuiMarkerDialogNew) &&
+						!(this.mc.currentScreen instanceof MwGuiTextDialog) &&
+						!(this.mc.currentScreen instanceof MwGuiQuickMarker) ) {
 				// if the player is not dead
 				this.onPlayerDeathAlreadyFired = false;
 				// if in game (no gui screen) center the minimap on the player and render it.
@@ -740,7 +742,7 @@ public void saveCfgAndMarkers() {
 	public void onKeyDown(KeyBinding kb) {
 		// make sure not in GUI element (e.g. chat box)
 		if ((this.mc.currentScreen == null) && (this.ready)) {
-			//Mw.log("client tick: %s key pressed", kb.keyDescription);
+			//MwUtil.log("client tick: %s key pressed", kb.getKeyCategory());
 			
 			if (kb == MwKeyHandler.keyMapMode) {
 				// map mode toggle
@@ -752,42 +754,47 @@ public void saveCfgAndMarkers() {
 				this.mc.displayGuiScreen(this.mwGui);
 			
 			} else if (kb == MwKeyHandler.keyNewMarker) {
+
+				this.mc.displayGuiScreen(new MwGuiQuickMarker(this));
+				/*
 				// open new marker dialog
-				String group = this.markerManager.getVisibleGroupName();
-				if (group.equals("none")) {
-					group = "group";
-				}
-        		if (this.newMarkerDialog)
-        		{				
-        			this.mc.displayGuiScreen(
-    					new MwGuiMarkerDialogNew(
-    							null,
-    							this.markerManager,
-    							"",
-    							group,
-    							this.playerXInt,
-    							this.playerYInt,
-    							this.playerZInt,
-    							this.playerDimension
-    						)
-    					);
-        		}
-        		else
-        		{
-    				this.mc.displayGuiScreen(
-    						new MwGuiMarkerDialog(
-    							null,
-    							this.markerManager,
-    							"",
-    							group,
-    							this.playerXInt,
-    							this.playerYInt,
-    							this.playerZInt,
-    							this.playerDimension
-    						)
-    					);
-        		}
-			} else if (kb == MwKeyHandler.keyNextGroup) {
+					String group = this.markerManager.getVisibleGroupName();
+					if (group.equals("none")) {
+						group = "group";
+					}
+					if (this.newMarkerDialog)
+					{
+						this.mc.displayGuiScreen(
+								new MwGuiMarkerDialogNew(
+										null,
+										this.markerManager,
+										"",
+										group,
+										this.playerXInt,
+										this.playerYInt,
+										this.playerZInt,
+										this.playerDimension
+								)
+						);
+					}
+					else
+					{
+						this.mc.displayGuiScreen(
+								new MwGuiMarkerDialog(
+										null,
+										this.markerManager,
+										"",
+										group,
+										this.playerXInt,
+										this.playerYInt,
+										this.playerZInt,
+										this.playerDimension
+								)
+						);
+					}
+				*/
+
+		} else if (kb == MwKeyHandler.keyNextGroup) {
 				// toggle marker mode
 				this.markerManager.nextGroup();
 				this.markerManager.update();
