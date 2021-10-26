@@ -31,14 +31,14 @@ dependencies {
 }
 
 group = "vectron"
-version = "2.1.20-II-Edition" //mod version
+version = "2.1.21-II-Edition" //mod version
 archivesBaseName = "MapWriter"
 
 
 minecraft {
     version = "1.7.10-10.13.4.1614-1.7.10"
     runDir = "eclipse"
-    replace '@MOD_VERSION@', "2.1.20-IIA-Edition" //mod version
+    replace '@MOD_VERSION@', "2.1.21-IIA-Edition" //mod version
 }
 
 processResources {
