@@ -117,9 +117,6 @@ public class MwGuiQuickMarker extends GuiScreen {
 
         posY+=3;
 
-
-
-
         if(this.userPresetGroup.containsKey(this.pressedKeyIndex)){
             String keyMap=this.userPresetGroup.get(this.pressedKeyIndex);
             if(this.userPresetMarkerInGroup.containsKey(keyMap)){
@@ -129,9 +126,6 @@ public class MwGuiQuickMarker extends GuiScreen {
 
         }
 
-
-
-
         for(int i=0; i<10; i++){
             Render.setColour(0xffffffff);
             Render.drawRectBorder(5,posY+i*(buttonHeight+3),buttonHeight,buttonHeight,1);
@@ -140,13 +134,10 @@ public class MwGuiQuickMarker extends GuiScreen {
             if(!this.drawPresetMarker){
                 if(this.userPresetGroup.containsKey(i)){
                        quickGroupDesc=this.userPresetGroup.get(i);
-                       quickKeyDesc=(i+1)!=10 ? String.valueOf(i+1) : String.valueOf(0);
+                    quickKeyDesc = ((i + 1) != 10) ? String.valueOf(i + 1) : String.valueOf(0);
                        drawString(this.fontRendererObj,quickKeyDesc,8,posY+i*(buttonHeight+3)+3,0xffffff);
 
-                }else {
-                       quickGroupDesc="EmptySlot";
-
-                       }
+                }else quickGroupDesc = "EmptySlot";
 
                 drawString(this.fontRendererObj,quickGroupDesc,buttonHeight+12,
                                                                 posY+i*(buttonHeight+3)+3,0xffffff);
@@ -154,7 +145,7 @@ public class MwGuiQuickMarker extends GuiScreen {
                 //draw quick key marker desc
                 if(this.selectedPresetMarker.containsKey(i) ){
                     quickMarkerDesc=this.selectedPresetMarker.get(i).getPresetMarkerName();
-                    quickKeyDesc=(i+1)!=10 ? String.valueOf(i+1) : String.valueOf(0);
+                    quickKeyDesc = ((i + 1) != 10) ? String.valueOf(i + 1) : String.valueOf(0);
 
                     drawRect(5,
                             posY+i*(buttonHeight+3),
@@ -208,37 +199,16 @@ public class MwGuiQuickMarker extends GuiScreen {
                 if (group.equals("none")) {
                     group = "group";
                 }
-                if (this.mw.newMarkerDialog)
-                {
-                    this.mc.displayGuiScreen(
-                            new MwGuiMarkerDialogNew(
-                                    null,
+                this.mc.displayGuiScreen(
+                    new MwGuiMarkerDialogNew(
+                            null,
                                     this.mw.markerManager,
                                     "",
                                     group,
                                     this.mw.playerXInt,
                                     this.mw.playerYInt,
                                     this.mw.playerZInt,
-                                    this.mw.playerDimension
-                            )
-                    );
-                }
-                else
-                {
-                    this.mc.displayGuiScreen(
-                            new MwGuiMarkerDialog(
-                                    null,
-                                    this.mw.markerManager,
-                                    "",
-                                    group,
-                                    this.mw.playerXInt,
-                                    this.mw.playerYInt,
-                                    this.mw.playerZInt,
-                                    this.mw.playerDimension
-                            )
-                    );
-                }
-
+                                    this.mw.playerDimension) );
 
             default:
 
@@ -293,7 +263,7 @@ public class MwGuiQuickMarker extends GuiScreen {
             this.createMarker=false;
 
             this.mw.markerManager.addMarker(markerName,
-                                            activePresetGroupName,
+                                            this.mw.markerManager.getGroupIndex(activePresetGroupName),
                                             this.mw.playerXInt,
                                             this.mw.playerYInt,
                                             this.mw.playerZInt,
@@ -301,14 +271,8 @@ public class MwGuiQuickMarker extends GuiScreen {
                                             markerColor);
             this.mw.markerManager.update();
             //save markers to file
-            this.mw.markerManager.saveMarkersToFile();
-
-
-
+            //this.mw.markerManager.saveMarkersToFile();
         }
-
-
-
         super.keyTyped(c, key);
     }
 
@@ -319,7 +283,7 @@ public class MwGuiQuickMarker extends GuiScreen {
         this.userPresetMarkerInGroup=this.mw.markerManager.userPresetMarker;
 
         this.maxNameWidthInPix=this.fontRendererObj.getStringWidth("EmptySlot");
-        String[] dialogText={
+        String[] dialogText = new String[]{
                 I18n.format("mwgui.mwguiquickmarker.title"),
                 I18n.format("mwgui.mwguiquickmarker.markertitle"),
                 I18n.format("mwgui.mwguiquickmarker.grouptitle"),

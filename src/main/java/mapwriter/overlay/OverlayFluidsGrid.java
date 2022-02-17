@@ -39,13 +39,13 @@ public  class OverlayFluidsGrid implements IMwDataProvider {
         public int getColorFromXY(int x, int z) {
             String currentGroup = this.mw.markerManager.getVisibleGroupName();
 
-            for (Marker marker : this.mw.markerManager.markerList) {
-                if(marker.groupName.equals(currentGroup) &&
-                            marker.x>x && marker.x<x+ overlayGridSize &&
-                            marker.z>z && marker.z<z+ overlayGridSize) {
-                    String color = String.format("%1$02X", marker.colour >> 16 & 255) +
-                                    String.format("%1$02X", marker.colour >> 8 & 255) +
-                                    String.format("%1$02X", marker.colour & 255);
+            for (Marker marker : this.mw.markerManager.getMarkerList()) {
+                if(marker.getGroupIndex()==this.mw.markerManager.getGroupIndex(currentGroup) &&
+                            marker.getPosX()>x && marker.getPosX()<x+ overlayGridSize &&
+                            marker.getPosZ()>z && marker.getPosZ()<z+ overlayGridSize) {
+                    String color = String.format("%1$02X", marker.getColour() >> 16 & 255) +
+                                    String.format("%1$02X", marker.getColour() >> 8 & 255) +
+                                    String.format("%1$02X", marker.getColour() & 255);
                     return 0x80000000 | Integer.parseInt(color, 16);
                 }
             }
@@ -92,7 +92,7 @@ public  class OverlayFluidsGrid implements IMwDataProvider {
         int limitMaxX = Math.min(maxChunkX, cX + gridSize);
         int limitMinZ = Math.max(minChunkZ, cZ - gridSize);
         int limitMaxZ = Math.min(maxChunkZ, cZ + gridSize);
-        ArrayList<IMwChunkOverlay> chunks = new ArrayList();
+        ArrayList<IMwChunkOverlay> chunks = new ArrayList<IMwChunkOverlay>();
 
         for(int x = limitMinX; x <= limitMaxX; ++x) {
             for(int z = limitMinZ; z <= limitMaxZ; ++z) {

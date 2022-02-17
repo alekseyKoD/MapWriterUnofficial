@@ -7,68 +7,81 @@ import mapwriter.map.MarkerManager;
 
 
 public class Marker {
-	public String name;
-	public String groupName;
-	public int x;
-	public int y;
-	public int z;
-	public int dimension;
-	public int colour;
+
+	private String name;
+	private int groupIndex;
+	private int posX;
+	private int posY;
+	private int posZ;
+	private int dimension;
+	private int colour;
 	
 	public Point.Double screenPos = new Point.Double(0, 0);
 
 
-	private static int[] colours = new int[] {
-    		0xff0000, 0x00ff00, 0x0000ff, 0xffff00, 0xff00ff, 0x00ffff,
-    		0xff8000, 0x8000ff,0x964b00,0x006400};
+	private static final int[] colours;
+
+	static{
+		colours = new int[]{
+				0xff0000, 0x00ff00, 0x0000ff, 0xffff00, 0xff00ff, 0x00ffff,
+				0xff8000, 0x8000ff, 0x964b00, 0x006400};
+	}
 
 	// static so that current index is shared between all markers
     private static int colourIndex = 0;
 	
-	public Marker(String name, String groupName, int x, int y, int z, int dimension, int colour) {
+	public Marker(String name, int groupIndex, int posX, int posY, int posZ, int dimension, int colour) {
 		this.name = name;
-		this.x = x;
-		this.y = y;
-		this.z = z;
+		this.posX = posX;
+		this.posY = posY;
+		this.posZ = posZ;
 		this.dimension = dimension;
 		this.colour = colour;
-		this.groupName = groupName;
+		this.groupIndex = groupIndex;
 	}
 
+	public String getMarkerName(){ return this.name ;}
 	public void setMarkerName(String name) { this.name = name; }
 
-	public void setGroupName(String newGroupName){ this.groupName=newGroupName; }
+	public int getGroupIndex(){return this.groupIndex; }
+	public void setGroupIndex(Integer newGroupIndex){ this.groupIndex=newGroupIndex; }
 
-	public void setCoordX(int x) { this.x = x; }
+	public int getPosX() { return posX; }
+	public void setPosX(int posX) { this.posX = posX; }
 
-	public void setCoordY(int y) { this.y = y; }
+	public int getPosY() { return posY;	}
+	public void setPosY(int posY) { this.posY = posY; }
 
-	public void setCoordZ(int z) { this.z = z; }
+	public int getPosZ() { return posZ;	}
+	public void setPosZ(int posZ) { this.posZ = posZ; }
 
+	public int getDimension() {	return dimension; }
 	public void setDimension(int dimension) { this.dimension = dimension; }
 
+	public int getColour() { return colour;	}
 	public void setColour(int colour) { this.colour = colour; }
 
+	public int getColourIndex() { return colourIndex; }
+
+	/*
 	public String getString() {
 		return String.format("%s %s (%d, %d, %d) %d %06x",
-				this.name, this.groupName, this.x, this.y, this.z, this.dimension, this.colour & 0xffffff);
+				this.name, this.groupName, this.posX, this.posY, this.posZ, this.dimension, this.colour & 0xffffff);
 	}
-	
+	*/
 	public static int getCurrentColour() {
     	return 0xff000000 | colours[colourIndex];
     }
 
 	public static int[] getColours(){return colours; }
 	
-    public void colourNext(MarkerManager markerManager, Marker marker) {
+    public void getNextcolour(MarkerManager markerManager, Marker marker) {
     	colourIndex = (getIndexFromColor(marker.colour)+ 1) % colours.length;
 		this.colour = getCurrentColour();
 		markerManager.selectedColor=this.colour;
-
-
-    }
+	}
     
-    public void colourPrev(MarkerManager markerManager, Marker marker) {
+    public void getPrevColour(MarkerManager markerManager, Marker marker) {
 
     	colourIndex = (getIndexFromColor(marker.colour) + colours.length - 1) % colours.length;
 		this.colour = getCurrentColour();
@@ -86,12 +99,9 @@ public class Marker {
 		return 0;
 	}
 
-
-
-
     public void draw(MapMode mapMode, MapView mapView, int borderColour) {
 		double scale = mapView.getDimensionScaling(this.dimension);
-		Point.Double p = mapMode.getClampedScreenXY(mapView, this.x * scale, this.z * scale);
+		Point.Double p = mapMode.getClampedScreenXY(mapView, this.posX * scale, this.posZ * scale);
 		this.screenPos.setLocation(p.x + mapMode.xTranslation, p.y + mapMode.yTranslation);
 		
 		// draw a coloured rectangle centered on the calculated (x, y)
@@ -110,7 +120,9 @@ public class Marker {
 		if (this == o) { return true; }
 		if (o instanceof Marker) {
 			Marker m = (Marker) o;
-			return (name == m.name) && (groupName == m.groupName) && (x == m.x) && (y == m.y) && (z == m.z) && (dimension == m.dimension);
+			return (name.equals(m.name) ) && (groupIndex == m.groupIndex)
+					&& (posX == m.posX) && (posY == m.posY)
+					&& (posZ == m.posZ) && (dimension == m.dimension);
 		}
 		return false;
 	}

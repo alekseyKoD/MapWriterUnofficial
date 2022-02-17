@@ -196,12 +196,14 @@ public class MwGuiImportMarkerFromJM extends GuiScreen {
                    //clear all markers from import jM
                 List<Marker> markedDeletedList = new ArrayList<Marker>();
 
-                for( int i=0;i<this.markerManager.markerList.size();i++){
-                  if (this.markerManager.markerList.get(i).groupName.equals("importJM")){
-                    markedDeletedList.add(this.markerManager.markerList.get(i));
+                for( int i=0;i<this.markerManager.getMarkerList().size();i++){
+                  if (this.markerManager.getMarkerList().get(i).getGroupIndex()==
+                                         this.markerManager.getGroupIndex("importJM")){
+
+                      markedDeletedList.add(this.markerManager.getMarkerList().get(i));
                   }
                 }
-                this.markerManager.markerList.removeAll(markedDeletedList);
+                this.markerManager.getMarkerList().removeAll(markedDeletedList);
                 this.markerManager.update();
 
                 MwUtil.importMarkersFromJourneymap(this.markerManager,jmWaypointsCurrentFolder);

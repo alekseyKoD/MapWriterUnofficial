@@ -1,5 +1,7 @@
 package mapwriter;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import mapwriter.forge.MwConfig;
 import mapwriter.forge.MwForge;
 import mapwriter.forge.MwKeyHandler;
@@ -160,7 +162,7 @@ public class Mw {
 	public RegionManager regionManager = null;
 	public ChunkManager chunkManager = null;
 	public Trail playerTrail = null;
-	
+
 	public static Mw instance;
 
 	public MwGui mwGui;
@@ -384,9 +386,9 @@ public class Mw {
 	
 	public void teleportToMarker(Marker marker) {
 		if (this.teleportCommand.equals("warp")) {
-			this.warpTo(marker.name);
-		} else if (marker.dimension == this.playerDimension) {
-			this.teleportTo(marker.x, marker.y, marker.z);
+			this.warpTo(marker.getMarkerName());
+		} else if (marker.getDimension() == this.playerDimension) {
+			this.teleportTo(marker.getPosX(), marker.getPosY(), marker.getPosZ());
 		} else {
 			MwUtil.printBoth("cannot teleport to marker in different dimension");
 		}
@@ -535,9 +537,9 @@ public class Mw {
 		
 		// marker manager only depends on the config being loaded
 		this.markerManager = new MarkerManager(this);
-		this.markerManager.load(this.worldConfig, catMarkers);
-		this.markerManager.loadPresetGroup(this.worldConfig,catUserPresetGroups);
-		this.markerManager.loadPresetMarkers(this.worldConfig,catUserPresetMarkers);
+		//this.markerManager.load(this.worldConfig, catMarkers);
+		//this.markerManager.loadPresetGroup(this.worldConfig,catUserPresetGroups);
+		//this.markerManager.loadPresetMarkers(this.worldConfig,catUserPresetMarkers);
 
 		
 		this.playerTrail = new Trail(this, "player");
@@ -556,7 +558,10 @@ public class Mw {
 		this.miniMap.view.setDimension(this.mc.thePlayer.dimension);
 		
 		this.chunkManager = new ChunkManager(this);
-		
+
+
+
+
 		this.ready = true;
 		//if (!zoomLevelsExist) {
 			//printBoth("recreating zoom levels");
@@ -608,9 +613,10 @@ public class Mw {
 	}
 
 public void saveCfgAndMarkers() {
+		/*
 		MwUtil.log("Saving markers and cfg...");
 
-		this.markerManager.save(this.worldConfig, catMarkers);
+		//this.markerManager.save(this.worldConfig, catMarkers);
 
 		if(this.miniMap!=null){
 
@@ -621,6 +627,8 @@ public void saveCfgAndMarkers() {
 		this.saveConfig();
 
 		MwUtil.log("done");
+
+		 */
 	}
 
 	////////////////////////////////
@@ -733,8 +741,16 @@ public void saveCfgAndMarkers() {
 				// earliest death marker added.
 				this.markerManager.delMarker(null, "playerDeaths");
 			}
-			this.markerManager.addMarker(MwUtil.getCurrentDateString(), "playerDeaths", this.playerXInt, this.playerYInt, this.playerZInt, this.playerDimension, 0xffff0000);
-			this.markerManager.setVisibleGroupName("playerDeaths");
+			this.markerManager.addMarker(MwUtil.getCurrentDateString(),
+					this.markerManager.groupNameExists("playerDeaths") ?
+							this.markerManager.getGroupIndex("playerDeaths") :
+							this.markerManager.addGroupToList("playerDeaths"),
+					this.playerXInt,
+					this.playerYInt,
+					this.playerZInt,
+					this.playerDimension,
+					0xffff0000);
+			this.markerManager.setVisibleGroupIndex(this.markerManager.getGroupIndex("playerDeaths"));
 			this.markerManager.update();
 		}
 	}

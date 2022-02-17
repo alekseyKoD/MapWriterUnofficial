@@ -39,7 +39,7 @@ public class MwGuiMarkerSlot extends GuiSlot {
         this.parentScreen = parentScreen;
         this.mw = mw;
         this.mc = mc;
-        this.markerList = mw.markerManager.visibleMarkerList;
+        this.markerList = mw.markerManager.getVisibleMarkerList();
         updateMarkerList("");
     }
 
@@ -57,12 +57,12 @@ public class MwGuiMarkerSlot extends GuiSlot {
             List targetInfo=MwUtil.getTargetInfo(
                     this.mw.playerXInt,
                     this.mw.playerZInt,
-                    this.markerList.get(i).x,
-                    this.markerList.get(i).z);
+                    this.markerList.get(i).getPosX(),
+                    this.markerList.get(i).getPosZ());
 
-            String markerName=this.markerList.get(i).name;
-            int markerColor=this.markerList.get(i).colour;
-            String coordinates=this.markerList.get(i).x+": "+this.markerList.get(i).z;
+            String markerName=this.markerList.get(i).getMarkerName();
+            int markerColor=this.markerList.get(i).getColour();
+            String coordinates=this.markerList.get(i).getPosX()+": "+this.markerList.get(i).getPosZ();
             String compassPoint=targetInfo.get(0).toString();
             int distance2Target= Integer.parseInt(targetInfo.get(1).toString());
 
@@ -74,8 +74,8 @@ public class MwGuiMarkerSlot extends GuiSlot {
             }else color=0xffff0000;
 
             Marker marker = this.markerList.get(i);
-            if ((text.equals("") || marker.name.toLowerCase().contains(text.toLowerCase())) &&
-                    marker.dimension == this.mw.playerDimension) {
+            if ((text.equals("") || marker.getMarkerName().toLowerCase().contains(text.toLowerCase())) &&
+                    marker.getDimension() == this.mw.playerDimension) {
 
                 this.searchMarkerList.add(new SearchMarker(markerName,
                                                             coordinates,
@@ -104,8 +104,8 @@ public class MwGuiMarkerSlot extends GuiSlot {
 
         this.mw.markerManager.selectedMarker = this.markerList.get(this.buttonId.get(i));
         this.mw.mwGui.mapView.setViewCentreScaled(
-                this.mw.markerManager.selectedMarker.x,
-                this.mw.markerManager.selectedMarker.z,
+                this.mw.markerManager.selectedMarker.getPosX(),
+                this.mw.markerManager.selectedMarker.getPosZ(),
                 0
         );
 
@@ -239,7 +239,7 @@ public class MwGuiMarkerSlot extends GuiSlot {
         // marker coordinate`s string, trim the marker`s name string
 
         int overlaps=this.getStartPosX()+markerNamePixelSize-startPosX-textShift;
-        overlaps=overlaps>0 ? overlaps:0;
+        overlaps= Math.max(overlaps, 0);
 
         markerName= overlaps<=0? markerName : this.getTrimRightString(markerName,overlaps);
 

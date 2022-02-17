@@ -50,30 +50,27 @@ public class MwGuiMarkerManageSlot extends GuiSlot {
         this.parentScreen = parentScreen;
         this.mw = mw;
         this.mc = mc;
-        this.markerList = mw.markerManager.visibleMarkerList;
+        this.markerList = mw.markerManager.getVisibleMarkerList();
         updateMarkerList("");
     }
 
     public void updateMarkerList(String text) {
-        int color;
+
         int slotIndex=0;
         this.checkBoxes.clear();
         this.checkboxesId.clear();
         this.searchMarkerList.clear();
         this.checkboxesEnabled.clear();
 
-
-        int buttonSizeX=15;
-
         for (int i = 0; i < this.markerList.size(); i++) {
 
-            String markerName=this.markerList.get(i).name;
-            int markerColor=this.markerList.get(i).colour;
-            String coordinates=this.markerList.get(i).x+": "+this.markerList.get(i).z;
+            String markerName=this.markerList.get(i).getMarkerName();
+            int markerColor=this.markerList.get(i).getColour();
+            String coordinates=this.markerList.get(i).getPosX()+": "+this.markerList.get(i).getPosZ();
 
             Marker marker = this.markerList.get(i);
-            if ((text.equals("") || marker.name.toLowerCase().contains(text.toLowerCase())) &&
-                    marker.dimension == this.mw.playerDimension) {
+            if ((text.equals("") || marker.getMarkerName().toLowerCase().contains(text.toLowerCase())) &&
+                    marker.getDimension()== this.mw.playerDimension) {
 
                 this.searchMarkerList.add(new SearchMarker(markerName, coordinates, markerColor));
 
@@ -218,7 +215,7 @@ public class MwGuiMarkerManageSlot extends GuiSlot {
         // marker coordinate`s string, trim the marker`s name string
 
         int overlaps=this.getStartPosX()+markerNamePixelSize-startPosX-textShift;
-        overlaps=overlaps>0 ? overlaps:0;
+        overlaps= Math.max(overlaps, 0);
 
         markerName= overlaps<=0? markerName : this.getTrimRightString(markerName,overlaps);
 

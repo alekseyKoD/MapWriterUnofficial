@@ -294,8 +294,8 @@ public class MwGuiUserPresets extends GuiScreen {
             }else this.inCorrectPresetGroupName =true;
 
         }else if(p_146284_1_.id == 201){
-            this.mw.markerManager.savePresetGroups(this.mw.worldConfig,this.mw.catUserPresetGroups);
-            this.mw.markerManager.savePresetMarkers(this.mw.worldConfig,this.mw.catUserPresetMarkers);
+           // this.mw.markerManager.savePresetGroups(this.mw.worldConfig,this.mw.catUserPresetGroups);
+           // this.mw.markerManager.savePresetMarkers(this.mw.worldConfig,this.mw.catUserPresetMarkers);
             this.mc.displayGuiScreen(this.parentScreen);
 
         }

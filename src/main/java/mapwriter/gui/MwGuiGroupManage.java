@@ -54,7 +54,7 @@ public class MwGuiGroupManage extends GuiScreen {
 
         this.groupComboBox=new MwGuiComboBox(this.mw.mc.fontRenderer,this.posX+5,this.posY+30,
                                               I18n.format("mw.gui.mwguimanagegroup.group"),
-                                        this.windowWidth/2, this.mw.markerManager.groupList,false);
+                                        this.windowWidth/2, this.mw.markerManager.getOrderedGroupList(),false);
 
         int labelWigth=this.mw.mc.fontRenderer.getStringWidth(newGroupNameLabel);
         int newGroupNameWidth=this.windowWidth/2-labelWigth-7;
@@ -113,11 +113,11 @@ public class MwGuiGroupManage extends GuiScreen {
                 this.errorMessage=I18n.format("mw.gui.mwguimanagegroup.errorSystemGroupName");
             } else {
                 //rename group`s name
-                for (Marker marker : mw.markerManager.markerList) {
-                    if(marker.groupName.equals(this.groupComboBox.getSelectionElementName())){
-                        marker.setGroupName(this.newGroupName.getText());
+                for (Marker marker : mw.markerManager.getMarkerList()) {
+                    if(marker.getGroupIndex() == this.mw.markerManager.getGroupIndex(this.groupComboBox.getSelectionElementName())){
+                        marker.setGroupIndex(this.mw.markerManager.getGroupIndex(this.newGroupName.getText()) );
                         this.mw.markerManager.update();
-                        this.mw.markerManager.saveMarkersToFile();
+                        //this.mw.markerManager.saveMarkersToFile();
                     }
                 }
             }

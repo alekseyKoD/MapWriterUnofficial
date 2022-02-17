@@ -96,7 +96,7 @@ public class MwGuiMarkerManage  extends GuiScreen {
         this.currentGroup=new MwGuiComboBox(this.fontRendererObj,20,
                                this.markerManageSlot.top-this.fontRendererObj.FONT_HEIGHT-elementVSpacing,
                                 currentGroupLabel,this.fontRendererObj.getStringWidth(this.currentGroupLabel)+120,
-                                this.mw.markerManager.groupList,false);
+                                this.mw.markerManager.getOrderedGroupList(),false);
         this.currentGroup.setActiveElementName(this.mw.markerManager.getVisibleGroupName());
 
         this.textField = new MwGuiTextField(this.fontRendererObj,
@@ -114,7 +114,7 @@ public class MwGuiMarkerManage  extends GuiScreen {
 
         this.setSelectedGroup=new ScrollableTextBox(20+this.LeftScreenBorderShift, setSelectedGroupStartPosY,
                 5*(this.colours.length-1)+this.currentGroup.getHeight()*this.colours.length+14, //14 is 2*arrowsWidth
-                      setSelectedGroupLabel,this.mw.markerManager.groupList);
+                      setSelectedGroupLabel,this.mw.markerManager.getOrderedGroupList());
         this.setSelectedGroup.init();
         this.setSelectedGroup.textField.setText(this.mw.markerManager.getVisibleGroupName());
         this.setSelectedGroup.setDrawArrows(true);
@@ -226,10 +226,11 @@ public class MwGuiMarkerManage  extends GuiScreen {
 
 
     private void setCurrentGroup(){
-        MwGuiMarkerManage.this.mw.markerManager.setVisibleGroupName(this.currentGroup.getSelectionElementName());
+        this.mw.markerManager.setVisibleGroupIndex(this.mw.markerManager.getGroupIndex(
+                                    this.currentGroup.getSelectionElementName()));
         MwGuiMarkerManage.this.mw.markerManager.update();
-        MwGuiMarkerManage.this.markerManageSlot.markerList=MwGuiMarkerManage.this.mw.markerManager.visibleMarkerList;
-        MwGuiMarkerManage.this.markerManageSlot.updateMarkerList(this.textField.getText());
+        this.markerManageSlot.markerList=this.mw.markerManager.getVisibleMarkerList();
+        this.markerManageSlot.updateMarkerList(this.textField.getText());
     }
 
     protected void mouseClicked(int x, int y, int button) {
@@ -381,12 +382,13 @@ public class MwGuiMarkerManage  extends GuiScreen {
                     int Index=this.markerManageSlot.checkboxesId.get(mapPair.getKey());
 
                     if(flagSetSelectionName && this.setSelectedName.validateTextFieldData()){
-                        oldMarkerName=this.markerManageSlot.markerList.get(Index).name;
+                        oldMarkerName=this.markerManageSlot.markerList.get(Index).getMarkerName();
                         this.markerManageSlot.markerList.get(Index).setMarkerName(this.setSelectedName.textField.getText());
                         counterName++;
                     }
                     if (flagSetSelectionGroup && this.setSelectedGroup.validateTextFieldData()) {
-                        this.markerManageSlot.markerList.get(Index).setGroupName(this.setSelectedGroup.textField.getText());
+                        this.markerManageSlot.markerList.get(Index).setGroupIndex(
+                                    this.mw.markerManager.addGroupToList(this.setSelectedGroup.textField.getText()));
                         counterGroup++;
                     }
                     if(flagSetSelectionColor){
@@ -415,7 +417,7 @@ public class MwGuiMarkerManage  extends GuiScreen {
                 this.setSelectionColor.setIsChecked(false);
             }
             this.mw.markerManager.update();
-            this.mw.markerManager.saveMarkersToFile();
+            //this.mw.markerManager.saveMarkersToFile();
             this.markerManageSlot.updateMarkerList(this.textField.getText());
         }
 

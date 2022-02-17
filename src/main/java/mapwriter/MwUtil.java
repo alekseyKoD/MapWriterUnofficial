@@ -210,15 +210,10 @@ public class MwUtil {
 		} else { //mp
 
 			jmDataFolder+="mp\\"+ Minecraft.getMinecraft().func_147104_D().serverName +"\\waypoints";
-
-
 		}
-		File jmWaypointsFolder=new File(jmDataFolder);
 
 
-
-
-		return jmWaypointsFolder;
+		return new File(jmDataFolder);
 
 	}
 
@@ -244,8 +239,12 @@ public class MwUtil {
 		//create HashMap to avoid duplication markers from import process
 		//	HashMap`s key is a string from Name+coordX+coordY+coordZ+dimension
 
-		for (Marker marker: markerManager.markerList){
-			String hashString=marker.name+String.valueOf(marker.x)+String.valueOf(marker.y)+String.valueOf(marker.z)+String.valueOf(marker.dimension);
+		for (Marker marker: markerManager.getMarkerList()){
+			String hashString=marker.getMarkerName()+
+					String.valueOf(marker.getPosX())+
+					String.valueOf(marker.getPosY())+
+					String.valueOf(marker.getPosZ())+
+					String.valueOf(marker.getDimension());
 			if(!uniqueMarker.containsKey(hashString)){
 				uniqueMarker.put(hashString,"");
 			}
@@ -311,7 +310,7 @@ public class MwUtil {
 										String.valueOf(markerZ)+String.valueOf(dimension);
 
 								if(!uniqueMarker.containsKey(hashString)){
-									markerManager.addMarker(markerName, markerGroup,
+									markerManager.addMarker(markerName, markerManager.getGroupIndex(markerGroup),
 																	markerX,markerY, markerZ, dimension, markerColour);
 									counter++;
 								}
@@ -324,8 +323,8 @@ public class MwUtil {
 			}
 		}
 
-		markerManager.update();
-		markerManager.saveMarkersToFile();
+		//markerManager.update();
+		//markerManager.saveMarkersToFile();
 	}
 
 

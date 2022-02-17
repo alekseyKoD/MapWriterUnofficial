@@ -38,13 +38,13 @@ public class OverlayVeinsGrid implements IMwDataProvider {
         public int getColorFromXY(int x, int z) {
             String currentGroup = this.mw.markerManager.getVisibleGroupName();
 
-            for (Marker marker : this.mw.markerManager.markerList) {
-                if(marker.groupName.equals(currentGroup) &&
-                        marker.x>x && marker.x<x+ overlayGridSize &&
-                        marker.z>z && marker.z<z+ overlayGridSize) {
-                    String color = String.format("%1$02X", marker.colour >> 16 & 255) +
-                            String.format("%1$02X", marker.colour >> 8 & 255) +
-                            String.format("%1$02X", marker.colour & 255);
+            for (Marker marker : this.mw.markerManager.getMarkerList()) {
+                if(marker.getGroupIndex()==this.mw.markerManager.getGroupIndex(currentGroup) &&
+                        marker.getPosX()>x && marker.getPosX()<x+ overlayGridSize &&
+                        marker.getPosZ()>z && marker.getPosZ()<z+ overlayGridSize) {
+                    String color = String.format("%1$02X", marker.getColour() >> 16 & 255) +
+                            String.format("%1$02X", marker.getColour() >> 8 & 255) +
+                            String.format("%1$02X", marker.getColour() & 255);
                     return 0x80000000 | Integer.parseInt(color, 16);
                 }
             }

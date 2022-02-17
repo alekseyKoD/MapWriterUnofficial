@@ -22,21 +22,14 @@ public class MwGuiGroupDialog extends MwGuiTextDialog {
     @Override
     public boolean submit() {
         boolean done = false;
-        String oldGroupName=mw.markerManager.getVisibleGroupName();
-        String newGroupName=this.getInputAsString();
+
+        //rename group
 
         if (this.inputValid) {
-            for (Marker marker : mw.markerManager.markerList) {
-               if(marker.groupName.equals(oldGroupName)){
-                    marker.setGroupName(newGroupName);
-                    mw.markerManager.setVisibleGroupName(newGroupName);
-               }
-            }
-
+            mw.markerManager.renameGroup(mw.markerManager.getVisibleGroupName(),this.getInputAsString());
             mw.markerManager.update();
-
             //save markers to file
-            mw.markerManager.saveMarkersToFile();
+            //mw.markerManager.saveMarkersToFile();
             done = true;
         }
         return done;

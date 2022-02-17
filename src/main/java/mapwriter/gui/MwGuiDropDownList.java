@@ -85,7 +85,12 @@ public class MwGuiDropDownList extends GuiScreen {
 
     }
 
-    public String getDropDownActiveElement(int index){ return this.elementList.get(index); }
+    public String getDropDownActiveElement(int index){
+        if(index>this.elementList.size()-1){
+            return this.elementList.get(this.elementList.size()-1);
+        }
+        return this.elementList.get(index);
+    }
 
     public boolean isPosInsideDropdownList(MwGuiDropDownList parentElement,int mouseX, int mouseY) {
 
@@ -124,15 +129,7 @@ public class MwGuiDropDownList extends GuiScreen {
         this.menuItemElementHeight=this.fontRenderer.FONT_HEIGHT;
         this.height=this.fontRenderer.FONT_HEIGHT+4;
 
-        if(isDropDownElements()){
-            int maxWidthInPixel=this.fontRenderer.getStringWidth(this.elementList.get(0));
-            for(int i=0;i<this.elementList.size(); i++) {
-                maxWidthInPixel = Math.max( maxWidthInPixel,
-                                            this.fontRenderer.getStringWidth(this.elementList.get(i)));
-            }
-            this.dropDownListWidth=maxWidthInPixel+this.menuItemElementTextShift+4;
-        }
-
+        this.dropDownListWidth=getDropDownListWidth();
         this.dropDownListHeight=this.elementList.size()*(this.fontRenderer.FONT_HEIGHT+this.menuItemElementVspacing);
 
 
@@ -140,8 +137,20 @@ public class MwGuiDropDownList extends GuiScreen {
 
     public String getMenuItemName() { return displayedMenuItemName; }
 
-    public void setDropDownListPosY(int dropDownListPosY) { this.dropDownListPosY = dropDownListPosY; }
+    private int getDropDownListWidth(){
+        if(!isDropDownElements()){
+            return 0;
+        }
+        int maxWidthInPixel=this.fontRenderer.getStringWidth(this.elementList.get(0));
+        for (String s : this.elementList) {
+            maxWidthInPixel = Math.max(maxWidthInPixel,
+                    this.fontRenderer.getStringWidth(s));
+        }
+        return maxWidthInPixel+this.menuItemElementTextShift+4;
 
+    }
+
+    public void setDropDownListPosY(int dropDownListPosY) { this.dropDownListPosY = dropDownListPosY; }
 
     public void setCurrentMenuItemName(String itemName) {
         if(this.isShowLabel()){
@@ -174,6 +183,7 @@ public class MwGuiDropDownList extends GuiScreen {
            int listPosY;
            int listWidth;
            this.dropDownListHeight=this.elementList.size()*(this.fontRenderer.FONT_HEIGHT+this.menuItemElementVspacing);
+        this.dropDownListWidth=getDropDownListWidth();
 
         if(parentElement.elementList.size()>0){
 
@@ -185,7 +195,7 @@ public class MwGuiDropDownList extends GuiScreen {
 
             }else {
                 listPosX=parentElement.posX;
-                listWidth=this.dropDownListWidth>this.width ? this.dropDownListWidth : this.width;
+                listWidth= Math.max(this.dropDownListWidth, this.width);
             }
             listPosY=parentElement.posY+parentElement.height;
             this.dropDownListPosY=listPosY;

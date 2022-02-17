@@ -9,18 +9,26 @@ import mapwriter.map.mapmode.MapMode;
 
 public class MarkerManager {
 
+	private static int NONE_INDEX=0;
+	private static int ALL_INDEX=1;
+
 	Mw mw;
 
-	public List<Marker> markerList = new ArrayList<Marker>();
-	public List<String> groupList = new ArrayList<String>();
+	private List<Marker> markerList = new ArrayList<Marker>();
+	private List<String> orderedGroupList = new ArrayList<String>();
+	private List<Integer> groupOrder =new ArrayList<Integer>();
+
+	// groupName as Key, groupIndex as Value
+	private HashMap<String,Integer> groupList = new HashMap<String,Integer>();
+
+
 
 	public HashMap<String, HashMap<Integer,UserPresetMarker> > userPresetMarker=new HashMap<String, HashMap<Integer,UserPresetMarker>>();
 	public HashMap<Integer, String> userPresetGroup=new HashMap<Integer, String>();
 
+	private List<Marker> visibleMarkerList = new ArrayList<Marker>();
 	
-	public List<Marker> visibleMarkerList = new ArrayList<Marker>();
-	
-	private String visibleGroupName = "none";
+	private int  visibleGroupIndex =0;
 	
 	public Marker selectedMarker = null;
 
@@ -28,8 +36,17 @@ public class MarkerManager {
 	
 	public MarkerManager(Mw mw) {
 		this.mw=mw;
+		//add system group "all" & "none" to group list
+		this.groupList.put("none",NONE_INDEX);
+		this.groupList.put("all",ALL_INDEX);
+
+		//add system group "all" & "none" to group order list
+		this.groupOrder.add(NONE_INDEX);
+		this.groupOrder.add(ALL_INDEX);
+
+		this.updateOrderedGroupList();
 	}
-	
+	/*
 	public void load(MwConfig config, String category) {
 		this.markerList.clear();
 		
@@ -53,7 +70,8 @@ public class MarkerManager {
 		
 		this.update();
 	}
-	
+	*/
+	/*
 	public void save(MwConfig config, String category) {
 		config.get(category, "markerCount", 0).set(this.markerList.size());
 		config.get(category, "visibleGroup", "").set(this.visibleGroupName);
@@ -67,7 +85,7 @@ public class MarkerManager {
 			i++;
 		}
 	}
-
+	*/
 	public void loadPresetGroup(MwConfig config, String category){
 
 		this.userPresetGroup.clear();
@@ -75,9 +93,6 @@ public class MarkerManager {
 		if (config.hasCategory(category)) {
 
 			int presetGroupCount = config.get(category, "presetGroupCount", 0).getInt();
-			if (presetGroupCount > 0) {
-
-			}
 
 			//load preset group from config to HashMap
 			for (int i = 0; i < presetGroupCount; i++) {
@@ -95,6 +110,7 @@ public class MarkerManager {
 
 	}
 
+	/*
 	public void loadPresetMarkers(MwConfig config, String category){
 
 		this.userPresetMarker.clear();
@@ -137,7 +153,7 @@ public class MarkerManager {
 
 		}
 
-	}
+	}*/
 
 	public void savePresetGroups(MwConfig config, String category){
 
@@ -152,7 +168,7 @@ public class MarkerManager {
 		}
 
 	}
-
+	/*
 	public void savePresetMarkers(MwConfig config, String category){
 
 		List<UserPresetMarker> presetMarkerListForSave=new ArrayList<UserPresetMarker>();
@@ -173,46 +189,61 @@ public class MarkerManager {
 
 	}
 
+	 */
 
+	/*
 	public void saveMarkersToFile(){
 		this.save(this.mw.worldConfig, this.mw.getCatMarkers());
 		this.mw.saveWorldConfig();
-	}
+	}*/
 	
-	public void setVisibleGroupName(String groupName) {
-		if (groupName != null) {
-			//If the group name contains an special character(".","-"," ","/","\"),
-			// then when you exit Add/Edit Marker GUI on the fullscreen, the current of markers group is set to "none"
-			//But, in the the group name this special is saved with special characters
-
-			//this.visibleGroupName = MwUtil.mungeString(groupName);
-			this.visibleGroupName = groupName;
-		} else {
-			this.visibleGroupName = "none";
+	public void updateOrderedGroupList(){
+		orderedGroupList.clear();
+		for(int element:groupOrder){
+			orderedGroupList.add(getGroupNameFromIndex(element));
 		}
 	}
-	
-	public String getVisibleGroupName() {
-		return this.visibleGroupName;
+
+	public List<String> getOrderedGroupList(){
+		return orderedGroupList;
 	}
+
+	public void setVisibleGroupIndex(int groupIndex) { this.visibleGroupIndex=groupIndex; }
+
+	public int getVisibleGroupIndex(){ return this.visibleGroupIndex; }
+	public String getVisibleGroupName() {
+		//if(this.visibleGroupIndex==NONE_INDEX){
+		//	return this.getGroupNameFromIndex(ALL_INDEX);
+		//}
+		return this.getGroupNameFromIndex(this.visibleGroupIndex);
+	}
+
+	public List<Marker> getVisibleMarkerList(){ return visibleMarkerList; }
 	
 	public void clear() {
+		/*
 		this.markerList.clear();
 		this.groupList.clear();
 		this.visibleMarkerList.clear();
 		this.visibleGroupName = "none";
+
+		 */
 	}
 	
+	/*
 	public String markerToString(Marker marker) {
 		return String.format("%s:%d:%d:%d:%d:%06x:%s",
-			marker.name,
-			marker.x, marker.y, marker.z,
-			marker.dimension,
-			marker.colour & 0xffffff,
+			marker.getName(),
+			marker.getPosX(),
+			marker.getPosY(),
+			marker.getPosZ(),
+			marker.getDimension(),
+			marker.getColour() & 0xffffff,
 			marker.groupName
 		);
-	}
+	}*/
 
+	/*
 	public String presetMarkerToString(UserPresetMarker marker) {
 		return String.format("%s:%s:%06x:%d:%d",
 				marker.getPresetGroup(),
@@ -223,7 +254,8 @@ public class MarkerManager {
 
 		);
 	}
-
+	*/
+	/*
 	public UserPresetMarker stringToPresetMarker(String s) {
 
 		String[] split = s.split(":");
@@ -243,7 +275,8 @@ public class MarkerManager {
 		}
 		return marker;
 	}
-
+	*/
+	/*
 	public Marker stringToMarker(String s) {
 		// new style delimited with colons
 		String[] split = s.split(":");
@@ -269,16 +302,50 @@ public class MarkerManager {
 			MwUtil.log("Marker.stringToMarker: invalid marker '%s'", s);
 		}
 		return marker;
+	}*/
+	public List<Marker> getMarkerList() { return markerList; }
+
+	public List<Integer> getGroupOrder() { return groupOrder; }
+
+	public int getGroupIndex(String groupName){
+		return this.groupList.containsKey(groupName) ? this.groupList.get(groupName): -1;
 	}
-	
-	public void addMarker(Marker marker) {
+
+	public String getGroupNameFromIndex(Integer index){
+		for(String getKey: this.groupList.keySet()) {
+			if (this.groupList.get(getKey).equals(index)) {
+				return getKey;
+			}
+		}
+		return "";
+	}
+
+	public boolean groupNameExists(String groupName){
+		return this.groupList.containsKey(groupName);
+			}
+
+	public int addGroupToList(String groupName){
+		if(!this.groupList.containsKey(groupName)){
+			this.groupList.put(groupName,this.groupList.size());
+			this.groupOrder.add(groupList.get(groupName));
+			this.updateOrderedGroupList();
+		}
+		return  this.groupList.get(groupName);
+	}
+
+	public void addMarkerToVisibleGroup(Marker marker){
+		if (!this.visibleMarkerList.contains(marker) && this.visibleGroupIndex==marker.getGroupIndex()){
+			this.visibleMarkerList.add(marker);
+
+		}
+	}
+
+	public void addMarker(Marker marker){
 		this.markerList.add(marker);
 	}
 	
-	public void addMarker(String name, String groupName, int x, int y, int z, int dimension, int colour) {
-		name = name.replace(":", "");
-		groupName = groupName.replace(":", "");
-		this.addMarker(new Marker(name, groupName, x, y, z, dimension, colour));
+	public void addMarker(String name, int groupIndex, int x, int y, int z, int dimension, int colour) {
+		this.addMarker(new Marker(name, groupIndex, x, y, z, dimension, colour));
 	}
 	
 	// returns true if the marker exists in the arraylist.
@@ -292,8 +359,8 @@ public class MarkerManager {
 	public boolean delMarker(String name, String group) {
 		Marker markerToDelete = null;
 		for (Marker marker : this.markerList) {
-			if (((name == null) || marker.name.equals(name)) &&
-				((group == null) || marker.groupName.equals(group))) {
+			if (((name == null) || marker.getMarkerName().equals(name)) &&
+				((group == null) || marker.getGroupIndex()== this.getGroupIndex(group)) ) {
 				markerToDelete = marker;
 				break;
 			}
@@ -319,39 +386,44 @@ public class MarkerManager {
 	    return error;
 	}*/
 	
+	public void renameGroup(String oldGroupName, String newGroupName){
+		this.groupList.put(newGroupName,this.groupList.get(oldGroupName));
+		this.groupList.remove(oldGroupName);
+
+	}
 	public void update() {
+
 		this.visibleMarkerList.clear();
-		this.groupList.clear();
-		this.groupList.add("none");
-		this.groupList.add("all");
 		for (Marker marker : this.markerList) {
-			if (marker.groupName.equals(this.visibleGroupName) || this.visibleGroupName.equals("all")) {
-				this.visibleMarkerList.add(marker);
+
+			if(this.visibleGroupIndex!=NONE_INDEX){
+				if (marker.getGroupIndex()==this.visibleGroupIndex || this.visibleGroupIndex==ALL_INDEX) {
+					this.visibleMarkerList.add(marker);
+				}
+
 			}
-			if (!this.groupList.contains(marker.groupName)) {
-				this.groupList.add(marker.groupName);
-			}
-		}
-		if (!this.groupList.contains(this.visibleGroupName)) {
-			this.visibleGroupName = "none";
+
 		}
 	}
-	
-	public void nextGroup(int n) {
-		if (this.groupList.size() > 0) {
-			int i = this.groupList.indexOf(this.visibleGroupName);
-			int size = this.groupList.size();
+
+		public void nextGroup(int n) {
+
+		if (this.orderedGroupList.size() > 0) {
+			int i = this.orderedGroupList.indexOf(this.getGroupNameFromIndex(this.visibleGroupIndex));
+			int size = this.orderedGroupList.size();
 			if (i != -1) {
 				i = (i + size + n) % size;
 			} else {
 				i = 0;
 			}
-			this.visibleGroupName = this.groupList.get(i);
-		} else {
-			this.visibleGroupName = "none";
-			this.groupList.add("none");
-		}
+			this.visibleGroupIndex = this.getGroupIndex(this.orderedGroupList.get(i));
+		} //else {
+		//	this.visibleGroupName = "none";
+		//	this.groupList.add("none");
+	   //}
+
 	}
+
 	
 	public void nextGroup() {
 		this.nextGroup(1);
@@ -363,13 +435,15 @@ public class MarkerManager {
 		this.nextGroup(-1);
 	}
 
-	public int countMarkersInGroup(String group) {
+	public int countMarkersInGroup(String groupName) {
+		int groupIndex=this.getGroupIndex(groupName);
+
 		int count = 0;
-		if (group.equals("all")) {
+		if (groupName.equals("all")) {
 			count = this.markerList.size();
 		} else {
 			for (Marker marker : this.markerList) {
-				if (marker.groupName.equals(group)) {
+				if (marker.getGroupIndex() == groupIndex) {
 					count++;
 				}
 			}
@@ -397,8 +471,8 @@ public class MarkerManager {
 		int nearestDistance = maxDistance * maxDistance;
 		Marker nearestMarker = null;
 		for (Marker marker : this.visibleMarkerList) {
-			int dx = x - marker.x;
-			int dz = z - marker.z;
+			int dx = x - marker.getPosX();
+			int dz = z - marker.getPosZ();
 			int d = (dx * dx) + (dz * dz);
 			if (d < nearestDistance) {
 				nearestMarker = marker;
@@ -412,8 +486,8 @@ public class MarkerManager {
 		int nearestDistance = 10000 * 10000;
 		Marker nearestMarker = null;
 		for (Marker marker : this.visibleMarkerList) {
-			int dx = marker.x - x;
-			int dz = marker.z - z;
+			int dx = marker.getPosX() - x;
+			int dz = marker.getPosZ() - z;
 			int d = (dx * dx) + (dz * dz);
 			double angle = Math.atan2(dz, dx);
 			// use cos instead of abs as it will wrap at 2 * Pi.
@@ -431,7 +505,7 @@ public class MarkerManager {
 	public void drawMarkers(MapMode mapMode, MapView mapView) {
 		for (Marker marker : this.visibleMarkerList) {
 	    	// only draw markers that were set in the current dimension
-			if (mapView.getDimension() == marker.dimension) {
+			if (mapView.getDimension() == marker.getDimension()) {
 				marker.draw(mapMode, mapView, 0xff000000);
 			}
 		}
