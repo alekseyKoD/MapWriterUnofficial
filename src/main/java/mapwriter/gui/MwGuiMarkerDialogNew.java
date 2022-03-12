@@ -2,6 +2,7 @@ package mapwriter.gui;
 
 import java.util.List;
 
+import mapwriter.MwUtil;
 import mapwriter.Render;
 import mapwriter.map.Marker;
 import mapwriter.map.MarkerManager;
@@ -16,6 +17,8 @@ import org.lwjgl.input.Mouse;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+
+
 
 @SideOnly(Side.CLIENT)
 public class MwGuiMarkerDialogNew extends GuiScreen
@@ -49,6 +52,8 @@ public class MwGuiMarkerDialogNew extends GuiScreen
 	private int dimension = 0;
 	private final int currentColor;
 	private int[] colours=null;
+
+	String markerToString="";
 
 	private final ResourceLocation leftArrowTexture = new ResourceLocation(
 			"mapwriter", "textures/map/arrow_text_left.png");
@@ -311,24 +316,41 @@ public class MwGuiMarkerDialogNew extends GuiScreen
 
 			int colour =this.markerColorPallete.getSelectedColor();
 
-			this.markerManager.addGroupToList(this.markerGroup);
-			this.markerManager.setVisibleGroupIndex(this.markerManager.getGroupIndex(this.markerGroup));
 			if (this.editingMarker != null) {
+				int oldMarkerHash=MwUtil.getHashFromMarker(this.editingMarker);
+				int oldGroupIndex=this.editingMarker.getGroupIndex();
 
 				this.editingMarker.setMarkerName(this.markerName);
-				this.editingMarker.setGroupIndex(this.markerManager.getGroupIndex(this.markerGroup) );
+
+				//checking that the marker is transferred to another group and that there are no more markers in the group
+
+				if(this.editingMarker.getGroupIndex()!=this.markerManager.getGroupIndex(this.markerGroup)){
+
+					//marker is the only one in the group
+					if(this.markerManager.countMarkersInGroup(this.editingMarker.getGroupIndex())==1){
+
+						this.markerManager.renameGroup(
+								this.markerManager.getGroupNameFromIndex(this.editingMarker.getGroupIndex()),
+								this.markerGroup);
+					}else{
+						//marker is not only one in the group
+						this.editingMarker.setGroupIndex(this.markerManager.addGroupToList(this.markerGroup) );
+					}
+				}
+
 				this.editingMarker.setPosX(this.markerX);
 				this.editingMarker.setPosY(this.markerY);
 				this.editingMarker.setPosZ(this.markerZ);
 				this.editingMarker.setDimension(this.dimension);
 				this.editingMarker.setColour( this.markerColorPallete.getSelectedColor());
 
+				this.markerManager.editMarker(oldMarkerHash,editingMarker);
 				this.markerManager.addMarkerToVisibleGroup(editingMarker);
 
 				this.editingMarker = null;
 			} else {
 				Marker newMarker=new Marker(this.markerName,
-						this.markerManager.getGroupIndex(this.markerGroup),
+						this.markerManager.addGroupToList(this.markerGroup),
 						this.markerX,
 						this.markerY,
 						this.markerZ,
@@ -337,10 +359,15 @@ public class MwGuiMarkerDialogNew extends GuiScreen
 
 				this.markerManager.addMarker(newMarker);
 				this.markerManager.addMarkerToVisibleGroup(newMarker);
+
+				MwUtil.getHashFromMarker(newMarker);
+
+				//new ClientsPacket("save","Test_1000").sendToServer();
+
 			}
+			this.markerManager.setVisibleGroupIndex(this.markerManager.getGroupIndex(this.markerGroup));
 			this.markerManager.selectedColor=this.markerColorPallete.getSelectedColor();
 			this.markerManager.update();
-
 		}
 		return inputCorrect;
 	}

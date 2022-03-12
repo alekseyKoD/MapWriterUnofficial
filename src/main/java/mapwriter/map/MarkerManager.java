@@ -6,15 +6,21 @@ import mapwriter.Mw;
 import mapwriter.MwUtil;
 import mapwriter.forge.MwConfig;
 import mapwriter.map.mapmode.MapMode;
+import mapwriter.Common;
+import mapwriter.server.networkPackets.ClientToServer.ClientGroupsPacket;
+import mapwriter.server.networkPackets.ClientToServer.ClientMarkersPacket;
+import org.apache.commons.lang3.StringUtils;
+
 
 public class MarkerManager {
 
-	private static int NONE_INDEX=0;
-	private static int ALL_INDEX=1;
 
 	Mw mw;
 
-	private List<Marker> markerList = new ArrayList<Marker>();
+	//private List<Marker> markerList = new ArrayList<Marker>();
+
+	//Key in Hashmap markerLis is a uniq hash(murmurhashV3 algo ), for search and sync client<->server
+	private HashMap<Integer, Marker> markerList=new HashMap<Integer, Marker>();
 	private List<String> orderedGroupList = new ArrayList<String>();
 	private List<Integer> groupOrder =new ArrayList<Integer>();
 
@@ -37,22 +43,66 @@ public class MarkerManager {
 	public MarkerManager(Mw mw) {
 		this.mw=mw;
 		//add system group "all" & "none" to group list
-		this.groupList.put("none",NONE_INDEX);
-		this.groupList.put("all",ALL_INDEX);
+		this.groupList.put(Common.NONE_GROUP,Common.NONE_INDEX);
+		this.groupList.put(Common.ALL_GROUP,Common.ALL_INDEX);
 
 		//add system group "all" & "none" to group order list
-		this.groupOrder.add(NONE_INDEX);
-		this.groupOrder.add(ALL_INDEX);
+		this.groupOrder.add(Common.NONE_INDEX);
+		this.groupOrder.add(Common.ALL_INDEX);
 
-		this.updateOrderedGroupList();
+		if(this.mw.isMwOnServerWorks && this.mw.saveMarkersOnServer==1){
+			new ClientGroupsPacket(Common.EnumGroupActionType.ADD_SYSTEM_GROUP).sendToServer();
+		}
+
+		//this.updateOrderedGroupList();
 	}
-	/*
+
+
 	public void load(MwConfig config, String category) {
 		this.markerList.clear();
-		
+		//load info
+		if (config.hasCategory("groups")){
+			//new versions markers and group info in file
+			this.mw.newVersionMarkers=true;
+
+			int groupsCount = config.get("groups", "groupsCount", 0).getInt();
+			this.visibleGroupIndex = config.get("groups", "visibleGroup", "").getInt();
+			this.groupOrder.clear();
+
+			String orderGroupValue=config.get("groups","orderGroups","").getString();
+			String[] orderGroupList = orderGroupValue.split(":");
+
+			for(int i=0;i<orderGroupList.length; i++){
+				this.groupOrder.add(Integer.parseInt(orderGroupList[i]));
+			}
+
+
+			if(groupsCount>0){
+				this.groupList.clear();
+
+
+				for (int i = 0; i < groupsCount; i++) {
+					String value=config.get("groups","group"+i,"").getString();
+					String[] split = value.split(":");
+					if(split.length==2){
+						this.groupList.put(split[0],Integer.parseInt(split[1]));
+					}
+
+				}
+			}else {
+				this.groupList.put(Common.NONE_GROUP,Common.NONE_INDEX);
+				this.groupList.put(Common.ALL_GROUP,Common.ALL_INDEX);
+			}
+
+
+
+
+
+		}
+
 		if (config.hasCategory(category)) {
 			int markerCount = config.get(category, "markerCount", 0).getInt();
-			this.visibleGroupName = config.get(category, "visibleGroup", "").getString();
+
 			
 			if (markerCount > 0) {
 				for (int i = 0; i < markerCount; i++) {
@@ -67,25 +117,42 @@ public class MarkerManager {
 				}
 			}
 		}
-		
+
 		this.update();
+
 	}
-	*/
-	/*
+
+
 	public void save(MwConfig config, String category) {
+		config.getCategory(category).clear();
 		config.get(category, "markerCount", 0).set(this.markerList.size());
-		config.get(category, "visibleGroup", "").set(this.visibleGroupName);
 
-
+		//save markers
 		int i = 0;
-		for (Marker marker : this.markerList) {
+		for(Map.Entry<Integer, Marker> entry : this.markerList.entrySet() ){
 			String key = "marker" + i;
-			String value = this.markerToString(marker);
+			String value = this.markerToString(entry.getValue());
 			config.get(category, key, "").set(value);
 			i++;
 		}
+
+		//save groups
+		i=0;
+		config.get("groups","groupsCount",0).set(this.groupList.size());
+
+		for(Map.Entry<String,Integer> groupEntry: this.groupList.entrySet()){
+			config.get("groups","group"+i,"").set(groupEntry.getKey()+":"+groupEntry.getValue());
+			i++;
+		}
+		config.get("groups", "visibleGroup", 0).set(this.visibleGroupIndex);
+		config.get("groups","orderGroups","0:1").set(StringUtils.join(this.groupOrder,":"));
+
+
+
+
+
 	}
-	*/
+
 	public void loadPresetGroup(MwConfig config, String category){
 
 		this.userPresetGroup.clear();
@@ -197,18 +264,15 @@ public class MarkerManager {
 		this.mw.saveWorldConfig();
 	}*/
 	
-	public void updateOrderedGroupList(){
-		orderedGroupList.clear();
-		for(int element:groupOrder){
-			orderedGroupList.add(getGroupNameFromIndex(element));
+	public void setVisibleGroupIndex(int groupIndex) {
+		this.visibleGroupIndex=groupIndex;
+		//add new visible group index to server storage
+		if(this.mw.isMwOnServerWorks && this.mw.saveMarkersOnServer==1){
+			new ClientGroupsPacket(Common.EnumGroupActionType.CHANGEVISIBLE,this.visibleGroupIndex ).sendToServer();
 		}
-	}
 
-	public List<String> getOrderedGroupList(){
-		return orderedGroupList;
-	}
 
-	public void setVisibleGroupIndex(int groupIndex) { this.visibleGroupIndex=groupIndex; }
+	}
 
 	public int getVisibleGroupIndex(){ return this.visibleGroupIndex; }
 	public String getVisibleGroupName() {
@@ -229,21 +293,7 @@ public class MarkerManager {
 
 		 */
 	}
-	
-	/*
-	public String markerToString(Marker marker) {
-		return String.format("%s:%d:%d:%d:%d:%06x:%s",
-			marker.getName(),
-			marker.getPosX(),
-			marker.getPosY(),
-			marker.getPosZ(),
-			marker.getDimension(),
-			marker.getColour() & 0xffffff,
-			marker.groupName
-		);
-	}*/
 
-	/*
 	public String presetMarkerToString(UserPresetMarker marker) {
 		return String.format("%s:%s:%06x:%d:%d",
 				marker.getPresetGroup(),
@@ -254,8 +304,8 @@ public class MarkerManager {
 
 		);
 	}
-	*/
-	/*
+
+/*
 	public UserPresetMarker stringToPresetMarker(String s) {
 
 		String[] split = s.split(":");
@@ -274,9 +324,24 @@ public class MarkerManager {
 			MwUtil.log("Marker.stringToMarker: invalid preset marker '%s'", s);
 		}
 		return marker;
+
+
 	}
-	*/
-	/*
+*/
+
+	public String markerToString(Marker marker) {
+
+		return String.format("%s:%d:%d:%d:%d:%06x:%s",
+			marker.getMarkerName(),
+			marker.getPosX(),
+			marker.getPosY(),
+			marker.getPosZ(),
+			marker.getDimension(),
+			marker.getColour() & 0xffffff,
+			marker.getGroupIndex()
+		);
+	}
+
 	public Marker stringToMarker(String s) {
 		// new style delimited with colons
 		String[] split = s.split(":");
@@ -292,8 +357,18 @@ public class MarkerManager {
 				int z = Integer.parseInt(split[3]);
 				int dimension = Integer.parseInt(split[4]);
 				int colour = 0xff000000 | Integer.parseInt(split[5], 16);
+				int markerIndex=0;
+				//if load markers from previous versions, convert markers and groups
+				if(!this.mw.newVersionMarkers){
+					//convert markers and group info from previous version
+					markerIndex=addGroupToList(split[6]);
+
+				}else {
+					markerIndex=Integer.parseInt(split[6]);
+
+				}
 				
-				marker = new Marker(split[0], split[6], x, y, z, dimension, colour);
+				marker = new Marker(split[0], markerIndex, x, y, z, dimension, colour);
 				
 			} catch (NumberFormatException e) {
 				marker = null;
@@ -302,10 +377,25 @@ public class MarkerManager {
 			MwUtil.log("Marker.stringToMarker: invalid marker '%s'", s);
 		}
 		return marker;
-	}*/
-	public List<Marker> getMarkerList() { return markerList; }
+	}
+
+	public HashMap<Integer,Marker> getMarkerList() { return markerList; }
 
 	public List<Integer> getGroupOrder() { return groupOrder; }
+
+	public void setGroupOrder(List<Integer> groupOrderList){
+		groupOrder.clear();
+		groupOrder.addAll(groupOrderList);
+	}
+
+
+	public HashMap<String,Integer> getGroupList(){ return groupList; }
+
+	public void setGroupList(HashMap<String,Integer> groupListMap){
+		groupList.clear();
+		groupList.putAll(groupListMap);
+	}
+
 
 	public int getGroupIndex(String groupName){
 		return this.groupList.containsKey(groupName) ? this.groupList.get(groupName): -1;
@@ -326,8 +416,16 @@ public class MarkerManager {
 
 	public int addGroupToList(String groupName){
 		if(!this.groupList.containsKey(groupName)){
+			//add new group to group list on client storage
 			this.groupList.put(groupName,this.groupList.size());
 			this.groupOrder.add(groupList.get(groupName));
+
+			//add new group and order group to server storage
+			if(this.mw.isMwOnServerWorks && this.mw.saveMarkersOnServer==1){
+				new ClientGroupsPacket(Common.EnumGroupActionType.EDITGROUP, this.groupList,this.groupOrder).sendToServer();
+			}
+
+
 			this.updateOrderedGroupList();
 		}
 		return  this.groupList.get(groupName);
@@ -341,72 +439,205 @@ public class MarkerManager {
 	}
 
 	public void addMarker(Marker marker){
-		this.markerList.add(marker);
+		//add marker to client`s storage
+		this.markerList.put(MwUtil.getHashFromMarker(marker),marker);
+		//add marker to server`s storage(if works on server side
+		if(this.mw.isMwOnServerWorks && this.mw.saveMarkersOnServer==1){
+			new ClientMarkersPacket(Common.EnumMarkerActionType.ADD,
+					MwUtil.getHashFromMarker(marker),
+					marker.convertMarkerToArray(marker) ).sendToServer();
+			}
+
 	}
-	
+
+	public void editMarker(int oldHash,Marker changedMarker){
+		this.markerList.remove(oldHash);
+		this.markerList.put(MwUtil.getHashFromMarker(changedMarker),changedMarker);
+		//send edited marker to server`s storage(if works on server side)
+		if(this.mw.isMwOnServerWorks && this.mw.saveMarkersOnServer==1){
+			new ClientMarkersPacket(Common.EnumMarkerActionType.EDIT,
+					oldHash,
+					MwUtil.getHashFromMarker(changedMarker),
+					changedMarker.convertMarkerToArray(changedMarker) ).sendToServer();
+		}
+	}
+	public void sendAllMarkersToServer(){
+		HashMap<Integer, List<String>> allMarkersData = new HashMap<Integer, List<String>>();
+		for(Map.Entry<Integer, Marker> markerEntry: this.markerList.entrySet()){
+			allMarkersData.put(markerEntry.getKey(),markerEntry.getValue().convertMarkerToArray(markerEntry.getValue()));
+		}
+
+
+		new ClientGroupsPacket(Common.EnumGroupActionType.DELETE, groupList, groupOrder,visibleGroupIndex).sendToServer();
+
+		new ClientMarkersPacket(Common.EnumMarkerActionType.SEND,allMarkersData).sendToServer();
+
+
+	}
 	public void addMarker(String name, int groupIndex, int x, int y, int z, int dimension, int colour) {
 		this.addMarker(new Marker(name, groupIndex, x, y, z, dimension, colour));
 	}
 	
 	// returns true if the marker exists in the arraylist.
 	// safe to pass null.
-	public boolean delMarker(Marker markerToDelete) {
-		return this.markerList.remove(markerToDelete);
+	public void delMarker(Marker markerToDelete) {
+		//delete marker in local storage
+		this.markerList.remove(MwUtil.getHashFromMarker(markerToDelete));
+
+		//delete marker in server storage(if works on server side)
+		if(this.mw.isMwOnServerWorks && this.mw.saveMarkersOnServer==1){
+			new ClientMarkersPacket(Common.EnumMarkerActionType.DELETE,
+									MwUtil.getHashFromMarker(markerToDelete)).sendToServer();
+		}
+
+		update();
+		if(isGroupEmpty(markerToDelete.getGroupIndex())){
+			//group is empty
+			delEmptyGroup(markerToDelete.getGroupIndex());
+		}
 	}
 	
 	// deletes the first marker with matching name and group.
 	// if null is passed as either name or group it means "any".
-	public boolean delMarker(String name, String group) {
+	public void delMarker(String name, String group) {
+
 		Marker markerToDelete = null;
-		for (Marker marker : this.markerList) {
-			if (((name == null) || marker.getMarkerName().equals(name)) &&
-				((group == null) || marker.getGroupIndex()== this.getGroupIndex(group)) ) {
-				markerToDelete = marker;
+		for (Map.Entry<Integer,Marker> markerEntry : markerList.entrySet() ) {
+			if (((name == null) || markerEntry.getValue().getMarkerName().equals(name)) &&
+				((group == null) || markerEntry.getValue().getGroupIndex()== this.getGroupIndex(group)) ) {
+				markerToDelete = markerEntry.getValue();
 				break;
 			}
 		}
-		// will return false if a marker matching the criteria is not found
-		// (i.e. if markerToDelete is null)
-		return this.delMarker(markerToDelete);
+		if(markerToDelete!=null){
+			this.delMarker(markerToDelete);
+		}
+
+	}
+
+	public boolean isGroupEmpty(int groupIndex){
+
+		return countMarkersInGroup(groupIndex) == 0 &&
+				(groupIndex != Common.ALL_INDEX || groupIndex != Common.NONE_INDEX);
+	}
+
+
+	public void delEmptyGroup(int groupIndex) {
+
+		//delete empty group in local storage
+		groupList.remove(getGroupNameFromIndex(groupIndex));
+		groupOrder.remove(groupIndex);
+
+		//delete empty group in server storage
+		if(this.mw.isMwOnServerWorks && this.mw.saveMarkersOnServer==1){
+			new ClientGroupsPacket(Common.EnumGroupActionType.DELETE, groupList, groupOrder).sendToServer();
+			updateOrderedGroupList();
+			if(groupIndex==visibleGroupIndex){
+
+				new ClientGroupsPacket(Common.EnumGroupActionType.CHANGEVISIBLE,Common.ALL_INDEX);
+				visibleGroupIndex = Common.ALL_INDEX;
+			}
+		}
+
 	}
 	
-	/*public boolean delGroup(String groupName) {
-		boolean error = !this.groupList.remove(groupName);
-	    Iterator it = this.markerMap.entrySet().iterator();
-	    while (it.hasNext()) {
-	        Map.Entry entry = (Map.Entry) it.next();
-	        Marker marker = (Marker) entry.getValue();
-	        if (marker.groupName.equals(groupName)) {
-	        	it.remove();
-	        }
-	    }
-	    if (groupName == this.visibleGroupName) {
-			this.nextGroup();
-		}
-	    return error;
-	}*/
-	
 	public void renameGroup(String oldGroupName, String newGroupName){
-		this.groupList.put(newGroupName,this.groupList.get(oldGroupName));
+
+		if(!this.groupList.containsKey(newGroupName)){
+			this.groupList.put(newGroupName,this.groupList.get(oldGroupName));
+		}
+		this.updateMarkersGroup(getGroupIndex(oldGroupName),getGroupIndex(newGroupName));
 		this.groupList.remove(oldGroupName);
+		this.delEmptyGroupFromOrderGroup();
+		//send  group and order group to server storage
+		if(this.mw.isMwOnServerWorks && this.mw.saveMarkersOnServer==1){
+			new ClientGroupsPacket(Common.EnumGroupActionType.EDITGROUP, this.groupList).sendToServer();
+		}
+		this.updateOrderedGroupList();
 
 	}
 	public void update() {
 
 		this.visibleMarkerList.clear();
-		for (Marker marker : this.markerList) {
 
-			if(this.visibleGroupIndex!=NONE_INDEX){
-				if (marker.getGroupIndex()==this.visibleGroupIndex || this.visibleGroupIndex==ALL_INDEX) {
-					this.visibleMarkerList.add(marker);
+		for(Map.Entry<Integer,Marker> markerEntry:markerList.entrySet()){
+			if(this.visibleGroupIndex!=Common.NONE_INDEX){
+				if (markerEntry.getValue().getGroupIndex()==this.visibleGroupIndex || this.visibleGroupIndex==Common.ALL_INDEX) {
+					this.visibleMarkerList.add(markerEntry.getValue());
 				}
 
 			}
 
 		}
+
+
 	}
 
-		public void nextGroup(int n) {
+	public void delEmptyGroupFromOrderGroup(){
+		int index = -1;
+		for(int i=0;i< groupOrder.size();i++){
+			if(!groupList.containsValue(groupOrder.get(i))){
+				index=i;
+				break;
+			}
+		}
+		if(index!=-1) {
+			groupOrder.remove(index);
+		}
+	}
+
+	public void updateMarkersGroup(int oldGroupIndex, int newGroupIndex){
+
+		for(Map.Entry<Integer,Marker> markerEntry:markerList.entrySet()){
+			if(markerEntry.getValue().getGroupIndex()==oldGroupIndex){
+				markerEntry.getValue().setGroupIndex(newGroupIndex);
+			}
+		}
+
+	}
+
+	public void updateOrderedGroupList(){
+		orderedGroupList.clear();
+		for(int element:groupOrder){
+			orderedGroupList.add(getGroupNameFromIndex(element));
+		}
+
+		//add new order group to server storage
+		if(this.mw.isMwOnServerWorks && this.mw.saveMarkersOnServer==1){
+			new ClientGroupsPacket(Common.EnumGroupActionType.CHANGEORDER,this.groupOrder).sendToServer();
+		}
+
+	}
+
+	//change order group, active group index - index selected group in order group list
+	// index=1 - move group one level up
+	// index=-1 - move group one leve down
+	public void changeGroupOrder(int selectedGroupIndex,int index){
+
+		//move the selected element one level up
+		if (index == 1) {
+			// one level up
+			if(selectedGroupIndex>0) {
+				Collections.swap(groupOrder, selectedGroupIndex, selectedGroupIndex - 1);
+
+			}
+
+		}else if(index==-1){
+			// one level down
+			if(selectedGroupIndex<groupOrder.size()-1) {
+				Collections.swap(this.groupOrder, selectedGroupIndex, selectedGroupIndex + 1);
+
+			}
+		}
+		updateOrderedGroupList();
+
+	}
+
+	public List<String> getOrderedGroupList(){
+		return orderedGroupList;
+	}
+
+	public void nextGroup(int n) {
 
 		if (this.orderedGroupList.size() > 0) {
 			int i = this.orderedGroupList.indexOf(this.getGroupNameFromIndex(this.visibleGroupIndex));
@@ -424,7 +655,6 @@ public class MarkerManager {
 
 	}
 
-	
 	public void nextGroup() {
 		this.nextGroup(1);
 	}
@@ -435,15 +665,14 @@ public class MarkerManager {
 		this.nextGroup(-1);
 	}
 
-	public int countMarkersInGroup(String groupName) {
-		int groupIndex=this.getGroupIndex(groupName);
+	public int countMarkersInGroup(int groupIndex) {
 
 		int count = 0;
-		if (groupName.equals("all")) {
+		if (groupIndex==Common.ALL_INDEX) {
 			count = this.markerList.size();
 		} else {
-			for (Marker marker : this.markerList) {
-				if (marker.getGroupIndex() == groupIndex) {
+			for(Map.Entry<Integer,Marker> markerEntry:markerList.entrySet()) {
+				if (markerEntry.getValue().getGroupIndex() == groupIndex) {
 					count++;
 				}
 			}

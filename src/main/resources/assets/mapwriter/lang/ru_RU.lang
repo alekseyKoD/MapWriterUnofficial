@@ -17,6 +17,7 @@ mw.gui.mwgui.group=Группа
 mw.gui.mwgui.overlay=Наложение:
 mw.gui.mwgui.markers=Маркеры
 mw.gui.mwgui.keys=Клавиши
+mw.gui.mwgui.info=Инфо
 mw.gui.mwgui.helptext.1=Для прокрутки карты используйте ЛКМ или стрелки.
 mw.gui.mwgui.helptext.2=Используйте колёсико мыши или клавиши Page Up/Down для приближения.
 mw.gui.mwgui.helptext.3=Нажмите ПКМ по карте, чтобы создать новый маркер.
@@ -111,7 +112,8 @@ mw.gui.mwguioptionslot.oldNewMarkerDialog.old=Старое
 mw.gui.mwguioptionslot.paintOverChunk=Закрашивать чанки: %s
 mw.gui.mwguioptionslot.colorMarkerNameSearchMode=Цвет имени маркера: %s
 mw.gui.mwguioptionslot.colorMarkerDistanceSearchMode=Цвет расстояния до маркера: %s
-mw.gui.mwguioptionslot.storeSaveIngameSaveDir=Хранить данные в осн. папке сохранений мира: %s
+mw.gui.mwguioptionslot.saveMarkersOnServer=Хранить маркеры на сервере: %s
+mw.gui.mwguioptionslot.sharedMarkersOnClient=Отображать Общие маркеры: %s
 
 mw.gui.mwguimarkerSlotNew.markerName=Имя маркера
 mw.gui.mwguimarkerSlotNew.markerCoordinate= Координаты маркера
@@ -167,6 +169,17 @@ mwgui.mwguiquickmarker.grouptitle=Предустановки групп
 mwgui.mwguiquickmarker.ExitLabel=Назад к игре
 mwgui.mwguiquickmarker.prevLevel=На уровень вверх
 mwgui.mwguiquickmarker.markerdialog=Создать маркер через GUI
+
+#Menu Info
+mw.gui.serverinfo.servertype=Тип сервера:
+mw.gui.serverinfo.mwOnServer=MapWriter на сервере:
+mw.gui.serverinfo.saveMarkerOnServer=Сохранять маркеры на сервере:
+mw.gui.serverinfo.sharedMarkerOnServer=Общие маркеры на сервере:
+mw.gui.serverinfo.sharedMarkerOnClient=Общие маркеры на клиенте:
+mw.gui.serverinfo.integratedServer=Встроенный
+mw.gui.serverinfo.dedicatedServer=Выделенный
+mw.gui.serverinfo.enabled=Включен
+mw.gui.serverinfo.disabled=Отключен
 
 # Menu
 mw.gui.mwguimenumarkerssearch=Поиск маркеров

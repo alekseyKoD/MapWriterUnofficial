@@ -1,7 +1,17 @@
 package mapwriter.forge;
 
 import java.net.InetSocketAddress;
+import java.util.UUID;
 
+import cpw.mods.fml.common.gameevent.PlayerEvent;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import mapwriter.server.MwSavedData;
+import mapwriter.server.MarkerStorage;
+import mapwriter.server.networkPackets.ServerToClient.ServerCheckerPacket;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -23,23 +33,34 @@ import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.network.FMLNetworkEvent;
 
 
-@Mod(modid="MapWriter", name="MapWriter", version="2.1.21-IIA-Edition", acceptableRemoteVersions = "*")
+@Mod(modid="MapWriter", name="MapWriter", version="2.2.Exp_ServerEdition", acceptableRemoteVersions = "*")
 
 public class MwForge {
-	
+
+    private MwSavedData mwWorldData;
+
+    private MarkerStorage mwDataStorage;
+
 	@Instance("MapWriter")
 	public static MwForge instance;
+
 	
 	@SidedProxy(clientSide="mapwriter.forge.ClientProxy", serverSide="mapwriter.forge.CommonProxy")
 	public static CommonProxy proxy;
-	
+
+
 	public static Logger logger = LogManager.getLogger("MapWriter");
+
+    public MarkerStorage getMwDataStorage(){ return mwDataStorage; }
+
+
 	
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
         FMLCommonHandler.instance().bus().register(this);
         MinecraftForge.EVENT_BUS.register(this);
         proxy.preInit(event.getSuggestedConfigurationFile());
+
 	}
 	
 	@EventHandler
@@ -69,6 +90,7 @@ public class MwForge {
 
     @SubscribeEvent
     public void onTick(TickEvent.ClientTickEvent event){
+
         if (event.phase == TickEvent.Phase.START){
         	// run the cleanup code when Mw is loaded and the player becomes null.
         	// a bit hacky, but simpler than checking if the connection has closed.
@@ -79,10 +101,87 @@ public class MwForge {
     }
 
     @SubscribeEvent
-    public void onWorldUnload(WorldEvent.Unload event) {
-	    if (Mw.instance.lastSavedTick != Mw.instance.tickCounter) {
-            Mw.instance.saveCfgAndMarkers();
-            Mw.instance.lastSavedTick = Mw.instance.tickCounter;
+    public void onEntityJoinWorld(EntityJoinWorldEvent event) {
+        Entity entity = event.entity;
+
+
+
+        if (!entity.worldObj.isRemote && entity instanceof EntityPlayerMP) {
+            //set flag, what MapWriter mod install and works on Server
+            new ServerCheckerPacket(true).sendToPlayer((EntityPlayerMP)event.entity);
+
+            if(this.mwWorldData==null){
+                this.mwWorldData=new MwSavedData("MapWriter."+entity.getUniqueID().toString());
+            }
+
+            this.mwWorldData.setMwData(this.mwWorldData.get(event.world).getMwData());
+            int count=this.mwWorldData.getSavedMarkerCount();
+            System.out.println("save data to NBT");
+            String markerName="marker"+String.valueOf(count+1);
+            this.mwWorldData.addMarkerData(markerName,100,count+1,100,16,0);
+            this.mwWorldData.markDirty();
+            event.world.mapStorage.setData(mwWorldData.getTagName(),this.mwWorldData);
+
+  //          this.getMwDataStorage().createNBTStructure(entity.getUniqueID());
+
+
         }
+
+
     }
+
+    @SubscribeEvent
+    public void onWorldLoad(WorldEvent.Load event){
+
+
+        if (!event.world.isRemote && event.world.provider.dimensionId==0){
+
+            mwDataStorage =new MarkerStorage();
+        }
+
+    }
+
+
+    @SubscribeEvent
+    public void onWorldUnload(WorldEvent.Unload event) {
+
+        
+        if(FMLCommonHandler.instance().getEffectiveSide()==Side.CLIENT) {
+            //save markers on client side(save to local storage -file mapwriter.cfg)
+            if (Mw.instance.lastSavedTick != Mw.instance.tickCounter) {
+                Mw.instance.lastSavedTick = Mw.instance.tickCounter;
+                if(Mw.instance.saveMarkersOnServer==0){
+                    Mw.instance.saveCfgAndMarkers();
+                }
+            }
+        }else{
+            //save markers on server side (only integrated server)
+                UUID playerUUID=Minecraft.getMinecraft().thePlayer.getUniqueID();
+                if(event.world.provider.dimensionId==0){
+                    mwDataStorage.createNBTStructure(playerUUID);
+                }
+
+
+        }
+
+    }
+
+
+    //save markers on server side work only dedicated server on server-side
+    @SubscribeEvent
+    public  void onPlayerLogOut(PlayerEvent.PlayerLoggedOutEvent event){
+    String uuid=event.player.getUniqueID().toString();
+
+    }
+
+
+
+    @SubscribeEvent
+    public void onServerTick(TickEvent.ServerTickEvent event) {
+// this most certainly WILL fire, even in single player, see for yourself:
+        int serverTick=1;
+    }
+
+
+
 }

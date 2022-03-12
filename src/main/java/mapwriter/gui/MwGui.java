@@ -2,6 +2,7 @@ package mapwriter.gui;
 
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import mapwriter.Mw;
@@ -20,6 +21,7 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
 
+import net.minecraft.util.EnumChatFormatting;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
@@ -46,6 +48,7 @@ public class MwGui extends GuiScreen {
     private double viewXStart;
     private double viewZStart;
     private Marker movingMarker = null;
+    private int movingMarkerOldHash=0;
     private int movingMarkerXStart = 0;
     private int movingMarkerZStart = 0;
     private int mouseBlockX = 0;
@@ -74,6 +77,8 @@ public class MwGui extends GuiScreen {
     	this.mapView.setDimension(this.mw.miniMap.view.getDimension());
     	this.mapView.setViewCentreScaled(this.mw.playerX, this.mw.playerZ, this.mw.playerDimension);
     	this.mapView.setZoomLevel(0);
+
+    	this.mw.markerManager.updateOrderedGroupList();
    		this.menuInit();
     }
 
@@ -83,6 +88,7 @@ public class MwGui extends GuiScreen {
     	this.mapView.setViewCentreScaled(x, z, dim);
     	this.mapView.setZoomLevel(0);
 
+		this.mw.markerManager.updateOrderedGroupList();
 		this.menuInit();
     }
     
@@ -140,6 +146,10 @@ public class MwGui extends GuiScreen {
 		//add menu Help
 		mainMenuItems.add(new MwGuiDropDownList(this.mw.mc.fontRenderer, "help",
 						I18n.format("mw.gui.mwgui.help"),	new ArrayList<String>(),false));
+		//add menu Info
+		mainMenuItems.add(new MwGuiDropDownList(this.mw.mc.fontRenderer, "info",
+				I18n.format("mw.gui.mwgui.info"),	new ArrayList<String>(),false));
+
 
 		for(int i=0; i<mainMenuItems.size(); i++){
 			mainMenuItems.get(i).init();
@@ -349,6 +359,7 @@ public class MwGui extends GuiScreen {
 	//--------------------------------------
 		case Keyboard.KEY_NUMPAD7:
 			//read
+
 			int test_cycles1=1;
 
 			//FMLCommonHandler.instance().getEffectiveSide();
@@ -463,6 +474,7 @@ public class MwGui extends GuiScreen {
 	    			this.movingMarker = marker;
 	    			this.movingMarkerXStart = marker.getPosX();
 	    			this.movingMarkerZStart = marker.getPosZ();
+	    			this.movingMarkerOldHash=MwUtil.getHashFromMarker(marker);
 	    		}
 
     	} else if (button == 1) {
@@ -694,6 +706,71 @@ public class MwGui extends GuiScreen {
     			"| " + I18n.format("mw.gui.mwgui.helptext.undergroundmap") + "\n",
 				windowPosX+75, windowPosY+42, windowWidth - 90, 0xffffff);
     }
+
+	public void drawInfo(int posX,int posY) {
+
+		// mw.gui.serverinfo.sharedMarkerOnServer=Shared markers on server:
+		// mw.gui.serverinfo.sharedMarkerOnClient=Shared markers on client:
+
+    	//draw windows with MapWriter mods on server
+		int windowWidth=0;
+
+		//server type: integrated or dedicated
+		String serverTypeString=" "+(this.mc.isIntegratedServerRunning() ?
+			(EnumChatFormatting.BOLD+I18n.format("mw.gui.serverinfo.integratedServer")) :
+			(EnumChatFormatting.BOLD+I18n.format("mw.gui.serverinfo.dedicatedServer")) );
+		//installed MapWriter mod on server
+		String mwOnServerWorkInfo=I18n.format("mw.gui.serverinfo.mwOnServer")+" "+
+				(this.mw.isMwOnServerWorks ?
+						EnumChatFormatting.GREEN+I18n.format("mw.gui.serverinfo.enabled") :
+						EnumChatFormatting.RED+I18n.format("mw.gui.serverinfo.disabled"));
+		//Enabled save markers on server
+		String saveMarkersOnServer=I18n.format("mw.gui.serverinfo.saveMarkerOnServer")+" "+
+				(this.mw.saveMarkersOnServer==1 ?
+						EnumChatFormatting.GREEN+I18n.format("mw.gui.serverinfo.enabled") :
+						EnumChatFormatting.RED+I18n.format("mw.gui.serverinfo.disabled"));
+		//Enabled shared markers on server
+		String sharedMarkersOnServer=I18n.format("mw.gui.serverinfo.sharedMarkerOnServer")+" "+
+				(this.mw.sharedMarkersOnServer ?
+						EnumChatFormatting.GREEN+I18n.format("mw.gui.serverinfo.enabled") :
+						EnumChatFormatting.RED+I18n.format("mw.gui.serverinfo.disabled"));
+		//Enabled shared markers on client
+		String sharedMarkersOnClient=I18n.format("mw.gui.serverinfo.sharedMarkerOnClient")+" "+
+				(this.mw.sharedMarkersOnClient==1 ?
+						EnumChatFormatting.GREEN+I18n.format("mw.gui.serverinfo.enabled") :
+						EnumChatFormatting.RED+I18n.format("mw.gui.serverinfo.disabled"));
+
+
+
+		windowWidth=Math.max(this.fontRendererObj.getStringWidth(serverTypeString),
+									this.fontRendererObj.getStringWidth(mwOnServerWorkInfo));
+		windowWidth=Math.max(windowWidth,
+							Math.max(this.fontRendererObj.getStringWidth(sharedMarkersOnServer),
+									 this.fontRendererObj.getStringWidth(sharedMarkersOnClient)));
+
+		int windowHeight=this.fontRendererObj.FONT_HEIGHT*5+12;
+
+		int windowPosX=windowWidth+50;
+		int windowPosY=posY+10;
+
+		drawRect(windowPosX, windowPosY, windowPosX+windowWidth,
+										windowPosY+windowHeight, 0x80000000);
+
+		drawString(this.fontRendererObj,I18n.format("mw.gui.serverinfo.servertype"),
+																			windowPosX,windowPosY,0xffffff);
+		drawString(this.fontRendererObj,serverTypeString,
+				windowPosX+this.fontRendererObj.getStringWidth(I18n.format("mw.gui.serverinfo.servertype")),
+						  windowPosY,0xffffff);
+		windowPosY+=this.fontRendererObj.FONT_HEIGHT+3;
+		drawString(this.fontRendererObj,mwOnServerWorkInfo,windowPosX,windowPosY,0xffffff);
+		windowPosY+=this.fontRendererObj.FONT_HEIGHT+3;
+		drawString(this.fontRendererObj,saveMarkersOnServer,windowPosX,windowPosY,0xffffff);
+		windowPosY+=this.fontRendererObj.FONT_HEIGHT+3;
+		drawString(this.fontRendererObj,sharedMarkersOnServer,windowPosX,windowPosY,0xffffff);
+		windowPosY+=this.fontRendererObj.FONT_HEIGHT+3;
+		drawString(this.fontRendererObj,sharedMarkersOnClient,windowPosX,windowPosY,0xffffff);
+
+	}
     
     public void drawMouseOverHint(int x, int y, String title, int mX, int mY, int mZ) {
     	String desc = String.format("(%d, %d, %d)", mX, mY, mZ);
@@ -725,6 +802,7 @@ public class MwGui extends GuiScreen {
 
 
         this.drawDefaultBackground();
+
         double xOffset = 0.0;
         double yOffset = 0.0;
         //double zoomFactor = 1.0;
@@ -733,11 +811,23 @@ public class MwGui extends GuiScreen {
 		if (this.mouseLeftHeld > 2 && !this.forbidenMapDragDrop) {
     		xOffset = (this.mouseLeftDragStartX - mouseX) * this.mapView.getWidth() / this.mapMode.w;
     		yOffset = (this.mouseLeftDragStartY - mouseY) * this.mapView.getHeight() / this.mapMode.h;
-    		
+
+    	//drag & drop marker on map
     		if (this.movingMarker != null) {
     			double scale = this.mapView.getDimensionScaling(this.movingMarker.getDimension());
-        		this.movingMarker.setPosX(this.movingMarkerXStart - (int) (xOffset / scale) );
-        		this.movingMarker.setPosZ(this.movingMarkerZStart - (int) (yOffset / scale) );
+				this.movingMarker.setPosX(this.movingMarkerXStart - (int) (xOffset / scale) );
+				this.movingMarker.setPosZ(this.movingMarkerZStart - (int) (yOffset / scale) );
+
+
+				if(!Mouse.isButtonDown(0)){
+					if(xOffset!=0 || yOffset!=0){
+						//update marker
+
+						this.mw.markerManager.editMarker(this.movingMarkerOldHash,this.movingMarker);
+					}
+
+				}
+
     		} else {
 	    		this.mapView.setViewCentre(this.viewXStart + xOffset, this.viewZStart + yOffset);
     		}
@@ -793,7 +883,8 @@ public class MwGui extends GuiScreen {
 		for(int i=0; i<this.mainMenuItems.size(); i++){
 
 			if(this.mainMenuItems.get(i).getMenuID().equals("group")){
-				this.mainMenuItems.get(i).setCurrentMenuItemName(this.mw.markerManager.getVisibleGroupName());
+				this.mainMenuItems.get(i).setCurrentMenuItemName(
+									MwUtil.truncatedString(this.mw.markerManager.getVisibleGroupName(),80));
 			}else if(this.mainMenuItems.get(i).getMenuID().equals("dimension")){
 				this.mainMenuItems.get(i).setCurrentMenuItemName(String.valueOf(this.mapView.getDimension() ));
 			}else if(this.mainMenuItems.get(i).getMenuID().equals("overlay")){
@@ -844,7 +935,13 @@ public class MwGui extends GuiScreen {
 				// draw help
 				this.drawHelp(mainMenuEndPosX, menuY + this.mw.mc.fontRenderer.FONT_HEIGHT);
 			}
-      	}
+			// menu "info" om mouse over
+			if (this.isPosInsideMainMenu(mouseX, mouseY) && this.mainMenuActiveElementIndex == 6) {
+				// draw info
+				this.drawInfo(mainMenuEndPosX, menuY + this.mw.mc.fontRenderer.FONT_HEIGHT);
+
+			}
+		}
 		super.drawScreen(mouseX, mouseY, f);
 
     }

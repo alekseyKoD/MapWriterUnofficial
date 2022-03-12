@@ -1,7 +1,5 @@
 package mapwriter;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import mapwriter.forge.MwConfig;
 import mapwriter.forge.MwForge;
 import mapwriter.forge.MwKeyHandler;
@@ -10,6 +8,7 @@ import mapwriter.map.*;
 import mapwriter.overlay.OverlaySlime;
 import mapwriter.region.BlockColours;
 import mapwriter.region.RegionManager;
+import mapwriter.server.networkPackets.ClientToServer.ClientLoadDataPacket;
 import mapwriter.tasks.CloseRegionManagerTask;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGameOver;
@@ -119,7 +118,11 @@ public class Mw {
 	public boolean paintChunks = false;
 	public int colorMarkerNameSearchMode;
 	public int colorMarkerDistanceSearchMode;
-	public int saveMarkersIngameSaveFolder;
+	public int saveMarkersOnServer;
+	public boolean newVersionMarkers =false;
+	public boolean sharedMarkersOnServer=false;
+	public int sharedMarkersOnClient;
+
 
 	// flags and counters
 	private boolean onPlayerDeathAlreadyFired = false;
@@ -127,6 +130,7 @@ public class Mw {
 	public boolean multiplayer = false;
 	public int tickCounter = 0;
   	public int lastSavedTick = 0;
+  	public boolean isMwOnServerWorks=false;
 
 	// list of available dimensions
 	public List<Integer> dimensionList = new ArrayList<Integer>();
@@ -208,7 +212,7 @@ public class Mw {
 		
 		// if something went wrong make sure the name is not blank
 		// (causes crash on start up due to empty configuration section)
-		if (worldName == "") {
+		if (worldName.equals("")) {
 			worldName = "default";
 		}
 		return worldName;
@@ -240,8 +244,10 @@ public class Mw {
 
 		this.colorMarkerDistanceSearchMode = this.config.getOrSetInt("options", "colorMarkerDistanceSearchMode",
 																this.colorMarkerDistanceSearchMode,0,1);
-		this.saveMarkersIngameSaveFolder = this.config.getOrSetInt("options", "saveMarkersIngameSaveFolder",
-				this.saveMarkersIngameSaveFolder,0,1);
+		this.saveMarkersOnServer = this.config.getOrSetInt("options", "saveMarkersOnServer",
+				this.saveMarkersOnServer,0,1);
+		this.sharedMarkersOnClient = this.config.getOrSetInt("options", "sharedMarkerOnClient",
+				this.sharedMarkersOnClient,0,1);
 
 		/*MwUtil.log("maxZoomAfter(%d)", this.maxZoom);
 		MwUtil.log("minZoomAfter(%d)", this.minZoom);*/
@@ -284,9 +290,9 @@ public class Mw {
 		this.config.setBoolean("options", "paintChunks", this.paintChunks);
 		this.config.setInt("options", "colorMarkerNameSearchMode", this.colorMarkerNameSearchMode);
 		this.config.setInt("options", "colorMarkerDistanceSearchMode", this.colorMarkerDistanceSearchMode);
-		this.config.setInt("options", "saveMarkersIngameSaveFolder", this.saveMarkersIngameSaveFolder);
-
-		this.config.save();	
+		this.config.setInt("options", "saveMarkersOnServer", this.saveMarkersOnServer);
+		this.config.setInt("options", "sharedMarkerOnClient",this.sharedMarkersOnClient);
+		this.config.save();
 	}
 	
 	public void saveWorldConfig() {
@@ -490,7 +496,7 @@ public class Mw {
 		if (this.ready) {
 			return;
 		}
-		
+
 		if ((this.mc.theWorld == null) || (this.mc.thePlayer == null)) {
 			MwUtil.log("Mw.load: world or player is null, cannot load yet");
 			return;
@@ -537,10 +543,20 @@ public class Mw {
 		
 		// marker manager only depends on the config being loaded
 		this.markerManager = new MarkerManager(this);
-		//this.markerManager.load(this.worldConfig, catMarkers);
-		//this.markerManager.loadPresetGroup(this.worldConfig,catUserPresetGroups);
-		//this.markerManager.loadPresetMarkers(this.worldConfig,catUserPresetMarkers);
 
+		//load markers and preset markers from server storage
+		if(this.isMwOnServerWorks && this.saveMarkersOnServer==1){
+			new ClientLoadDataPacket(Common.EnumServerActionType.SYNC).sendToServer();
+		}else {
+			//load markers & preset markers from local file
+			this.markerManager.load(this.worldConfig, catMarkers);
+
+		}
+
+		/*
+		this.markerManager.loadPresetGroup(this.worldConfig,catUserPresetGroups);
+		this.markerManager.loadPresetMarkers(this.worldConfig,catUserPresetMarkers);
+		*/
 		
 		this.playerTrail = new Trail(this, "player");
 		
@@ -607,16 +623,18 @@ public class Mw {
 //			this.saveConfig();
 			
 			this.tickCounter = 0;
+			this.isMwOnServerWorks=false;
+			this.sharedMarkersOnServer=false;
 
             OverlaySlime.reset(); //Reset the state so the seed will be asked again when we log in
         }
 	}
 
 public void saveCfgAndMarkers() {
-		/*
+
 		MwUtil.log("Saving markers and cfg...");
 
-		//this.markerManager.save(this.worldConfig, catMarkers);
+		this.markerManager.save(this.worldConfig, catMarkers);
 
 		if(this.miniMap!=null){
 
@@ -628,7 +646,7 @@ public void saveCfgAndMarkers() {
 
 		MwUtil.log("done");
 
-		 */
+
 	}
 
 	////////////////////////////////
@@ -734,7 +752,7 @@ public void saveCfgAndMarkers() {
 	public void onPlayerDeath() {
 		if (this.ready && (this.maxDeathMarkers > 0)) {
 			this.updatePlayer();
-			int deleteCount = this.markerManager.countMarkersInGroup("playerDeaths") - this.maxDeathMarkers + 1;
+			int deleteCount = this.markerManager.countMarkersInGroup(this.markerManager.getGroupIndex("playerDeaths") ) - this.maxDeathMarkers + 1;
 			for (int i = 0; i < deleteCount; i++) {
 				// delete the first marker found in the group "playerDeaths".
 				// as new markers are only ever appended to the marker list this will delete the

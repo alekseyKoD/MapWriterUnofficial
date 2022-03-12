@@ -232,7 +232,7 @@ public class MwGuiDropDownList extends GuiScreen {
 
        }else {
             highlightBoxposX = parentElement.posX;
-            highlightBoxWidth = this.dropDownListWidth > this.width ? this.dropDownListWidth : this.width;
+            highlightBoxWidth = Math.max(this.dropDownListWidth, this.width);
        }
        if(isPosInsideDropdownList(parentElement, posX, posY) && activeElement<(parentElement.elementList.size())) {
             drawRect(highlightBoxposX, highlightBoxPosY, highlightBoxposX+highlightBoxWidth,

@@ -45,14 +45,20 @@ public class MwGuiOptionSlot extends GuiSlot {
 			I18n.format("mw.gui.mwguioptionslot.optionOff"),
 			I18n.format("mw.gui.mwguioptionslot.optionOn")
 	};
-	private static final String[] saveMarkersIngameSaveFolderArray={
-			I18n.format("mw.gui.mwguioptionslot.optionOff"),
-			I18n.format("mw.gui.mwguioptionslot.optionOn")
-	};
 	private static final String[] circularMiniMapModeArray={
 			I18n.format("mw.gui.mwguioptionslot.optionOff"),
 			I18n.format("mw.gui.mwguioptionslot.optionOn")
 	};
+
+	private static final String[] saveMarkersOnServerArray={
+			I18n.format("mw.gui.mwguioptionslot.optionOff"),
+			I18n.format("mw.gui.mwguioptionslot.optionOn")
+	};
+	private static final String[] sharedMarkersOnClientArray={
+			I18n.format("mw.gui.mwguioptionslot.optionOff"),
+			I18n.format("mw.gui.mwguioptionslot.optionOn")
+	};
+
 
 
 
@@ -60,7 +66,7 @@ public class MwGuiOptionSlot extends GuiSlot {
 
 	private static final int[] ticksBetweenUpdatesIntArray = {0, 20, 40, 60, 100, 200, 300, 400, 500, 750, 1000};
 
-	private GuiButton[] buttons = new GuiButton[17];
+	private GuiButton[] buttons = new GuiButton[18];
 	
     static final ResourceLocation WIDGET_TEXTURE_LOC = new ResourceLocation("textures/gui/widgets.png");
 	
@@ -130,28 +136,26 @@ public class MwGuiOptionSlot extends GuiSlot {
 			//	this.buttons[i].displayString = "Map Lighting: " + (this.mw.lightingEnabled ? "enabled" : "disabled");
 			//	break;
 			case 13:
-				this.buttons[i].displayString = I18n.format("mw.gui.mwguioptionslot.oldNewMarkerDialog",
-												(this.mw.newMarkerDialog ?
-														I18n.format("mw.gui.mwguioptionslot.oldNewMarkerDialog.new") :
-														I18n.format("mw.gui.mwguioptionslot.oldNewMarkerDialog.old")));
-				break;
-			case 14:
 				this.buttons[i].displayString = I18n.format("mw.gui.mwguioptionslot.paintOverChunk",this.mw.paintChunks);
 				break;
-			case 15:
+			case 14:
 				this.buttons[i].displayString = I18n.format("mw.gui.mwguioptionslot.colorMarkerNameSearchMode",
 												this.colorMarkerNameSearchArray[this.mw.colorMarkerNameSearchMode]);
 				break;
-			case 16:
+			case 15:
 				this.buttons[i].displayString = I18n.format("mw.gui.mwguioptionslot.colorMarkerDistanceSearchMode",
 												this.colorMarkerDistanceSearchArray[this.mw.colorMarkerDistanceSearchMode]);
 				break;
-			/* for feature
-			case 17:
-				this.buttons[i].displayString = I18n.format("mw.gui.mwguioptionslot.storeSaveIngameSaveDir",
-												saveMarkersIngameSaveFolderArray[this.mw.saveMarkersIngameSaveFolder]);
+			case 16:
+				this.buttons[i].enabled=this.mw.isMwOnServerWorks;
+				this.buttons[i].displayString = I18n.format("mw.gui.mwguioptionslot.saveMarkersOnServer",
+												saveMarkersOnServerArray[this.mw.saveMarkersOnServer]);
 				break;
-			*/
+			case 17:
+				//this.buttons[i].enabled=(this.mw.isMwOnServerWorks && this.mw.sharedMarkersOnServer);
+				this.buttons[i].displayString = I18n.format("mw.gui.mwguioptionslot.sharedMarkersOnClient",
+						sharedMarkersOnClientArray[this.mw.sharedMarkersOnClient]);
+				break;
 			default:
 				break;
 		}
@@ -267,34 +271,34 @@ public class MwGuiOptionSlot extends GuiSlot {
 				// background texture mode
 				this.mw.backgroundTextureMode = (this.mw.backgroundTextureMode + 1) % 4;
 				break;
-			//case 11:
-			//	// lighting
-			//	this.mw.lightingEnabled = !this.mw.lightingEnabled;
-			//	break;
 			case 13:
-				this.mw.newMarkerDialog = !this.mw.newMarkerDialog;
-				break;
-			case 14:
 				this.mw.paintChunks = !this.mw.paintChunks;
 				break;
-			case 15:
+			case 14:
 				//Marker`s name color on search screen
 				this.mw.colorMarkerNameSearchMode = (this.mw.colorMarkerNameSearchMode + 1) % 2;
 				break;
-			case 16:
+			case 15:
 				//Marker`s distance color on search screen
 				this.mw.colorMarkerDistanceSearchMode = (this.mw.colorMarkerDistanceSearchMode + 1) % 2;
+				break;
+			case 16:
+				// Store markers on Server(Integrated or dedicated)
+
+				if(this.mw.isMwOnServerWorks){
+					this.mw.saveMarkersOnServer = (this.mw.saveMarkersOnServer + 1) % 2;
+				}
+
+				break;
+			case 17:
+				// show shared markers
+
+				this.mw.sharedMarkersOnClient = (this.mw.sharedMarkersOnClient + 1) % 2;
 				break;
 			default:
 				break;
 
-			/* for feature
-			case 17:
 
-				// Store markers and map in world`s save folder
-				this.mw.saveMarkersIngameSaveFolder = (this.mw.saveMarkersIngameSaveFolder + 1) % 2;
-				break;
-			*/
 		}
 		this.updateButtonLabel(i);
 	}

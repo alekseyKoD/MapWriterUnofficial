@@ -203,7 +203,7 @@ public class MwGuiImportMarkerFromJM extends GuiScreen {
                       markedDeletedList.add(this.markerManager.getMarkerList().get(i));
                   }
                 }
-                this.markerManager.getMarkerList().removeAll(markedDeletedList);
+               // this.markerManager.getMarkerList().removeAll(markedDeletedList);
                 this.markerManager.update();
 
                 MwUtil.importMarkersFromJourneymap(this.markerManager,jmWaypointsCurrentFolder);

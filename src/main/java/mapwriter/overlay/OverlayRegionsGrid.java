@@ -10,6 +10,7 @@ import net.minecraft.util.MathHelper;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Map;
 
 public  class OverlayRegionsGrid implements IMwDataProvider {
 
@@ -39,13 +40,13 @@ public  class OverlayRegionsGrid implements IMwDataProvider {
         public int getColorFromXY(int x, int z) {
             String currentGroup = this.mw.markerManager.getVisibleGroupName();
 
-            for (Marker marker : this.mw.markerManager.getMarkerList()) {
-                if(marker.getGroupIndex()==this.mw.markerManager.getGroupIndex(currentGroup) &&
-                        marker.getPosX()>x && marker.getPosX()<x+ overlayGridSize &&
-                        marker.getPosZ()>z && marker.getPosZ()<z+ overlayGridSize) {
-                    String color = String.format("%1$02X", marker.getColour() >> 16 & 255) +
-                            String.format("%1$02X", marker.getColour() >> 8 & 255) +
-                            String.format("%1$02X", marker.getColour() & 255);
+            for (Map.Entry<Integer,Marker> markerEntry : this.mw.markerManager.getMarkerList().entrySet() ) {
+                if(markerEntry.getValue().getGroupIndex()==this.mw.markerManager.getGroupIndex(currentGroup) &&
+                        markerEntry.getValue().getPosX()>x && markerEntry.getValue().getPosX()<x+ overlayGridSize &&
+                        markerEntry.getValue().getPosZ()>z && markerEntry.getValue().getPosZ()<z+ overlayGridSize) {
+                    String color = String.format("%1$02X", markerEntry.getValue().getColour() >> 16 & 255) +
+                            String.format("%1$02X", markerEntry.getValue().getColour() >> 8 & 255) +
+                            String.format("%1$02X", markerEntry.getValue().getColour() & 255);
                     return 0x80000000 | Integer.parseInt(color, 16);
                 }
             }

@@ -2,6 +2,7 @@ package mapwriter.forge;
 
 import java.io.File;
 
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import mapwriter.Mw;
 import mapwriter.api.MwAPI;
 import mapwriter.overlay.*;
@@ -10,9 +11,11 @@ import net.minecraft.client.Minecraft;
 import net.minecraftforge.common.MinecraftForge;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Loader;
+import net.minecraftforge.event.world.WorldEvent;
 
 public class ClientProxy extends CommonProxy {
 
+//	private MarkerStorage serverMarkerStorage;
 	private MwConfig config;
 
 	public void preInit(File configFile) {
@@ -20,10 +23,12 @@ public class ClientProxy extends CommonProxy {
 	}
 
 	public void load() {
+	//	MarkerStorage serverMarkerStorage = new MarkerStorage();
 		Mw mw = new Mw(this.config);
 		Object eventHandler = new EventHandler(mw);
 		MinecraftForge.EVENT_BUS.register(eventHandler);
 		FMLCommonHandler.instance().bus().register(eventHandler);
+		//FMLCommonHandler.instance().bus().register(new MwServerHandler());
 
 		Object eventKeyHandler = new MwKeyHandler();
 		FMLCommonHandler.instance().bus().register(eventKeyHandler);
@@ -50,4 +55,5 @@ public class ClientProxy extends CommonProxy {
 		// MwAPI.registerDataProvider("Checker", new OverlayChecker());
 		// MwAPI.setCurrentDataProvider("Slime");
 	}
-}
+
+	}

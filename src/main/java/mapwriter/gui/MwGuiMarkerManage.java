@@ -374,27 +374,31 @@ public class MwGuiMarkerManage  extends GuiScreen {
             //Apply selected action to selected markers
 
             String oldMarkerName="";
+            int oldMarkerHash;
             int counterName=0;
             int counterGroup=0;
             int counterColor=0;
             for (Map.Entry<Integer,Boolean> mapPair: this.markerManageSlot.checkboxesEnabled.entrySet()){
                 if (mapPair.getValue()){
-                    int Index=this.markerManageSlot.checkboxesId.get(mapPair.getKey());
+                    int index=this.markerManageSlot.checkboxesId.get(mapPair.getKey());
+                    oldMarkerHash=MwUtil.getHashFromMarker(this.markerManageSlot.markerList.get(index));
 
                     if(flagSetSelectionName && this.setSelectedName.validateTextFieldData()){
-                        oldMarkerName=this.markerManageSlot.markerList.get(Index).getMarkerName();
-                        this.markerManageSlot.markerList.get(Index).setMarkerName(this.setSelectedName.textField.getText());
+                        oldMarkerName=this.markerManageSlot.markerList.get(index).getMarkerName();
+                        this.markerManageSlot.markerList.get(index).setMarkerName(this.setSelectedName.textField.getText());
                         counterName++;
                     }
                     if (flagSetSelectionGroup && this.setSelectedGroup.validateTextFieldData()) {
-                        this.markerManageSlot.markerList.get(Index).setGroupIndex(
+                        this.markerManageSlot.markerList.get(index).setGroupIndex(
                                     this.mw.markerManager.addGroupToList(this.setSelectedGroup.textField.getText()));
                         counterGroup++;
                     }
                     if(flagSetSelectionColor){
-                        this.markerManageSlot.markerList.get(Index).setColour(this.setSelectedColor.getSelectedColor());
+                        this.markerManageSlot.markerList.get(index).setColour(this.setSelectedColor.getSelectedColor());
                         counterColor++;
                     }
+                    this.mw.markerManager.editMarker(oldMarkerHash,this.markerManageSlot.markerList.get(index));
+
                 }
             }
             if(flagSetSelectionName){

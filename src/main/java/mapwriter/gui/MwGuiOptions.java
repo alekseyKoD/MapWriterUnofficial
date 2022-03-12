@@ -22,7 +22,8 @@ public class MwGuiOptions extends GuiScreen {
     	this.optionSlot = new MwGuiOptionSlot(this, this.mc, this.mw);
         this.optionSlot.registerScrollButtons(7, 8);
         
-        this.buttonList.add(new GuiButton(200, (this.width / 2) - 50, this.height - 28, 100, 20, I18n.format("gui.done")));
+        this.buttonList.add(new GuiButton(200, (this.width / 2) - 50, this.height - 28,
+                                                        100, 20, I18n.format("gui.done")));
     }
     
     protected void actionPerformed(GuiButton button) {
@@ -31,13 +32,23 @@ public class MwGuiOptions extends GuiScreen {
 			// reconfigure texture size
 			this.mw.setTextureSize();
 			this.mc.displayGuiScreen(this.parentScreen);
+			if(this.mw.isMwOnServerWorks && this.mw.saveMarkersOnServer==1){
+                //save markers on server`s storage if options "save markers on server" enabled
+
+                this.mw.markerManager.sendAllMarkersToServer();
+            }
+
+
+
+
 		}
 	}
 
     public void drawScreen(int mouseX, int mouseY, float f) {
         this.drawDefaultBackground();
         this.optionSlot.drawScreen(mouseX, mouseY, f);
-        this.drawCenteredString(this.fontRendererObj, I18n.format("mw.gui.mwguioptions.mwOptions"), this.width / 2, 10, 0xffffff);
+        this.drawCenteredString(this.fontRendererObj, I18n.format("mw.gui.mwguioptions.mwOptions"),
+                                                            this.width / 2, 10, 0xffffff);
         super.drawScreen(mouseX, mouseY, f);
     }
 

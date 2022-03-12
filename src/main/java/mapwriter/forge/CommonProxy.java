@@ -1,9 +1,24 @@
 package mapwriter.forge;
 
+import mapwriter.server.MwSavedData;
+import mapwriter.server.MarkerStorage;
+
 import java.io.File;
 
 public class CommonProxy {
-	public void preInit(File configFile) {}
-	public void load() {}
+
+	private MwSavedData mwWorldData;
+	private MwConfig config;
+
+	public void preInit(File configFile) {
+		this.config = new MwConfig(configFile);
+
+	}
+	public void load() {
+		MarkerStorage serverMarkerStorage = new MarkerStorage();
+
+	}
 	public void postInit() {}
+
+
 }

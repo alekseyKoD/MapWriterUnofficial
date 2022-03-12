@@ -1,14 +1,16 @@
 package mapwriter.map;
 
 import java.awt.Point;
+import java.util.ArrayList;
+import java.util.List;
+
 import mapwriter.Render;
 import mapwriter.map.mapmode.MapMode;
-import mapwriter.map.MarkerManager;
 
 
 public class Marker {
 
-	private String name;
+	private String markerName;
 	private int groupIndex;
 	private int posX;
 	private int posY;
@@ -19,7 +21,7 @@ public class Marker {
 	public Point.Double screenPos = new Point.Double(0, 0);
 
 
-	private static final int[] colours;
+	private static final  int[] colours;
 
 	static{
 		colours = new int[]{
@@ -31,7 +33,7 @@ public class Marker {
     private static int colourIndex = 0;
 	
 	public Marker(String name, int groupIndex, int posX, int posY, int posZ, int dimension, int colour) {
-		this.name = name;
+		this.markerName = name;
 		this.posX = posX;
 		this.posY = posY;
 		this.posZ = posZ;
@@ -40,8 +42,19 @@ public class Marker {
 		this.groupIndex = groupIndex;
 	}
 
-	public String getMarkerName(){ return this.name ;}
-	public void setMarkerName(String name) { this.name = name; }
+	public Marker(List<String> arrayData){
+		this.markerName = arrayData.get(0); //marker`s name
+		this.groupIndex = Integer.parseInt(arrayData.get(1)); //marker`s group index
+		this.posX = Integer.parseInt(arrayData.get(2)); //marker`s X coordinates
+		this.posY = Integer.parseInt(arrayData.get(3)); //marker`s Y coordinate
+		this.posZ = Integer.parseInt(arrayData.get(4)); //marker`s Z coordinate
+		this.dimension = Integer.parseInt(arrayData.get(5)); //marker`s dimension id
+		this.colour = Integer.parseInt(arrayData.get(6)); //marker`s color
+
+	}
+
+	public String getMarkerName(){ return this.markerName;}
+	public void setMarkerName(String name) { this.markerName = name; }
 
 	public int getGroupIndex(){return this.groupIndex; }
 	public void setGroupIndex(Integer newGroupIndex){ this.groupIndex=newGroupIndex; }
@@ -62,6 +75,18 @@ public class Marker {
 	public void setColour(int colour) { this.colour = colour; }
 
 	public int getColourIndex() { return colourIndex; }
+
+	public List<String> convertMarkerToArray(Marker marker){
+		List<String> markerL=new ArrayList<String>();
+		markerL.add(0,marker.getMarkerName()); //marker Name
+		markerL.add(1,String.valueOf(marker.getGroupIndex())); //marker`s group index
+		markerL.add(2,String.valueOf(marker.getPosX()) ); // marker`s X coordinates
+		markerL.add(3,String.valueOf(marker.getPosY()) ); // marker`s Y coordinates
+		markerL.add(4,String.valueOf(marker.getPosZ()) ); // marker`s Z coordinates
+		markerL.add(5,String.valueOf(marker.getDimension()) ); // marker`s dimension id
+		markerL.add(6,String.valueOf(marker.getColour()) ); // marker`s color
+		return markerL;
+	}
 
 	/*
 	public String getString() {
@@ -120,9 +145,13 @@ public class Marker {
 		if (this == o) { return true; }
 		if (o instanceof Marker) {
 			Marker m = (Marker) o;
-			return (name.equals(m.name) ) && (groupIndex == m.groupIndex)
-					&& (posX == m.posX) && (posY == m.posY)
-					&& (posZ == m.posZ) && (dimension == m.dimension);
+			return (markerName.equals(m.markerName) ) &&
+					(groupIndex == m.groupIndex) &&
+					(posX == m.posX) &&
+					(posY == m.posY) &&
+					(colour==m.colour) &&
+					(posZ == m.posZ) &&
+					(dimension == m.dimension);
 		}
 		return false;
 	}

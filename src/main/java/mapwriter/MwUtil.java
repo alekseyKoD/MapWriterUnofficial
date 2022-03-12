@@ -28,6 +28,7 @@ import net.minecraft.world.chunk.Chunk;
 import org.apache.commons.lang3.StringUtils;
 import cpw.mods.fml.common.FMLCommonHandler;
 
+
 import javax.swing.*;
 
 
@@ -62,6 +63,31 @@ public class MwUtil {
 		s = s.replace('/',  '_');
 		s = s.replace('\\',  '_');
 		return patternInvalidChars.matcher(s).replaceAll("");
+	}
+
+	public static String truncatedString(String sourceString,int maxWidth){
+		int sourceStringLength=Minecraft.getMinecraft().fontRenderer.getStringWidth(sourceString+"...");
+
+		if (sourceStringLength > maxWidth) {
+			return sourceString.substring(0,maxWidth/(sourceStringLength/sourceString.length())-2)+"...";
+		}
+		return sourceString;
+
+
+	}
+
+	public static int getHashFromMarker(Marker marker){
+
+
+		String marker2String=marker.getMarkerName()+
+				String.valueOf(marker.getGroupIndex())+
+				String.valueOf(marker.getPosX())+
+				String.valueOf(marker.getPosY())+
+				String.valueOf(marker.getPosZ())+
+				String.valueOf(marker.getDimension())+
+				String.valueOf(marker.getColour());
+		return MurmurHash3.hash32x86(marker2String.getBytes());
+
 	}
 	
 	public static File getFreeFilename(File dir, String baseName, String ext) {
@@ -238,7 +264,7 @@ public class MwUtil {
 		HashMap <String, String > uniqueMarker= new HashMap<String, String>();
 		//create HashMap to avoid duplication markers from import process
 		//	HashMap`s key is a string from Name+coordX+coordY+coordZ+dimension
-
+	/*
 		for (Marker marker: markerManager.getMarkerList()){
 			String hashString=marker.getMarkerName()+
 					String.valueOf(marker.getPosX())+
@@ -249,7 +275,7 @@ public class MwUtil {
 				uniqueMarker.put(hashString,"");
 			}
 		}
-
+	*/
 
 
 		if(jmWaypountsFolder.isDirectory()) {
