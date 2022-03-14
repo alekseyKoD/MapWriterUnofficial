@@ -3,8 +3,6 @@ package mapwriter.server.networkPackets.ClientToServer;
 
 import hohserg.elegant.networking.api.ClientToServerPacket;
 import hohserg.elegant.networking.api.ElegantPacket;
-import mapwriter.Mw;
-import mapwriter.MwUtil;
 import mapwriter.forge.MwForge;
 import mapwriter.Common;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -64,21 +62,21 @@ public class ClientGroupsPacket implements ClientToServerPacket {
             case ADD_SYSTEM_GROUP:
                 //add system group (all & none) to server storage
 
-                if (!MwForge.instance.getMwDataStorage().getGroupStorage().containsKey(playerUUID)) {
-                    MwForge.instance.getMwDataStorage().getGroupStorage().put(playerUUID, new HashMap<String, Integer>());
-                    MwForge.instance.getMwDataStorage().getGroupOrderStorage().put(playerUUID, new ArrayList<Integer>());
+                if (!MwForge.instance.getMwMarkerStorage().getGroupStorage().containsKey(playerUUID)) {
+                    MwForge.instance.getMwMarkerStorage().getGroupStorage().put(playerUUID, new HashMap<String, Integer>());
+                    MwForge.instance.getMwMarkerStorage().getGroupOrderStorage().put(playerUUID, new ArrayList<Integer>());
 
                 }
 
-                if(!MwForge.instance.getMwDataStorage().getGroupStorage().get(playerUUID).
+                if(!MwForge.instance.getMwMarkerStorage().getGroupStorage().get(playerUUID).
                                                 containsKey(Common.NONE_GROUP)){
-                    MwForge.instance.getMwDataStorage().getGroupStorage().get(playerUUID).put(
+                    MwForge.instance.getMwMarkerStorage().getGroupStorage().get(playerUUID).put(
                             Common.NONE_GROUP,
                             Common.NONE_INDEX);
                 }
-                if(!MwForge.instance.getMwDataStorage().getGroupStorage().get(playerUUID).
+                if(!MwForge.instance.getMwMarkerStorage().getGroupStorage().get(playerUUID).
                         containsKey(Common.ALL_GROUP)){
-                    MwForge.instance.getMwDataStorage().getGroupStorage().get(playerUUID).put(
+                    MwForge.instance.getMwMarkerStorage().getGroupStorage().get(playerUUID).put(
                             Common.ALL_GROUP,
                             Common.ALL_INDEX);
                 }
@@ -86,45 +84,45 @@ public class ClientGroupsPacket implements ClientToServerPacket {
 
             case EDITGROUP:
                 // add group list to server storage
-                if (!MwForge.instance.getMwDataStorage().getGroupStorage().containsKey(playerUUID)) {
-                    MwForge.instance.getMwDataStorage().getGroupStorage().put(playerUUID, new HashMap<String, Integer>());
-                    MwForge.instance.getMwDataStorage().getGroupOrderStorage().put(playerUUID, new ArrayList<Integer>());
+                if (!MwForge.instance.getMwMarkerStorage().getGroupStorage().containsKey(playerUUID)) {
+                    MwForge.instance.getMwMarkerStorage().getGroupStorage().put(playerUUID, new HashMap<String, Integer>());
+                    MwForge.instance.getMwMarkerStorage().getGroupOrderStorage().put(playerUUID, new ArrayList<Integer>());
 
                 }
 
-                MwForge.instance.getMwDataStorage().getGroupStorage().get(playerUUID).clear();
-                MwForge.instance.getMwDataStorage().getGroupStorage().get(playerUUID).putAll(this.groupData);
+                MwForge.instance.getMwMarkerStorage().getGroupStorage().get(playerUUID).clear();
+                MwForge.instance.getMwMarkerStorage().getGroupStorage().get(playerUUID).putAll(this.groupData);
 
                 // add order group list to server storage
 
-                MwForge.instance.getMwDataStorage().getGroupOrderStorage().get(playerUUID).clear();
-                MwForge.instance.getMwDataStorage().getGroupOrderStorage().get(playerUUID).addAll(this.groupOrderData);
+                MwForge.instance.getMwMarkerStorage().getGroupOrderStorage().get(playerUUID).clear();
+                MwForge.instance.getMwMarkerStorage().getGroupOrderStorage().get(playerUUID).addAll(this.groupOrderData);
                 break;
 
             case CHANGEORDER:
                 // add order group list to server storage
-                if (!MwForge.instance.getMwDataStorage().getGroupOrderStorage().containsKey(playerUUID)) {
-                    MwForge.instance.getMwDataStorage().getGroupOrderStorage().put(playerUUID, new ArrayList<Integer>());
+                if (!MwForge.instance.getMwMarkerStorage().getGroupOrderStorage().containsKey(playerUUID)) {
+                    MwForge.instance.getMwMarkerStorage().getGroupOrderStorage().put(playerUUID, new ArrayList<Integer>());
                 }
-                MwForge.instance.getMwDataStorage().getGroupOrderStorage().get(playerUUID).clear();
-                MwForge.instance.getMwDataStorage().getGroupOrderStorage().get(playerUUID).addAll(this.groupOrderData);
+                MwForge.instance.getMwMarkerStorage().getGroupOrderStorage().get(playerUUID).clear();
+                MwForge.instance.getMwMarkerStorage().getGroupOrderStorage().get(playerUUID).addAll(this.groupOrderData);
                 break;
 
             case CHANGEVISIBLE:
-                MwForge.instance.getMwDataStorage().getVisibleGroupIndexStorage().put(playerUUID, this.visibleGroupIndex);
+                MwForge.instance.getMwMarkerStorage().getVisibleGroupIndexStorage().put(playerUUID, this.visibleGroupIndex);
                 break;
 
             case DELETE:
-                if (!MwForge.instance.getMwDataStorage().getGroupStorage().containsKey(playerUUID)) {
-                    MwForge.instance.getMwDataStorage().getGroupStorage().put(playerUUID, new HashMap<String, Integer>());
-                    MwForge.instance.getMwDataStorage().getGroupOrderStorage().put(playerUUID, new ArrayList<Integer>());
+                if (!MwForge.instance.getMwMarkerStorage().getGroupStorage().containsKey(playerUUID)) {
+                    MwForge.instance.getMwMarkerStorage().getGroupStorage().put(playerUUID, new HashMap<String, Integer>());
+                    MwForge.instance.getMwMarkerStorage().getGroupOrderStorage().put(playerUUID, new ArrayList<Integer>());
                 }
 
-                MwForge.instance.getMwDataStorage().getGroupStorage().get(playerUUID).clear();
-                MwForge.instance.getMwDataStorage().getGroupStorage().get(playerUUID).putAll(this.groupData);
-                MwForge.instance.getMwDataStorage().getGroupOrderStorage().get(playerUUID).clear();
-                MwForge.instance.getMwDataStorage().getGroupOrderStorage().get(playerUUID).addAll(this.groupOrderData);
-                MwForge.instance.getMwDataStorage().getVisibleGroupIndexStorage().put(playerUUID, this.visibleGroupIndex);
+                MwForge.instance.getMwMarkerStorage().getGroupStorage().get(playerUUID).clear();
+                MwForge.instance.getMwMarkerStorage().getGroupStorage().get(playerUUID).putAll(this.groupData);
+                MwForge.instance.getMwMarkerStorage().getGroupOrderStorage().get(playerUUID).clear();
+                MwForge.instance.getMwMarkerStorage().getGroupOrderStorage().get(playerUUID).addAll(this.groupOrderData);
+                MwForge.instance.getMwMarkerStorage().getVisibleGroupIndexStorage().put(playerUUID, this.visibleGroupIndex);
                 break;
             default:
                 break;

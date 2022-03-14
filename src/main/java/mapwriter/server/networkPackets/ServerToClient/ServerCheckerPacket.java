@@ -19,8 +19,11 @@ public class ServerCheckerPacket implements ServerToClientPacket {
     public void onReceive(Minecraft mc) {
         //sets the flag that the server is installed and running server`s MapWriter
         //(for save markers on server storage)
+
+
         if(mc.theWorld.isRemote){
             Mw.instance.isMwOnServerWorks=true;
+            System.out.println("FLAG set");
         }
 
     }

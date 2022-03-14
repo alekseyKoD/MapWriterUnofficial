@@ -31,17 +31,17 @@ public class ClientLoadDataPacket implements ClientToServerPacket {
         switch (this.actionType){
             case SYNC:
                 //load marker`s info, group`s info and preset marker`s from server storage to client storage
-                if(MwForge.instance.getMwDataStorage().getMarkerStorage().containsKey(player.getUniqueID()) &&
-                        MwForge.instance.getMwDataStorage().getMarkerStorage().get(player.getUniqueID()).size()>0 ) {
+                if(MwForge.instance.getMwMarkerStorage().getMarkerStorage().containsKey(player.getUniqueID()) &&
+                        MwForge.instance.getMwMarkerStorage().getMarkerStorage().get(player.getUniqueID()).size()>0 ) {
 
 
                     HashMap<Integer, Marker> userMarkerStorage = new HashMap<Integer, Marker>
-                            (MwForge.instance.getMwDataStorage().getMarkerStorage().get(player.getUniqueID()));
+                            (MwForge.instance.getMwMarkerStorage().getMarkerStorage().get(player.getUniqueID()));
                     new ServerMarkerPackets(Common.EnumMarkerActionType.LOAD,
-                            MwForge.instance.getMwDataStorage().getConvertedMarkerStorage(userMarkerStorage),
-                            MwForge.instance.getMwDataStorage().getGroupStorage().get(player.getUniqueID()),
-                            MwForge.instance.getMwDataStorage().getGroupOrderStorage().get(player.getUniqueID()),
-                            MwForge.instance.getMwDataStorage().getVisibleGroupIndexStorage().get(player.getUniqueID()))
+                            MwForge.instance.getMwMarkerStorage().getConvertedMarkerStorage(userMarkerStorage),
+                            MwForge.instance.getMwMarkerStorage().getGroupStorage().get(player.getUniqueID()),
+                            MwForge.instance.getMwMarkerStorage().getGroupOrderStorage().get(player.getUniqueID()),
+                            MwForge.instance.getMwMarkerStorage().getVisibleGroupIndexStorage().get(player.getUniqueID()))
                             .sendToPlayer(player);
                 }
                 break;

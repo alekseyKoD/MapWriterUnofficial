@@ -52,31 +52,31 @@ public class ClientMarkersPacket implements ClientToServerPacket {
         UUID playerUUID=player.getUniqueID();
         switch(this.actionType) {
             case ADD:
-                if (!MwForge.instance.getMwDataStorage().getMarkerStorage().containsKey(playerUUID)) {
+                if (!MwForge.instance.getMwMarkerStorage().getMarkerStorage().containsKey(playerUUID)) {
                     HashMap<Integer, Marker> markerMap = new HashMap<Integer, Marker>();
                     markerMap.put(this.markerHash, new Marker(this.markerData));
-                    MwForge.instance.getMwDataStorage().getMarkerStorage().put(playerUUID, markerMap);
+                    MwForge.instance.getMwMarkerStorage().getMarkerStorage().put(playerUUID, markerMap);
                 }
-                MwForge.instance.getMwDataStorage().getMarkerStorage().get(playerUUID).put(this.markerHash,
+                MwForge.instance.getMwMarkerStorage().getMarkerStorage().get(playerUUID).put(this.markerHash,
                                                                                             new Marker(this.markerData));
                 break;
             case EDIT:
-                MwForge.instance.getMwDataStorage().getMarkerStorage().get(playerUUID).remove(this.oldMarkerHash);
-                MwForge.instance.getMwDataStorage().getMarkerStorage().get(playerUUID).put(this.markerHash,
+                MwForge.instance.getMwMarkerStorage().getMarkerStorage().get(playerUUID).remove(this.oldMarkerHash);
+                MwForge.instance.getMwMarkerStorage().getMarkerStorage().get(playerUUID).put(this.markerHash,
                                                                                             new Marker(this.markerData));
                 break;
             case DELETE:
-                MwForge.instance.getMwDataStorage().getMarkerStorage().get(playerUUID).remove(this.markerHash);
+                MwForge.instance.getMwMarkerStorage().getMarkerStorage().get(playerUUID).remove(this.markerHash);
                 break;
             case SEND:
-                if (!MwForge.instance.getMwDataStorage().getMarkerStorage().containsKey(playerUUID)) {
+                if (!MwForge.instance.getMwMarkerStorage().getMarkerStorage().containsKey(playerUUID)) {
                     HashMap<Integer, Marker> markerMap = new HashMap<Integer, Marker>();
-                    MwForge.instance.getMwDataStorage().getMarkerStorage().put(playerUUID, markerMap);
-                } else MwForge.instance.getMwDataStorage().getMarkerStorage().get(playerUUID).clear();
+                    MwForge.instance.getMwMarkerStorage().getMarkerStorage().put(playerUUID, markerMap);
+                } else MwForge.instance.getMwMarkerStorage().getMarkerStorage().get(playerUUID).clear();
 
 
                 for(Map.Entry<Integer, List<String>> allMarkersMap: this.allMarkersData.entrySet() ){
-                    MwForge.instance.getMwDataStorage().getMarkerStorage().get(playerUUID).put(allMarkersMap.getKey(),
+                    MwForge.instance.getMwMarkerStorage().getMarkerStorage().get(playerUUID).put(allMarkersMap.getKey(),
                                                                                     new Marker(allMarkersMap.getValue()));
 
                 }

@@ -1,11 +1,11 @@
 package mapwriter.forge;
 
 import java.net.InetSocketAddress;
+import java.util.HashMap;
 import java.util.UUID;
 
 import cpw.mods.fml.common.gameevent.PlayerEvent;
 import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import mapwriter.server.MwSavedData;
 import mapwriter.server.MarkerStorage;
 import mapwriter.server.networkPackets.ServerToClient.ServerCheckerPacket;
@@ -38,8 +38,10 @@ import cpw.mods.fml.common.network.FMLNetworkEvent;
 public class MwForge {
 
     private MwSavedData mwWorldData;
+    private MarkerStorage mwMarkerStorage;
 
-    private MarkerStorage mwDataStorage;
+        private final HashMap<UUID,MwSavedData> mwDataStorage=new HashMap<UUID, MwSavedData>();
+
 
 	@Instance("MapWriter")
 	public static MwForge instance;
@@ -51,7 +53,7 @@ public class MwForge {
 
 	public static Logger logger = LogManager.getLogger("MapWriter");
 
-    public MarkerStorage getMwDataStorage(){ return mwDataStorage; }
+    public MarkerStorage getMwMarkerStorage(){ return mwMarkerStorage; }
 
 
 	
@@ -103,6 +105,7 @@ public class MwForge {
     @SubscribeEvent
     public void onEntityJoinWorld(EntityJoinWorldEvent event) {
         Entity entity = event.entity;
+        UUID playerUUID=entity.getUniqueID();
 
 
 
@@ -110,18 +113,34 @@ public class MwForge {
             //set flag, what MapWriter mod install and works on Server
             new ServerCheckerPacket(true).sendToPlayer((EntityPlayerMP)event.entity);
 
+            if(!this.mwDataStorage.containsKey(playerUUID)){
+
+                    this.mwDataStorage.put(playerUUID, new MwSavedData("MapWriter."+playerUUID.toString()));
+                }
+
+           /*
             if(this.mwWorldData==null){
+
                 this.mwWorldData=new MwSavedData("MapWriter."+entity.getUniqueID().toString());
             }
-
-            this.mwWorldData.setMwData(this.mwWorldData.get(event.world).getMwData());
-            int count=this.mwWorldData.getSavedMarkerCount();
+            */
+            this.mwDataStorage.get(playerUUID).setMwData(MwSavedData.get(event.world).getMwData());
+            //this.mwWorldData.setMwData(this.mwWorldData.get(event.world).getMwData());
+            //int count=this.mwWorldData.getSavedMarkerCount();
+            int count=this.mwDataStorage.get(playerUUID).getSavedMarkerCount();
             System.out.println("save data to NBT");
-            String markerName="marker"+String.valueOf(count+1);
+            String markerName="marker"+ (count + 1);
+
+            this.mwDataStorage.get(playerUUID).addMarkerData(playerUUID,markerName,100,count+1,100,16,0);
+            this.mwDataStorage.get(playerUUID).markDirty();
+            event.world.mapStorage.setData(this.mwDataStorage.get(playerUUID).getTagName(),this.mwDataStorage.get(playerUUID));
+
+
+            /*
             this.mwWorldData.addMarkerData(markerName,100,count+1,100,16,0);
             this.mwWorldData.markDirty();
             event.world.mapStorage.setData(mwWorldData.getTagName(),this.mwWorldData);
-
+            */
   //          this.getMwDataStorage().createNBTStructure(entity.getUniqueID());
 
 
@@ -136,7 +155,7 @@ public class MwForge {
 
         if (!event.world.isRemote && event.world.provider.dimensionId==0){
 
-            mwDataStorage =new MarkerStorage();
+            mwMarkerStorage =new MarkerStorage();
         }
 
     }
@@ -156,11 +175,12 @@ public class MwForge {
             }
         }else{
             //save markers on server side (only integrated server)
+            /*
                 UUID playerUUID=Minecraft.getMinecraft().thePlayer.getUniqueID();
                 if(event.world.provider.dimensionId==0){
-                    mwDataStorage.createNBTStructure(playerUUID);
+                    mwMarkerStorage.createNBTStructure(playerUUID);
                 }
-
+           */
 
         }
 

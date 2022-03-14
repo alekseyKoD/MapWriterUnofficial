@@ -446,7 +446,7 @@ public class MarkerManager {
 			new ClientMarkersPacket(Common.EnumMarkerActionType.ADD,
 					MwUtil.getHashFromMarker(marker),
 					marker.convertMarkerToArray(marker) ).sendToServer();
-			}
+		}
 
 	}
 
